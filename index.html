@@ -52,7 +52,8 @@ canvas{box-shadow:0 8px 30px rgba(0,0,0,.5)}
 body.cine #pad,body.cine #bar{visibility:hidden}
 @media (hover:hover) and (pointer:fine){#pad{display:none}}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="three.min.js"></script>
+<script>if(!window.THREE){document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\\/script>')}</script>
 </head>
 <body>
 <div id="bar"><button id="b-sensei" hidden style="background:#b82b2b;color:#fff;font-weight:bold" title="Toggle Sensei Mode">👑 Sensi Tag</button><button id="bs" hidden>Invite</button><button id="bl" hidden>Leave</button><button id="bp">⏸</button><button id="bv">🗣</button><button id="bm">🔊</button></div>
@@ -602,7 +603,7 @@ function setNetUI(){
  document.getElementById('bs').hidden=!NH;document.getElementById('bl').hidden=!(NH||NG);
  const bsBtn=document.getElementById('b-sensei');if(bsBtn)bsBtn.hidden=!(NH||NG);
 }
-function loadPeer(cb){if(window.Peer)return cb();const sc=document.createElement('script');sc.src='https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js';sc.onload=cb;
+function loadPeer(cb){if(window.Peer)return cb();const sc=document.createElement('script');sc.src='peerjs.min.js';sc.onerror=()=>{const s2=document.createElement('script');s2.src='https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js';s2.onload=cb;s2.onerror=()=>popups.push({t:'Could not load multiplayer',x:480,y:200,l:2.5,s:1});document.head.appendChild(s2)};sc.onload=cb;
  sc.onerror=()=>popups.push({t:'Could not load multiplayer',x:480,y:200,l:2.5,s:1});document.head.appendChild(sc)}
 function leave(m){try{peer&&peer.destroy()}catch(e){}peer=null;hostConn=null;NH=NG=false;conns=[];remote={};netStatus='';room='';state='ready';setNetUI();if(m)popups.push({t:m,x:480,y:200,l:2.5,s:1})}
 function hostRoom(){if(peer)return;loadPeer(()=>{const code=Math.random().toString(36).slice(2,6).toUpperCase(),p=new Peer('rccg-'+code);peer=p;
