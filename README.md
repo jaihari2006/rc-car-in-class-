@@ -1,10 +1,20 @@
 # 🏎️ RC Car in Class
 
+![RC Car in Class Banner](images/banner.jpg)
+
 Play online or download the native Android app:
 
 - **🌐 Play in Browser**: [https://jaihari2006.github.io/rc-car-in-class-/](https://jaihari2006.github.io/rc-car-in-class-/)
 - **📱 Download Android APK**: [Download app-debug.apk](https://github.com/jaihari2006/rc-car-in-class-/releases/download/v1.0.0/app-debug.apk)
 - **🏷️ GitHub Release**: [v1.0.0 Release Page](https://github.com/jaihari2006/rc-car-in-class-/releases/tag/v1.0.0)
+
+---
+
+## 📸 Screenshots & Artwork
+
+| Nitro Boost & Power Slide | Multiplayer Classroom Chase |
+| :---: | :---: |
+| ![Nitro Boost Action](images/gameplay-nitro.jpg) | ![Multiplayer Sensei Tag](images/multiplayer-sensei.jpg) |
 
 ---
 
