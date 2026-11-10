@@ -1,0 +1,49 @@
+{
+  "id": "futuristic",
+  "name": "Futuristic Type",
+  "desc": "Dark sci-fi cyber academy, neon cyan grid, holographic terminal board",
+  "swatches": ["#0a0818", "#00f0ff", "#ff007f"],
+  "floor": {
+    "style": "tile",
+    "hsl": [250, 45, 10],
+    "var": 6,
+    "line": "rgba(0, 240, 255, 0.5)",
+    "grid": "#00f0ff",
+    "gloss": 0.12
+  },
+  "wall": {
+    "top": "#1a122e",
+    "bottom": "#0e091c",
+    "wain": "#261545",
+    "base": "#ff007f",
+    "neon": "#00f0ff",
+    "petals": false
+  },
+  "board": {
+    "top": "#0a0818",
+    "bottom": "#060410",
+    "chalk": "#00f0ff",
+    "glow": true
+  },
+  "desk": {
+    "wood": "#1e1a33",
+    "grain": [0, 240, 255]
+  },
+  "ceil": "#0c0818",
+  "sky": ["#16082b"],
+  "bg": "#05030a",
+  "light": {
+    "sky": "#8844ff",
+    "ground": "#00f0ff",
+    "hemi": 0.55,
+    "sun": "#00f0ff",
+    "sunI": 0.9
+  },
+  "car": {
+    "metal": 0.95,
+    "rough": 0.1,
+    "clear": 1.0,
+    "rim": "#00f0ff",
+    "glow": "#00f0ff"
+  }
+}

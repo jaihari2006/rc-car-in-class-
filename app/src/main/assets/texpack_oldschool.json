@@ -1,0 +1,49 @@
+{
+  "id": "oldschool",
+  "name": "Old School Type",
+  "desc": "Vintage wood classroom, chalkboard green, warm sepia sunlight",
+  "swatches": ["#8b5a2b", "#1e382b", "#ffe5b4"],
+  "floor": {
+    "style": "wood",
+    "hsl": [28, 48, 30],
+    "var": 14,
+    "plank": 180,
+    "line": "rgba(35, 18, 8, 0.65)",
+    "gloss": 0.45
+  },
+  "wall": {
+    "top": "#f4eedb",
+    "bottom": "#ded4be",
+    "wain": "#5c381c",
+    "base": "#3d2412",
+    "neon": null,
+    "petals": false
+  },
+  "board": {
+    "top": "#1e382b",
+    "bottom": "#13251c",
+    "chalk": "#fffce8",
+    "glow": false
+  },
+  "desk": {
+    "wood": "#8b5a2b",
+    "grain": [65, 35, 15]
+  },
+  "ceil": "#e8dfcc",
+  "sky": ["#a8caff"],
+  "bg": "#140e08",
+  "light": {
+    "sky": "#ffe5b4",
+    "ground": "#633918",
+    "hemi": 0.65,
+    "sun": "#ffd79a",
+    "sunI": 1.15
+  },
+  "car": {
+    "metal": 0.65,
+    "rough": 0.22,
+    "clear": 1.0,
+    "rim": "#d4af37",
+    "glow": "#d4af37"
+  }
+}

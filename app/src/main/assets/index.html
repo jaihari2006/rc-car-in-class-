@@ -118,6 +118,32 @@ body.cine #pad,body.cine #bar{visibility:hidden}
 <script>
 const cv=document.getElementById('c'),g=cv.getContext('2d');
 const WW=900,WH=600,OX=30,OY=130,SY=0.6,DH=30;
+function rr(x,y,w,h,r){
+ if(r===undefined)r=8;
+ if(typeof r==='number')r={tl:r,tr:r,br:r,bl:r};
+ g.beginPath();
+ g.moveTo(x+r.tl,y);
+ g.lineTo(x+w-r.tr,y);
+ g.quadraticCurveTo(x+w,y,x+w,y+r.tr);
+ g.lineTo(x+w,y+h-r.br);
+ g.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h);
+ g.lineTo(x+r.bl,y+h);
+ g.quadraticCurveTo(x,y+h,x,y+h-r.bl);
+ g.lineTo(x,y+r.tl);
+ g.quadraticCurveTo(x,y,x+r.tl,y);
+ g.closePath();
+}
+function fillRoundRect(x,y,w,h,r,col){
+ g.save();g.fillStyle=col;rr(x,y,w,h,r);g.fill();g.restore();
+}
+function strokeRoundRect(x,y,w,h,r,col,lw){
+ g.save();g.strokeStyle=col;g.lineWidth=lw||1.5;rr(x,y,w,h,r);g.stroke();g.restore();
+}
+function drawCard(x,y,w,h,r,bgCol,borderCol,lw){
+ rr(x,y,w,h,r);
+ if(bgCol){g.fillStyle=bgCol;g.fill()}
+ if(borderCol){g.strokeStyle=borderCol;g.lineWidth=lw||1.5;g.stroke()}
+}
 const P=(x,y,z=0)=>{if(!T3)return[x+OX,y*SY+OY-z];const v=T3.v.set(x*.1,z*.1,y*.1).project(T3.cam);if(v.z>1)return[-999,-999];return[(v.x+1)*480,(1-v.y)*260]};
 const keys={up:0,down:0,left:0,right:0,nitro:0};
 const map={Shift:'nitro',n:'nitro',N:'nitro',ArrowUp:'up',w:'up',ArrowDown:'down',s:'down',ArrowLeft:'left',a:'left',ArrowRight:'right',d:'right'};
@@ -203,22 +229,63 @@ function sensMul(){return SENS_VALS[sensIdx]}
 
 const CARS=[['911 GTS Blue',0,0x1c3a9e,1,1,1],['Guards Red',40,0xd0161f,1.03,1.02,1],['Racing Yellow',60,0xf2c100,1.04,1.04,1.02],['Carrara White',80,0xeeeeee,1.05,1.05,1.03],['Jet Black',110,0x15151a,1.07,1.06,1.03],['Mint Green',140,0x1f9a6b,1.08,1.07,1.05],['Lava Orange',180,0xff6a00,1.1,1.08,1.05],['Miami Cyan',220,0x15b7d6,1.11,1.1,1.07],['Violet Storm',270,0x7a3cff,1.13,1.11,1.08],['Rose Quartz',330,0xff6fa5,1.14,1.12,1.1],['Chalk Grey',400,0xa5a8ad,1.16,1.14,1.11],['Gold Rush',480,0xd4af37,1.18,1.15,1.12],['Racing Green',570,0x0e5a3a,1.2,1.17,1.14],['Burgundy Turbo',670,0x6d0f2b,1.22,1.19,1.15],['Arctic Silver',790,0xc9d2da,1.25,1.21,1.17],['Neon Lime',920,0xb6ff00,1.27,1.23,1.19],['Midnight GT',1070,0x0a1a5c,1.3,1.26,1.21],['Copper Flash',1250,0xb8662b,1.33,1.28,1.23],['Ice Blue RS',1450,0x9ad7ff,1.36,1.31,1.26],['Carbon Phantom',1700,0x23252b,1.4,1.34,1.3],['Platinum GTS',2000,0xe8e3d0,1.45,1.38,1.33]];
 const cf=i=>1+(CARS[carSel][i]-1)*.6;
+const BUILTIN_VOICE_PACKS={
+ en:{id:"en",name:"English Voice Pack",lang:"en-US",desc:"Teacher, heroes and classmates speak English",
+  teacher:{pitch:0.85,rate:0.95,
+   roast:["If I catch you, I'm gonna tear you apart!","Hey! Stop right there!","That toy is going in the trash!","I'll snap that thing in half!","Detention for a month!","You call THAT driving?!","Your parents will hear about this!","That car is hideous!","I'm confiscating that junk!","Wait till I get my hands on you!","Get back here, you little pest!","That thing is an eyesore!"],
+   car:"Your {car} is a piece of junk!",
+   ask:["Where is that toy?!","Whose toy is that?!","Hand over that remote control right now!"],
+   way:["Hmph! This way then!","Don't waste my time!","It won't get far!"],
+   nope:["Hmph! You had better not be lying!","I'm watching you closely!","Back to studying, all of you!"],
+   patrol:["No running in class!","Slow down in the hallways!","Homework on my desk, please!","Quiet down, class!"],
+   catch:["Gotcha! That toy is confiscated!","Caught you! Detention after class!","I got you! You won't get away!","Game over! Hand over the controller!"],
+   fall:["Gyaaaah! Missed!!","OOF! My face!!","I slipped!! Dammit!!","Ouch! Whose homework was that?!","Wait till I get back up!!","Uwaaa! Currrrse you RC car!!"]},
+  hero:{pitch:1.7,rate:1.1,
+   hide:["Quick, behind me!","Hide under my desk!","I'll cover you, stay low!"],
+   way:["It went that way, Sensi!","I saw it zoom toward the windows!","It's over by the front door!"],
+   nope:["I didn't see anything, Sensi...","What toy? We're just studying physics!","Didn't hear a thing over here!"]},
+  student:{pitch:1.4,rate:1.12,
+   cool:["Cool!","So cool!","Whoa, look at that drift!","Sick car!","Run! Sensi is mad!"]}
+ },
+ ja:{id:"ja",name:"Japanese Voice Pack",lang:"ja-JP",desc:"Anime-style Japanese lines for Sakamoto Sensi and students",
+  teacher:{pitch:1.15,rate:1.05,
+   roast:["ちょっと！待ちなさい！","そのおもちゃをゴミ箱に捨てるわよ！","放課後職員室に来なさい！","私の授業で何をやってるの？！","捕まえたら承知しないからね！","その車、ボロボロじゃない！","親御さんに連絡しますからね！","授業妨害もいい加減にしなさい！","没収！絶対に返しません！","教室でラジコンなんて前代未聞よ！","どこまで逃げる気？！止まりなさい！","そんなポンコツ車、すぐに捕まえてやるわ！"],
+   car:"その{car}、ボロボロじゃない！",
+   ask:["そのおもちゃは誰の？！","あのおもちゃはどこへ行ったの？！","ちょっと！おもちゃを出しなさい！"],
+   way:["ふん！あっちね！待ちなさい！","逃がさないわよ！","すぐに捕まえてやるわ！"],
+   nope:["ふん！嘘をついてたら承知しないわよ！","あなたたち、ちゃんと自習しなさい！","見張ってるからね！"],
+   patrol:["廊下を走らない！","静かに自習しなさい！","宿題を出しなさい！","授業中に立ち歩かない！"],
+   catch:["捕まえたわよ！観念しなさい！","現行犯逮捕よ！放課後職員室に来なさい！","逃げられると思ったの？！没収です！","捕まえた！もう逃げられないわよ！"],
+   fall:["きゃあっ！転んだ！","いたたた…！待ちなさい！","くそっ！逃げられた！","あのおもちゃめ…許さないわ！","うわああ！私の教科書が…！"]},
+  hero:{pitch:1.35,rate:1.15,
+   hide:["早く！僕の後ろに隠れて！","こっちだ！僕の机の下に隠れろ！","大丈夫、先生には見つからないよ！"],
+   way:["先生！あっちに行きましたよ！","窓の方へ走っていきました！","あっちのロッカーの方です！"],
+   nope:["えっ？何も見てませんけど…","おもちゃ？真面目に自習してました！","僕たちのところには来てないですよ！"]},
+  student:{pitch:1.45,rate:1.2,
+   cool:["すっげー！","超かっこいい！","すげえドリフト！","先生が怒ってるぞー！","速すぎる！"]}
+ }
+};
+const BUILTIN_TEX_PACKS={
+ oldschool:{id:"oldschool",name:"Old School Type",desc:"Vintage wood classroom, chalkboard green, warm sepia sunlight",swatches:["#8b5a2b","#1e382b","#ffe5b4"],floor:{style:"wood",hsl:[28,48,30],var:14,plank:180,line:"rgba(35,18,8,.65)",gloss:0.45},wall:{top:"#f4eedb",bottom:"#ded4be",wain:"#5c381c",base:"#3d2412",neon:null,petals:false},board:{top:"#1e382b",bottom:"#13251c",chalk:"#fffce8",glow:false},desk:{wood:"#8b5a2b",grain:[65,35,15]},ceil:"#e8dfcc",sky:["#a8caff"],bg:"#140e08",light:{sky:"#ffe5b4",ground:"#633918",hemi:0.65,sun:"#ffd79a",sunI:1.15},car:{metal:0.65,rough:0.22,clear:1.0,rim:"#d4af37",glow:"#d4af37"}},
+ modern:{id:"modern",name:"Modern Type",desc:"Sleek minimalist studio, white porcelain tiles, whiteboard with blue marker",swatches:["#e4e7eb","#1a73e8","#ffffff"],floor:{style:"tile",hsl:[210,15,88],var:4,line:"rgba(180,190,205,.7)",grid:"rgba(180,190,205,.75)",gloss:0.18},wall:{top:"#fbfcfd",bottom:"#eaeff5",wain:"#d0d8e2",base:"#98a6b8",neon:null,petals:false},board:{top:"#fcfdff",bottom:"#eef3f9",chalk:"#1a73e8",glow:false},desk:{wood:"#e4e7eb",grain:[190,200,215]},ceil:"#ffffff",sky:["#70b5ff"],bg:"#0c1018",light:{sky:"#f4f8ff",ground:"#a0b0c4",hemi:0.75,sun:"#ffffff",sunI:1.1},car:{metal:0.85,rough:0.15,clear:1.0,rim:"#c8d0da",glow:"#4fc3f7"}},
+ futuristic:{id:"futuristic",name:"Futuristic Type",desc:"Dark sci-fi cyber academy, neon cyan grid, holographic terminal board",swatches:["#0a0818","#00f0ff","#ff007f"],floor:{style:"tile",hsl:[250,45,10],var:6,line:"rgba(0,240,255,.5)",grid:"#00f0ff",gloss:0.12},wall:{top:"#1a122e",bottom:"#0e091c",wain:"#261545",base:"#ff007f",neon:"#00f0ff",petals:false},board:{top:"#0a0818",bottom:"#060410",chalk:"#00f0ff",glow:true},desk:{wood:"#1e1a33",grain:[0,240,255]},ceil:"#0c0818",sky:["#16082b"],bg:"#05030a",light:{sky:"#8844ff",ground:"#00f0ff",hemi:0.55,sun:"#00f0ff",sunI:0.9},car:{metal:0.95,rough:0.1,clear:1.0,rim:"#00f0ff",glow:"#00f0ff"}}
+};
 let VP=null,activePack='',packs={en:null,ja:null},packSt={en:'',ja:''};
-let TP=null,activeTex='',texPacks={sakura:null,neon:null,retro:null},texSt={sakura:'',neon:'',retro:''};const RF={};
+let TP=null,activeTex='',texPacks={oldschool:null,modern:null,futuristic:null},texSt={oldschool:'',modern:'',futuristic:''};const RF={};
 let GFX=(function(){try{return localStorage.getItem('rcGfx')||'ultra'}catch(e){return'ultra'}})();
 function saveGfx(){try{localStorage.setItem('rcGfx',GFX)}catch(e){}}
-try{const tk=JSON.parse(localStorage.getItem('rcTex')||'{}');for(const k in texPacks)texPacks[k]=tk[k]||null;activeTex=localStorage.getItem('rcTexSel')||''}catch(e){}
-TP=texPacks[activeTex]||null;
+try{const tk=JSON.parse(localStorage.getItem('rcTex')||'{}');for(const k of ['oldschool','modern','futuristic'])texPacks[k]=tk[k]||null;activeTex=localStorage.getItem('rcTexSel')||''}catch(e){}
+TP=texPacks[activeTex]||BUILTIN_TEX_PACKS[activeTex]||null;
 function tv(p,d){let o=TP;for(const k of p.split('.'))o=o&&o[k];return o===undefined||o===null?d:o}
 const NAMES=['Sakura','Hinata','Kenji','Yuki','Haruto','Akari','Ren','Mio','Sora','Aoi','Riku','Hana'];
 let hide=null,voiceOn=true,VO=[],lastSp={};
 const R_=["If I catch you, I'm gonna tear you apart!","Hey! Stop right there!","That toy is going in the trash!","I'll snap that thing in half!","Detention for a month!","You call THAT driving?!","Your parents will hear about this!","That car is hideous!","I'm confiscating that junk!","Wait till I get my hands on you!","Get back here, you little pest!","That thing is an eyesore!"];
 try{const pk=JSON.parse(localStorage.getItem('rcPacks')||'{}');packs.en=pk.en||null;packs.ja=pk.ja||null;activePack=localStorage.getItem('rcPackSel')||''}catch(e){}
-VP=packs[activePack]||null;
-function savePacks(){try{localStorage.setItem('rcPacks',JSON.stringify(packs));localStorage.setItem('rcPackSel',activePack)}catch(e){}VP=packs[activePack]||null}
+VP=packs[activePack]||BUILTIN_VOICE_PACKS[activePack]||null;
+function savePacks(){try{localStorage.setItem('rcPacks',JSON.stringify(packs));localStorage.setItem('rcPackSel',activePack)}catch(e){}VP=packs[activePack]||BUILTIN_VOICE_PACKS[activePack]||null}
 const pk_=a=>a[Math.floor(Math.random()*a.length)];
 const LN=(g,k,def)=>{const a=VP&&VP[g]&&VP[g][k];return a&&a.length?a:def};
-const ROAST=()=>{const a=LN('teacher','roast',R_).concat([(VP&&VP.teacher&&VP.teacher.car||'Your {car} is a piece of junk!').replace('{car}',CARS[carSel][0])]);return a[Math.floor(Math.random()*a.length)]};
+const ROAST=()=>{const dR=(VP&&VP.lang&&VP.lang.startsWith('ja'))?BUILTIN_VOICE_PACKS.ja.teacher.roast:R_;const a=LN('teacher','roast',dR).concat([(VP&&VP.teacher&&VP.teacher.car||'Your {car} is a piece of junk!').replace('{car}',CARS[carSel][0])]);return a[Math.floor(Math.random()*a.length)]};
 const lanes=[60,225,375,525];
 let students=[],teacher={};
 function initChars(){
@@ -232,6 +299,7 @@ function initChars(){
 function end(m){if(state==='over')return;msg=m;state='over';sfx.bell();earned=score+level*5;coins+=earned;save();
  tops.push({s:score,l:level});tops.sort((a,b)=>b.s-a.s);tops=tops.slice(0,5);try{localStorage.setItem('rcTop',JSON.stringify(tops))}catch(e){}
  teacher.downT=0;
+ if(m==='caught'){const cCatch=LN('teacher','catch',['Gotcha! That toy is confiscated!','Caught you! Detention after class!','I got you! You won\'t get away!']);teacher.say=pk_(cCatch);teacher.sayT=2.4;speak(teacher,teacher.say)}
  if(!NH&&!NG){isSensei=false;senseiMode=false;senseiPlayerId='';senseiCaught=0;updatePedUI()}}
 function pushOut(o,r){
  for(const d of desks){
@@ -573,25 +641,29 @@ function drawRoom(){
 function hud(){
  dispScore+=(score-dispScore)*.15;dispTime+=(time-dispTime)*.2;
  const t=Math.max(0,dispTime),low=t<10&&state==='play';
- g.fillStyle='rgba(0,0,0,.4)';g.fillRect(8,6,944,10);
- g.fillStyle=low&&Math.sin(Date.now()/100)>0?'#ff5a4a':'hsl('+Math.min(120,t*2.4)+',75%,50%)';g.fillRect(8,6,944*Math.min(1,t/120),10);
- g.textAlign='right';g.font='bold '+(low?22:18)+'px "Trebuchet MS",sans-serif';g.fillStyle=low?'#ff8a7a':'#f3efe0';g.fillText(Math.floor(Math.ceil(t)/60)+':'+String(Math.ceil(t)%60).padStart(2,'0'),952,38);g.textAlign='left';
- g.fillStyle='rgba(20,18,26,.6)';g.fillRect(8,OY+4,132,52);
+ fillRoundRect(8,6,944,10,5,'rgba(0,0,0,.45)');
+ const col=low&&Math.sin(Date.now()/100)>0?'#ff5a4a':'hsl('+Math.min(120,t*2.4)+',75%,50%)';
+ fillRoundRect(8,6,944*Math.min(1,t/120),10,5,col);
+ drawCard(844,20,108,30,10,'rgba(16,14,24,.75)',low?'#ff5a4a':'rgba(255,255,255,.15)',1);
+ g.textAlign='center';g.font='bold '+(low?19:16)+'px "Trebuchet MS",sans-serif';g.fillStyle=low?'#ff8a7a':'#f3efe0';
+ g.fillText(Math.floor(Math.ceil(t)/60)+':'+String(Math.ceil(t)%60).padStart(2,'0'),898,42);g.textAlign='left';
+ const cardH=isSensei?(teacher.downT>0?74:56):56;
+ drawCard(8,OY+4,isSensei?156:140,cardH,12,'rgba(16,14,24,.75)','rgba(255,255,255,.12)',1.5);
  if(isSensei){
-  g.fillStyle='#e0302a';g.font='bold 13px "Trebuchet MS",sans-serif';g.fillText('\ud83d\udc51 ROLE: SAKAMOTO SENSI',16,OY+18);
-  g.fillStyle='#ffd23f';g.font='bold 24px "Trebuchet MS",sans-serif';g.fillText('Cars Caught: '+senseiCaught,16,OY+44);
+  g.fillStyle='#e0302a';g.font='bold 13px "Trebuchet MS",sans-serif';g.fillText('👑 ROLE: SAKAMOTO SENSI',16,OY+18);
+  g.fillStyle='#ffd23f';g.font='bold 22px "Trebuchet MS",sans-serif';g.fillText('Cars Caught: '+senseiCaught,16,OY+42);
   if(teacher.downT>0){
    g.fillStyle='#ff5a4a';g.font='bold 13px "Trebuchet MS",sans-serif';
-   g.fillText('💫 DOWN: '+teacher.downT.toFixed(1)+'s',16,OY+62);
+   g.fillText('💫 DOWN: '+teacher.downT.toFixed(1)+'s',16,OY+64);
   }
  }else{
   g.fillStyle='#f3efe0';g.font='12px "Trebuchet MS",sans-serif';g.fillText('Score',16,OY+20);g.fillText('Level '+level,84,OY+20);
   g.font='bold '+Math.round(26+Math.min(1,Math.abs(score-dispScore)*.3)*8)+'px "Trebuchet MS",sans-serif';g.fillText(Math.round(dispScore),16,OY+48);
-  if(senseiMode&&senseiPlayerId){g.fillStyle='#ff9a9a';g.font='bold 12px "Trebuchet MS",sans-serif';const sn=senseiPlayerId==='host'?'Host':(remote[senseiPlayerId]?.name||'Player');g.fillText('\u26a0 AVOID SENSI ('+sn+')',16,OY-6)}
+  if(senseiMode&&senseiPlayerId){g.fillStyle='#ff9a9a';g.font='bold 12px "Trebuchet MS",sans-serif';const sn=senseiPlayerId==='host'?'Host':(remote[senseiPlayerId]?.name||'Player');g.fillText('⚠ AVOID SENSI ('+sn+')',16,OY-6)}
  }
  if(netStatus){g.fillStyle='#f3efe0';g.font='bold 14px "Trebuchet MS",sans-serif';g.fillText(netStatus+' ('+(Object.keys(remote).length+1)+' players)'+(senseiMode?' [SENSI MODE]':''),16,38)}
- let y=OY+64;
- const bar=(w,c,l)=>{g.fillStyle='rgba(0,0,0,.45)';g.fillRect(8,y,100,8);g.fillStyle=c;g.fillRect(8,y,100*Math.max(0,Math.min(1,w)),8);g.fillStyle='#f3efe0';g.font='11px "Trebuchet MS",sans-serif';g.fillText(l,114,y+8);y+=14};
+ let y=OY+cardH+12;
+ const bar=(w,c,l)=>{fillRoundRect(8,y,100,8,4,'rgba(0,0,0,.45)');fillRoundRect(8,y,100*Math.max(0,Math.min(1,w)),8,4,c);g.fillStyle='#f3efe0';g.font='11px "Trebuchet MS",sans-serif';g.fillText(l,114,y+8);y+=14};
  if(isSensei){bar(senseiStamina/100,senseiStamina>20?'#3fa66b':'#e0302a','Sensi Stamina');}
  else{bar(nitro/100,nitroOK?'#4fc3ff':'#8a6a6a',nitroOK?'Nitro':'Recharging');}
  const nb=document.querySelector('[data-k=nitro]');if(nb){const bgs='linear-gradient(to top,'+(nitroOK?'#2a8fd6':'#6a7a88')+' '+nitro+'%,#22394d '+nitro+'%)';if(nb._b!==bgs){nb._b=bgs;nb.style.background=bgs}}
@@ -614,19 +686,59 @@ function drawParts(){
 }
 function panel(title,lines,showDiff){
  if(!NH&&!NG&&isSensei){isSensei=false;senseiMode=false;senseiPlayerId='';senseiCaught=0;updatePedUI()}
- g.save();g.globalAlpha=ea;g.translate(0,(1-ea)*40);g.fillStyle='rgba(24,22,32,.9)';g.fillRect(200,50,560,470);g.textAlign='center';g.fillStyle='#f3efe0';
- g.font='bold 32px "Trebuchet MS",sans-serif';g.fillText(title,480,96);g.font='bold 15px "Trebuchet MS",sans-serif';g.fillStyle='#ffd23f';g.fillText('Coins: '+coins,690,78);g.fillStyle='#f3efe0';
- g.font='16px "Trebuchet MS",sans-serif';lines.forEach((l,i)=>g.fillText(l,480,130+i*24));
- let y=130+lines.length*24+8;ui.diff=showDiff;ui.dy=y;
- if(showDiff){DIFF.forEach((d,i)=>{const x=290+i*130;g.fillStyle=i===diff?'#e8b53a':'#4a4858';g.fillRect(x,y,120,34);g.fillStyle=i===diff?'#2b2a33':'#f3efe0';g.fillText(d.n,x+60,y+23)});y+=52}
- ui.py=y;g.fillStyle='#e8b53a';g.fillRect(380,y,200,40);g.fillStyle='#2b2a33';g.font='bold 18px "Trebuchet MS",sans-serif';
+ g.save();g.globalAlpha=ea;g.translate(0,(1-ea)*40);
+ drawCard(190,36,580,474,22,'rgba(20,18,30,.95)','rgba(255,210,63,.25)',2);
+ g.textAlign='center';g.fillStyle='#f3efe0';g.font='bold 32px "Trebuchet MS",sans-serif';
+ g.fillText(title,480,80);
+ drawCard(640,58,110,26,12,'rgba(0,0,0,.5)','#ffd23f',1);
+ g.font='bold 14px "Trebuchet MS",sans-serif';g.fillStyle='#ffd23f';
+ g.fillText('Coins: '+coins,695,76);
+ g.fillStyle='#f3efe0';g.font='15px "Trebuchet MS",sans-serif';
+ lines.forEach((l,i)=>g.fillText(l,480,112+i*22));
+ let y=112+lines.length*22+8;ui.diff=showDiff;ui.dy=y;
+ if(showDiff){
+  DIFF.forEach((d,i)=>{
+   const x=290+i*130;
+   drawCard(x,y,120,34,10,i===diff?'#e8b53a':'#3a3848',i===diff?'#ffd23f':'rgba(255,255,255,.12)',1.5);
+   g.fillStyle=i===diff?'#2b2a33':'#f3efe0';g.font='bold 15px "Trebuchet MS",sans-serif';
+   g.fillText(d.n,x+60,y+23);
+  });
+  y+=48;
+ }
+ ui.py=y;
+ drawCard(380,y,200,40,12,'#e8b53a','#ffd23f',1.5);
+ g.fillStyle='#2b2a33';g.font='bold 18px "Trebuchet MS",sans-serif';
  g.fillText(state==='pause'?'Resume':state==='over'?(NG?'Waiting for host':'Play again'):'Play',480,y+26);
- if(showDiff&&!NG){g.fillStyle='#3a6ea5';g.fillRect(596,y,150,40);g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';g.fillText('Garage',671,y+26);g.fillStyle='#5a5a70';g.fillRect(214,y,150,40);g.fillStyle='#fff';g.fillText('Settings',289,y+26)}
- if(showDiff&&!(NH||NG)){ui.my=y+50;[['Create room',290],['Join room',490]].forEach(([l,x])=>{g.fillStyle='#4a4858';g.fillRect(x,ui.my,180,32);g.fillStyle='#f3efe0';g.font='bold 15px "Trebuchet MS",sans-serif';g.fillText(l,x+90,ui.my+21)});y+=44}else ui.my=-99;
- if(NH){ui.sy=y+48;g.fillStyle=senseiMode?'#b82222':'#4a4858';g.fillRect(290,ui.sy,380,32);g.fillStyle='#fff';g.font='bold 14px "Trebuchet MS",sans-serif';const sn=senseiPlayerId?(senseiPlayerId==='host'?'Host':(remote[senseiPlayerId]?.name||'Player')):'Unassigned';g.fillText(senseiMode?('\ud83d\udc51 Sensi Mode: ON ('+sn+' is Sensi)'):'\ud83d\udc51 Enable Sensi Mode (Play as Teacher)',480,ui.sy+21);y+=44}else ui.sy=-99;
- y+=64;g.fillStyle='#f3efe0';g.font='bold 15px "Trebuchet MS",sans-serif';g.fillText('Top 5 on this device',480,y);g.font='14px "Trebuchet MS",sans-serif';
+ if(showDiff&&!NG){
+  drawCard(596,y,150,40,12,'#3a6ea5','rgba(255,255,255,.2)',1.5);
+  g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';g.fillText('Garage',671,y+26);
+  drawCard(214,y,150,40,12,'#5a5a70','rgba(255,255,255,.2)',1.5);
+  g.fillStyle='#fff';g.fillText('Settings',289,y+26);
+ }
+ if(showDiff&&!(NH||NG)){
+  ui.my=y+48;
+  [['Create room',290],['Join room',490]].forEach(([l,x])=>{
+   drawCard(x,ui.my,180,32,10,'#4a4858','rgba(255,255,255,.15)',1.5);
+   g.fillStyle='#f3efe0';g.font='bold 15px "Trebuchet MS",sans-serif';g.fillText(l,x+90,ui.my+21);
+  });
+  y+=42;
+ }else ui.my=-99;
+ if(NH){
+  ui.sy=y+46;
+  drawCard(290,ui.sy,380,32,10,senseiMode?'#b82222':'#4a4858','rgba(255,255,255,.18)',1.5);
+  g.fillStyle='#fff';g.font='bold 14px "Trebuchet MS",sans-serif';
+  const sn=senseiPlayerId?(senseiPlayerId==='host'?'Host':(remote[senseiPlayerId]?.name||'Player')):'Unassigned';
+  g.fillText(senseiMode?('👑 Sensi Mode: ON ('+sn+' is Sensi)'):'👑 Enable Sensi Mode (Play as Teacher)',480,ui.sy+21);
+  y+=42;
+ }else ui.sy=-99;
+ y+=54;
+ drawCard(310,y-16,340,78,12,'rgba(0,0,0,.45)','rgba(255,255,255,.08)',1);
+ g.fillStyle='#ffd23f';g.font='bold 13px "Trebuchet MS",sans-serif';
+ g.fillText('🏆 Top 5 Scores on this Device',480,y);
+ g.font='13px "Trebuchet MS",sans-serif';g.fillStyle='#e0e0ea';
  if(!tops.length)g.fillText('No scores yet',480,y+20);
- tops.forEach((t,i)=>g.fillText((i+1)+'.  '+t.s+' pts  (level '+t.l+')',480,y+20+i*19));g.textAlign='left';g.restore();
+ tops.forEach((t,i)=>{if(i<3)g.fillText((i+1)+'.  '+t.s+' pts  (Level '+t.l+')',480,y+18+i*18)});
+ g.textAlign='left';g.restore();
 }
 function drawPower(p){const z=12+Math.sin(p.t)*4,[sx,sy]=P(p.x,p.y,z),[fx,fy]=P(p.x,p.y);
  g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.ellipse(fx,fy,9,4,0,0,7);g.fill();
@@ -771,6 +883,8 @@ function hostRoom(){if(peer)return;loadPeer(()=>{const code=Math.random().toStri
      if(d.tx!==undefined){teacher.x=d.tx;teacher.y=d.ty}
      burst(teacher.x,teacher.y,14,12,'rgba(255,255,255,.9)',2.0,true);
      popups.push({t:'💥 SENSI MISSED AND FELL! (3s)',x:480,y:200,l:2.5,s:1,c:'#ff7766'});
+     const cries=['Gyaaaah! Missed!!','OOF! My face!!','I slipped!! Dammit!!','Ouch! Whose homework was that?!','Wait till I get back up!!','Uwaaa! Currrrse you RC car!!'];
+     teacher.say=pk_(LN('teacher','fall',cries));teacher.sayT=2.8;speak(teacher,teacher.say);
     }
    }});
   c.on('close',()=>{delete remote[c.peer];conns=conns.filter(k=>k!==c);if(conns.length===0){senseiMode=false;senseiPlayerId='';isSensei=false;updatePedUI();popups.push({t:'Guests left. Switched to Solo RC Car.',x:480,y:200,l:2,s:1})}else if(senseiPlayerId===c.peer){senseiPlayerId='';randomSensei()}})})})}
@@ -802,7 +916,7 @@ function attemptCatch(){
   else{tone(880,.15,'sawtooth',.3);tone(1320,.25,'triangle',.35,null,.08)}
   burst(caughtCar.x,caughtCar.y,18,18,'#ff3b30',2.8);
   flash=0.45;
-  teacher.say=ROAST();teacher.sayT=2.4;speak(teacher,teacher.say);
+  teacher.say=pk_(LN('teacher','catch',[ROAST()]));teacher.sayT=2.4;speak(teacher,teacher.say);
   if(caughtCar===car){
    popups.push({t:'👑 SENSI CAUGHT YOU! -10s',x:480,y:200,l:2.5,s:1,c:'#ff3b30'});
    car.x=450+(Math.random()-.5)*80;car.y=560;car.v=0;time=Math.max(0,time-10);
@@ -822,7 +936,7 @@ function attemptCatch(){
   tone(110,.3,'triangle',.45,30);
   tone(320,.2,'sawtooth',.25,90);
   const cries=['Gyaaaah! Missed!!','OOF! My face!!','I slipped!! Dammit!!','Ouch! Whose homework was that?!','Wait till I get back up!!','Uwaaa! Currrrse you RC car!!'];
-  teacher.say=cries[Math.floor(Math.random()*cries.length)];
+  teacher.say=pk_(LN('teacher','fall',cries));
   teacher.sayT=2.8;speak(teacher,teacher.say);
   popups.push({t:'💥 MISSED! SENSI FELL! (3s stun)',x:480,y:200,l:2.5,s:1,c:'#ff7766'});
   if(NG&&hostConn&&hostConn.open)hostConn.send({t:'scat',hit:0,downT:3.0,tx:teacher.x,ty:teacher.y,dir:teacher.dir});
@@ -1224,29 +1338,32 @@ function render3D(){
   R.setScissorTest(false);R.setViewport(0,0,960,520)}}
 function applyCar(i){if(!T3)return;T3.sc.remove(T3.car);T3.car=mkCar(CARS[i===undefined?carSel:i][2]);T3.sc.add(T3.car)}
 function sBubble(o){if(!(o.sayT>0&&o.say))return;const p=P(o.x,o.y,98);if(p[0]<0||p[0]>960||p[1]<30||p[1]>520)return;
- g.font='bold 13px "Trebuchet MS",sans-serif';const txt=(o.reflex>0?'\u26a1 ':'\u2728 ')+o.say;const w=g.measureText(txt).width+14,x=p[0],y=p[1]-8,bx=Math.max(4,Math.min(956-w,x-w/2));
- g.fillStyle='#fff';g.fillRect(bx,y-20,w,20);g.beginPath();g.moveTo(x-4,y);g.lineTo(x+4,y);g.lineTo(x,y+7);g.fill();g.fillStyle=o.reflex>0?'#d63030':'#1a7a3a';g.fillText(txt,bx+7,y-5)}
+ g.font='bold 13px "Trebuchet MS",sans-serif';const txt=(o.reflex>0?'⚡ ':'✨ ')+o.say;const w=g.measureText(txt).width+16,x=p[0],y=p[1]-8,bx=Math.max(4,Math.min(956-w,x-w/2));
+ drawCard(bx,y-22,w,22,8,'#ffffff','rgba(0,0,0,.15)',1);
+ g.fillStyle='#ffffff';g.beginPath();g.moveTo(x-4,y);g.lineTo(x+4,y);g.lineTo(x+4,y+6);g.fill();
+ g.fillStyle=o.reflex>0?'#d63030':'#1a7a3a';g.fillText(txt,bx+8,y-6)}
 function shopClick(x,y){
- for(let i=0;i<21;i++){const cx=14+(i%7)*132,cy=262+Math.floor(i/7)*64;if(x>cx&&x<cx+128&&y>cy&&y<cy+60){shopSel=i;applyCar(i);sfx.tick();return}}
- if(x>300&&x<520&&y>462&&y<500){const c=CARS[shopSel];
+ for(let i=0;i<21;i++){const cx=14+(i%7)*132,cy=256+Math.floor(i/7)*62;if(x>cx&&x<cx+126&&y>cy&&y<cy+56){shopSel=i;applyCar(i);sfx.tick();return}}
+ if(x>300&&x<520&&y>456&&y<498){const c=CARS[shopSel];
   if(owned.includes(shopSel)){carSel=shopSel;save();sfx.pick()}
   else if(coins>=c[1]){coins-=c[1];owned.push(shopSel);carSel=shopSel;save();sfx.power()}
   else popups.push({t:'Not enough coins',x:480,y:235,l:1.5,s:1})}
- else if(x>540&&x<700&&y>462&&y<500){state='ready';applyCar(carSel)}}
+ else if(x>540&&x<700&&y>456&&y<498){state='ready';applyCar(carSel)}}
 function drawShop(){const c=CARS[shopSel],hex=n=>'#'+n.toString(16).padStart(6,'0'),own=owned.includes(shopSel);
- g.save();g.globalAlpha=ea;g.fillStyle='rgba(20,18,26,.9)';g.fillRect(0,252,960,268);
- g.textAlign='left';g.fillStyle='#f3efe0';g.font='bold 30px "Trebuchet MS",sans-serif';g.fillText(c[0],30,52);
- g.font='16px "Trebuchet MS",sans-serif';g.fillStyle='#ffd23f';g.fillText(shopSel===carSel?'Equipped':own?'Owned':c[1]+' coins',30,78);
- g.textAlign='right';g.font='bold 18px "Trebuchet MS",sans-serif';g.fillText('Coins: '+coins,940,36);g.textAlign='left';
- [['Speed',3],['Accel',4],['Handling',5]].forEach(([n,k],i)=>{const yy=96+i*28;g.fillStyle='#f3efe0';g.font='14px "Trebuchet MS",sans-serif';g.fillText(n,30,yy+12);g.fillStyle='rgba(255,255,255,.25)';g.fillRect(110,yy,150,12);g.fillStyle=hex(c[2]);g.fillRect(110,yy,150*Math.min(1,(c[k]-.95)/.55),12)});
- for(let i=0;i<21;i++){const q=CARS[i],cx=14+(i%7)*132,cy=262+Math.floor(i/7)*64;
-  g.fillStyle=i===shopSel?'#3a3850':'#2a2938';g.fillRect(cx,cy,128,60);g.strokeStyle=i===carSel?'#6bd16b':i===shopSel?'#ffd23f':'rgba(255,255,255,.12)';g.lineWidth=2;g.strokeRect(cx,cy,128,60);
-  g.fillStyle=hex(q[2]);g.fillRect(cx+10,cy+14,44,10);g.fillRect(cx+18,cy+8,26,8);g.fillStyle='#111';g.beginPath();g.arc(cx+20,cy+26,4,0,7);g.arc(cx+44,cy+26,4,0,7);g.fill();
-  g.fillStyle='#f3efe0';g.font='bold 11px "Trebuchet MS",sans-serif';g.fillText(q[0],cx+6,cy+48);
-  g.font='11px "Trebuchet MS",sans-serif';g.fillStyle=i===carSel?'#6bd16b':owned.includes(i)?'#9ad0ff':'#ffd23f';g.fillText(i===carSel?'EQUIPPED':owned.includes(i)?'OWNED':q[1]+'c',cx+64,cy+24)}
- g.fillStyle=own?'#3fa66b':coins>=c[1]?'#e8b53a':'#6a6a74';g.fillRect(300,462,220,38);g.fillStyle='#15151a';g.textAlign='center';g.font='bold 17px "Trebuchet MS",sans-serif';
- g.fillText(shopSel===carSel?'Equipped':own?'Equip':'Buy for '+c[1],410,487);
- g.fillStyle='#4a4858';g.fillRect(540,462,160,38);g.fillStyle='#f3efe0';g.fillText('Back',620,487);g.restore();g.textAlign='left'}
+ g.save();g.globalAlpha=ea;drawCard(0,248,960,272,18,'rgba(18,16,26,.95)','rgba(255,255,255,.1)',1.5);
+ g.textAlign='left';g.fillStyle='#f3efe0';g.font='bold 28px "Trebuchet MS",sans-serif';g.fillText(c[0],30,48);
+ g.font='15px "Trebuchet MS",sans-serif';g.fillStyle='#ffd23f';g.fillText(shopSel===carSel?'Equipped':own?'Owned':c[1]+' coins',30,72);
+ drawCard(830,20,110,28,10,'rgba(0,0,0,.5)','#ffd23f',1);
+ g.textAlign='center';g.font='bold 14px "Trebuchet MS",sans-serif';g.fillStyle='#ffd23f';g.fillText('Coins: '+coins,885,39);g.textAlign='left';
+ [['Speed',3],['Accel',4],['Handling',5]].forEach(([n,k],i)=>{const yy=88+i*26;g.fillStyle='#f3efe0';g.font='13px "Trebuchet MS",sans-serif';g.fillText(n,30,yy+11);drawCard(105,yy,150,12,6,'rgba(255,255,255,.18)',null);fillRoundRect(105,yy,150*Math.min(1,(c[k]-.95)/.55),12,6,hex(c[2]))});
+ for(let i=0;i<21;i++){const q=CARS[i],cx=14+(i%7)*132,cy=256+Math.floor(i/7)*62,isEquip=i===carSel,isSel=i===shopSel;
+  drawCard(cx,cy,126,56,10,isSel?'#3c3a54':'#252434',isEquip?'#6bd16b':isSel?'#ffd23f':'rgba(255,255,255,.12)',isEquip||isSel?2:1);
+  fillRoundRect(cx+8,cy+12,42,10,4,hex(q[2]));fillRoundRect(cx+16,cy+6,24,8,3,hex(q[2]));g.fillStyle='#111';g.beginPath();g.arc(cx+18,cy+24,4,0,7);g.arc(cx+42,cy+24,4,0,7);g.fill();
+  g.fillStyle='#f3efe0';g.font='bold 11px "Trebuchet MS",sans-serif';g.fillText(q[0],cx+6,cy+46);
+  g.font='10px "Trebuchet MS",sans-serif';g.fillStyle=isEquip?'#6bd16b':owned.includes(i)?'#9ad0ff':'#ffd23f';g.fillText(isEquip?'EQUIPPED':owned.includes(i)?'OWNED':q[1]+'c',cx+62,cy+22)}
+ drawCard(300,456,220,40,12,own?'#3fa66b':coins>=c[1]?'#e8b53a':'#6a6a74','rgba(255,255,255,.2)',1.5);g.fillStyle='#15151a';g.textAlign='center';g.font='bold 17px "Trebuchet MS",sans-serif';
+ g.fillText(shopSel===carSel?'Equipped':own?'Equip':'Buy for '+c[1],410,482);
+ drawCard(540,456,160,40,12,'#4a4858','rgba(255,255,255,.2)',1.5);g.fillStyle='#f3efe0';g.fillText('Back',620,482);g.restore();g.textAlign='left'}
 function loadVoices(){try{VO=speechSynthesis.getVoices()||[]}catch(e){VO=[]}}
 if(window.speechSynthesis){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
 function stepSfx(o,teach){const dx=o.x-car.x,dy=o.y-car.y,d=Math.hypot(dx,dy);if(d>420||muted)return;const vol=(1-d/420)*(teach?.55:.32),pan=Math.max(-1,Math.min(1,(dx*-Math.sin(car.a)+dy*Math.cos(car.a))/260));
@@ -1281,8 +1398,8 @@ function heroEnd(go){const h=hide,st=h.hero,T=teacher;hide=null;st.cd=25;car.x=h
  else T.say=pk_(LN('teacher','nope',['Hmph. You had better not be lying!']));
  T.sayT=2.2;speak(T,T.say);popups.push({t:'Saved by '+st.name+'!',x:480,y:200,l:2,s:1});sfx.power()}
 function drawTags(){g.font='bold 11px "Trebuchet MS",sans-serif';g.textAlign='center';
- const tag=(o,h,txt,col)=>{const p=P(o.x,o.y,h);if(p[0]<0||p[0]>960||p[1]<20||p[1]>520)return;const w=g.measureText(txt).width+8;g.fillStyle='rgba(0,0,0,.45)';g.fillRect(p[0]-w/2,p[1]-11,w,14);g.fillStyle=col;g.fillText(txt,p[0],p[1])};
- students.forEach(o=>{if(o.name&&(o.hero||Math.hypot(o.x-car.x,o.y-car.y)<250))tag(o,82,(o.hero?'\u2605 ':'')+o.name,o.hero?'#ffd23f':'#cfe3ff')});
+ const tag=(o,h,txt,col)=>{const p=P(o.x,o.y,h);if(p[0]<0||p[0]>960||p[1]<20||p[1]>520)return;const w=g.measureText(txt).width+10;fillRoundRect(p[0]-w/2,p[1]-12,w,15,5,'rgba(0,0,0,.55)');g.fillStyle=col;g.fillText(txt,p[0],p[1])};
+ students.forEach(o=>{if(o.name&&(o.hero||Math.hypot(o.x-car.x,o.y-car.y)<250))tag(o,82,(o.hero?'★ ':'')+o.name,o.hero?'#ffd23f':'#cfe3ff')});
  if(teacher.x!==undefined){
   const sLabel=senseiMode&&senseiPlayerId?('👑 SENSI ['+(senseiPlayerId==='host'?'Host':(remote[senseiPlayerId]?.name||'P'))+']'):'Sakamoto Sensi';
   tag(teacher,96,sLabel,senseiMode&&senseiPlayerId?'#ffd23f':'#ff9a9a');
@@ -1301,109 +1418,228 @@ function drawTags(){g.font='bold 11px "Trebuchet MS",sans-serif';g.textAlign='ce
   }
  }g.textAlign='left'}
 const charImg=new Image();let charImgOK=false;charImg.onload=()=>charImgOK=true;charImg.src='characters.jpg';
-const PACKS=[['en','English Voice Pack','Teacher, heroes and students speak English'],['ja','Japanese Voice Pack','Anime-style Japanese lines (needs a Japanese voice on your phone)']];
-function dlPack(id){packSt[id]='loading';fetch('voicepack_'+id+'.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(j=>{packs[id]=j;packSt[id]='';if(!activePack)activePack=id;savePacks()}).catch(()=>{packSt[id]='fail'})}
-function settingsClick(x,y){const ib=by=>x>300&&x<660&&y>by&&y<by+38;
- if(ib(108))cycleSens();else if(ib(150))state='voices';else if(ib(192))state='textures';else if(ib(234))cycleGfx();else if(ib(276))startIntro();else if(ib(318))toggleVoice();else if(ib(360))toggleMute();else if(ib(406))state='ready'}
-const TEXPACKS=[['sakura','Sakura Spring','Pink classroom, cherry-blossom light',['#f5c8d8','#f0c9a0','#e8b4c8']],['neon','Midnight Neon','Dark glowing room, neon car underglow',['#1b1033','#22e6ff','#ff2bd6']],['retro','Retro Wood','Warm vintage wood, gold car trim',['#cfb27a','#7a4a2a','#c8a040']]];
+const PACKS=[
+ ['en','English Voice Pack','Sensei, heroes and students speak crisp English'],
+ ['ja','Japanese Anime Pack','Authentic anime Japanese lines for Sakamoto Sensi & class']
+];
+function previewVoice(id){
+ const pack=packs[id]||BUILTIN_VOICE_PACKS[id];
+ if(!pack)return;
+ const phrase=id==='ja'?'ちょっと！待ちなさい！そのおもちゃをゴミ箱に捨てるわよ！':'Hey! Stop right there! That toy is going in the trash!';
+ popups.push({t:'🔊 '+(id==='ja'?'Sensi [JA]: ':'Sensi [EN]: ')+phrase,x:480,y:230,l:2.8,s:1,c:'#ffd23f'});
+ const ss=window.speechSynthesis;
+ if(!ss){blip(phrase,120);return}
+ try{
+  ss.cancel();
+  const u=new SpeechSynthesisUtterance(phrase);
+  u.lang=pack.lang||(id==='ja'?'ja-JP':'en-US');
+  u.pitch=(pack.teacher&&pack.teacher.pitch)||(id==='ja'?1.15:0.85);
+  u.rate=(pack.teacher&&pack.teacher.rate)||1.0;
+  u.volume=1.0;
+  if(VO&&VO.length){
+   const pool=VO.filter(v=>v.lang.toLowerCase().startsWith(u.lang.slice(0,2)));
+   const fem=pool.filter(v=>/female|zira|samantha|susan|hazel|karen|moira|aria|jenny|kyoko|haruka|nanami|google uk english female|google us english|google 日本語/i.test(v.name));
+   u.voice=fem[0]||pool[0]||null;
+  }
+  ss.speak(u);
+ }catch(e){blip(phrase,120)}
+}
+function dlPack(id){
+ packSt[id]='loading';
+ const applyJ=(j)=>{
+  packs[id]=j;packSt[id]='';if(!activePack)activePack=id;savePacks();
+  popups.push({t:(id==='ja'?'Japanese':'English')+' Voice Pack Installed!',x:480,y:200,l:2,s:1,c:'#8fd16b'});
+  if(sfx&&sfx.power)sfx.power();
+ };
+ fetch('voicepack_'+id+'.json').then(r=>{if(!r.ok)throw 0;return r.json()})
+  .then(applyJ)
+  .catch(()=>{
+   if(BUILTIN_VOICE_PACKS[id]){applyJ(JSON.parse(JSON.stringify(BUILTIN_VOICE_PACKS[id])))}
+   else{packSt[id]='fail'}
+  });
+}
+const TEXPACKS=[
+ ['oldschool','Old School Type','Vintage wood classroom, chalkboard green, warm sepia sunlight',['#8b5a2b','#1e382b','#ffe5b4']],
+ ['modern','Modern Type','Sleek minimalist studio, white porcelain tiles, whiteboard with blue marker',['#e4e7eb','#1a73e8','#ffffff']],
+ ['futuristic','Futuristic Type','Dark sci-fi cyber academy, neon cyan grid, holographic terminal board',['#0a0818','#00f0ff','#ff007f']]
+];
 function saveTex(){try{localStorage.setItem('rcTex',JSON.stringify(texPacks));localStorage.setItem('rcTexSel',activeTex)}catch(e){}}
-function useTex(id){activeTex=id;TP=texPacks[id]||null;saveTex();applyTex()}
-function dlTex(id){texSt[id]='loading';fetch('texpack_'+id+'.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(j=>{texPacks[id]=j;texSt[id]='';if(!activeTex)useTex(id);else saveTex()}).catch(()=>{texSt[id]='fail'})}
-function texClick(x,y){TEXPACKS.forEach(([id],i)=>{const cx=60+i*290,cy=150;
-  if(x>cx+12&&x<cx+192&&y>cy+100&&y<cy+144){if(!texPacks[id]){if(texSt[id]!=='loading')dlTex(id)}else useTex(activeTex===id?'':id)}
-  if(texPacks[id]&&x>cx+202&&x<cx+258&&y>cy+100&&y<cy+144){texPacks[id]=null;texSt[id]='';if(activeTex===id)useTex('');else saveTex()}});
- if(x>400&&x<560&&y>450&&y<486)state='settings'}
-function drawTex(){g.save();g.globalAlpha=ea;g.fillStyle='rgba(24,22,32,.95)';g.fillRect(40,24,880,472);g.textAlign='center';g.fillStyle='#f3efe0';g.font='bold 28px "Trebuchet MS",sans-serif';g.fillText('Texture Packs',480,64);
- g.font='13px "Trebuchet MS",sans-serif';g.fillStyle='#b8b8c8';g.fillText('Restyles the classroom, desks, board, lighting and your car',480,92);
- TEXPACKS.forEach(([id,name,desc,sw],i)=>{const x=60+i*290,y=150,inst=!!texPacks[id],act=activeTex===id,st=texSt[id];
-  g.fillStyle='#2a2938';g.fillRect(x,y,270,150);sw.forEach((c,k)=>{g.fillStyle=c;g.fillRect(x+75+k*44,y+10,38,22)});
-  g.fillStyle='#f3efe0';g.font='bold 17px "Trebuchet MS",sans-serif';g.fillText(name,x+135,y+54);g.font='11px "Trebuchet MS",sans-serif';g.fillStyle='#b8b8c8';g.fillText(desc,x+135,y+70);
-  g.fillStyle=st==='fail'?'#ff8a7a':inst?'#8fd16b':'#ffd23f';g.font='bold 12px "Trebuchet MS",sans-serif';g.fillText(st==='loading'?'Downloading...':st==='fail'?'Download failed':inst?(act?'Installed - Active':'Installed'):'Not downloaded',x+135,y+90);
-  g.fillStyle=!inst?'#3a6ea5':act?'#3fa66b':'#e8b53a';g.fillRect(x+12,y+100,180,44);g.fillStyle=!inst||act?'#fff':'#15151a';g.font='bold 15px "Trebuchet MS",sans-serif';
-  g.fillText(st==='loading'?'Please wait...':!inst?'Download':act?'Active (tap: off)':'Use this pack',x+102,y+127);
-  if(inst){g.fillStyle='#6a3a3a';g.fillRect(x+202,y+100,56,44);g.fillStyle='#fff';g.font='bold 12px "Trebuchet MS",sans-serif';g.fillText('Remove',x+230,y+127)}});
- g.fillStyle='#4a4858';g.fillRect(400,450,160,36);g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';g.fillText('Back',480,474);g.restore();g.textAlign='left'}
+function useTex(id){activeTex=id;TP=texPacks[id]||BUILTIN_TEX_PACKS[id]||null;saveTex();applyTex()}
+function dlTex(id){
+ texSt[id]='loading';
+ const applyJ=(j)=>{
+  texPacks[id]=j;texSt[id]='';if(!activeTex)useTex(id);else saveTex();
+  popups.push({t:(TEXPACKS.find(x=>x[0]===id)?.[1]||id)+' Theme Installed!',x:480,y:200,l:2,s:1,c:'#8fd16b'});
+  if(sfx&&sfx.power)sfx.power();
+ };
+ fetch('texpack_'+id+'.json').then(r=>{if(!r.ok)throw 0;return r.json()})
+  .then(applyJ)
+  .catch(()=>{
+   if(BUILTIN_TEX_PACKS[id]){applyJ(JSON.parse(JSON.stringify(BUILTIN_TEX_PACKS[id])))}
+   else{texSt[id]='fail'}
+  });
+}
+function texClick(x,y){
+ TEXPACKS.forEach(([id],i)=>{
+  const cx=55+i*292,cy=102,w=276,inst=!!texPacks[id],act=activeTex===id,mainW=inst?(w-88):(w-28);
+  if(x>cx+14&&x<cx+14+mainW&&y>cy+234&&y<cy+276){
+   if(!inst){if(texSt[id]!=='loading')dlTex(id)}
+   else{useTex(act?'':id);popups.push({t:activeTex?(TEXPACKS.find(k=>k[0]===id)?.[1]||id)+' Theme Applied!':'Default Classroom Theme Restored',x:480,y:200,l:1.8,s:1,c:'#8fd16b'});sfx.pick()}
+   return;
+  }
+  if(inst&&x>cx+w-66&&x<cx+w-14&&y>cy+234&&y<cy+276){
+   texPacks[id]=null;texSt[id]='';if(activeTex===id)useTex('');else saveTex();popups.push({t:'Theme Removed',x:480,y:200,l:1.5,s:1});sfx.tick();return;
+  }
+ });
+ if(x>400&&x<560&&y>450&&y<490){state='settings';sfx.tick()}
+}
+function drawTex(){
+ g.save();g.globalAlpha=ea;drawCard(40,24,880,472,20,'rgba(20,18,30,.96)','rgba(255,255,255,.14)',2);
+ g.textAlign='center';g.fillStyle='#f3efe0';g.font='bold 28px "Trebuchet MS",sans-serif';g.fillText('Texture & Visual Themes',480,58);
+ g.font='13px "Trebuchet MS",sans-serif';g.fillStyle='#b8b8c8';g.fillText('Select an environment theme to restyle the classroom, desks, blackboard, lighting and your car',480,82);
+ TEXPACKS.forEach(([id,name,desc,sw],i)=>{
+  const x=55+i*292,y=102,w=276,h=336,inst=!!texPacks[id],act=activeTex===id,st=texSt[id];
+  drawCard(x,y,w,h,16,act?'rgba(38,34,56,.95)':'rgba(28,26,40,.9)',act?'#6bd16b':'rgba(255,255,255,.12)',act?2.5:1.5);
+  sw.forEach((c,k)=>{drawCard(x+54+k*58,y+16,50,24,6,c,'rgba(255,255,255,.25)',1)});
+  g.textAlign='center';g.font='bold 19px "Trebuchet MS",sans-serif';g.fillStyle=act?'#8fd16b':'#f3efe0';g.fillText(name,x+w/2,y+68);
+  g.font='11px "Trebuchet MS",sans-serif';g.fillStyle='#b8b8c8';g.fillText(desc,x+w/2,y+86);
+  drawCard(x+14,y+100,w-28,92,10,'rgba(15,14,22,.65)','rgba(255,255,255,.08)',1);
+  g.textAlign='left';g.font='11px "Trebuchet MS",sans-serif';g.fillStyle='#ffd23f';g.fillText('Environment Restyle:',x+24,y+118);
+  g.fillStyle='#e0e4ec';
+  if(id==='oldschool'){
+   g.fillText('• Walnut wood desks & plank floor',x+24,y+136);g.fillText('• Classic chalkboard & green trim',x+24,y+152);g.fillText('• Warm golden sunlight & gold trim',x+24,y+168);g.fillText('• Vintage classroom atmosphere',x+24,y+184);
+  }else if(id==='modern'){
+   g.fillText('• Sleek white porcelain tile floor',x+24,y+136);g.fillText('• Modern whiteboard & blue marker',x+24,y+152);g.fillText('• Studio daylight & silver accents',x+24,y+168);g.fillText('• High-gloss minimalist finish',x+24,y+184);
+  }else{
+   g.fillText('• Dark obsidian floor with cyan grid',x+24,y+136);g.fillText('• Cyber holographic HUD blackboard',x+24,y+152);g.fillText('• Neon magenta & cyan wall accents',x+24,y+168);g.fillText('• Glowing neon car underglow',x+24,y+184);
+  }
+  g.textAlign='center';g.fillStyle=st==='fail'?'#ff8a7a':act?'#8fd16b':inst?'#ffd23f':'#9a9ab0';g.font='bold 12px "Trebuchet MS",sans-serif';
+  const stMsg=st==='loading'?'Downloading...':st==='fail'?'Download failed':act?'● Active in-game right now':inst?'Downloaded (Tap to Apply)':'Not downloaded';
+  g.fillText(stMsg,x+w/2,y+214);
+  const mainCol=!inst?'#2a75d3':act?'#2e7d32':'#e07a22',mainW=inst?(w-88):(w-28);
+  drawCard(x+14,y+234,mainW,42,12,mainCol,'rgba(255,255,255,.25)',1.5);
+  g.fillStyle='#fff';g.font='bold 14px "Trebuchet MS",sans-serif';
+  g.fillText(st==='loading'?'Please wait...':!inst?'⬇ Download':act?'✔ Active (Tap Off)':'★ Apply Theme',x+14+mainW/2,y+260);
+  if(inst){drawCard(x+w-66,y+234,52,42,12,'rgba(120,40,40,.65)','rgba(255,100,100,.3)',1.5);g.fillStyle='#ffb0b0';g.font='bold 11px "Trebuchet MS",sans-serif';g.fillText('Del',x+w-40,y+260)}
+ });
+ drawCard(400,452,160,36,12,'#4a4858','rgba(255,255,255,.2)',1.5);g.fillStyle='#fff';g.font='bold 15px "Trebuchet MS",sans-serif';g.textAlign='center';
+ g.fillText('Back to Settings',480,475);g.restore();g.textAlign='left';
+}
 function voicesClick(x,y){
- PACKS.forEach(([id],i)=>{const cx=70+i*430,cy=290;
-  if(x>cx+20&&x<cx+280&&y>cy+90&&y<cy+134){if(!packs[id]){if(packSt[id]!=='loading')dlPack(id)}else{activePack=activePack===id?'':id;savePacks()}}
-  if(packs[id]&&x>cx+300&&x<cx+380&&y>cy+90&&y<cy+134){packs[id]=null;packSt[id]='';if(activePack===id)activePack='';savePacks()}});
- if(x>400&&x<560&&y>450&&y<486)state='settings'}
+ PACKS.forEach(([id],i)=>{
+  const cx=60+i*430,cy=102,w=410,inst=!!packs[id],act=activePack===id;
+  if(x>cx+16&&x<cx+191&&y>cy+236&&y<cy+278){previewVoice(id);sfx.tick();return}
+  if(x>cx+202&&x<cx+394&&y>cy+236&&y<cy+278){
+   if(!inst){if(packSt[id]!=='loading')dlPack(id)}
+   else{activePack=(act?'':id);savePacks();popups.push({t:activePack?(id==='ja'?'Japanese':'English')+' Voice Pack Activated!':'Default Voices Activated',x:480,y:200,l:1.8,s:1,c:'#8fd16b'});sfx.pick()}
+   return;
+  }
+  if(inst&&x>cx+16&&x<cx+w-16&&y>cy+288&&y<cy+322){
+   packs[id]=null;packSt[id]='';if(activePack===id)activePack='';savePacks();popups.push({t:'Voice Pack Removed',x:480,y:200,l:1.5,s:1});sfx.tick();return;
+  }
+ });
+ if(x>400&&x<560&&y>450&&y<490){state='settings';sfx.tick()}
+}
 function quitToMenu(){
- if(NH||NG){
-  leave('Left multiplayer game');
- }else{
-  isSensei=false;
-  senseiMode=false;
-  senseiPlayerId='';
-  senseiCaught=0;
-  updatePedUI();
-  state='ready';
- }
- car.v=0;
- nitroOn=false;
- if(window.speechSynthesis)speechSynthesis.cancel();
+ if(NH||NG){leave('Left multiplayer game')}
+ else{isSensei=false;senseiMode=false;senseiPlayerId='';senseiCaught=0;updatePedUI();state='ready'}
+ car.v=0;nitroOn=false;if(window.speechSynthesis)speechSynthesis.cancel();
 }
 function drawPause(){
- g.save();
- g.globalAlpha=ea;
- g.fillStyle='rgba(18,16,26,.95)';
- g.fillRect(250,38,460,444);
- g.strokeStyle='rgba(255,255,255,.12)';
- g.lineWidth=2;
- g.strokeRect(250,38,460,444);
- g.textAlign='center';
- g.fillStyle='#ffd23f';
- g.font='bold 28px "Trebuchet MS",sans-serif';
- g.fillText('GAME PAUSED',480,74);
- g.font='13px "Trebuchet MS",sans-serif';
- g.fillStyle='#b8b8c8';
- g.fillText('Level '+level+'  \u2022  Score '+Math.round(score)+'  \u2022  Coins '+coins,480,98);
+ g.save();g.globalAlpha=ea;drawCard(240,32,480,456,20,'rgba(18,16,26,.96)','rgba(255,210,63,.25)',2);
+ g.textAlign='center';g.fillStyle='#ffd23f';g.font='bold 28px "Trebuchet MS",sans-serif';g.fillText('GAME PAUSED',480,68);
+ drawCard(330,80,300,26,12,'rgba(0,0,0,.45)','rgba(255,255,255,.1)',1);
+ g.font='12px "Trebuchet MS",sans-serif';g.fillStyle='#d8d8e8';g.fillText('Level '+level+'  •  Score '+Math.round(score)+'  •  Coins '+coins,480,97);
  const btn=(y,label,bgCol,txtCol)=>{
-  g.fillStyle=bgCol;
-  g.fillRect(280,y,400,36);
+  drawCard(270,y,420,36,12,bgCol,'rgba(255,255,255,.18)',1.5);
   g.fillStyle=txtCol||'#fff';
-  g.font='bold 15px "Trebuchet MS",sans-serif';
-  g.fillText(label,480,y+23);
+  g.font='bold 15px "Trebuchet MS",sans-serif';g.fillText(label,480,y+23);
  };
- btn(118,'\u25b6  Resume Game','#2e7d32');
- btn(162,NG?'\ud83d\udd04  Restart (Host Only)':'\ud83d\udd04  Restart Race','#d97724');
- btn(206,'\ud83c\udfae  Steering Sensitivity: '+SENS_NAMES[sensIdx],'#2f6bb2');
- btn(250,'\ud83d\udd0a  Sound Effects: '+(muted?'OFF':'ON'),muted?'#5a4a4a':'#4a4858');
- btn(294,'\ud83d\udde3\ufe0f  Anime Voices: '+(voiceOn?'ON':'OFF'),voiceOn?'#6a4aa5':'#4a4858');
- btn(338,'\u26a1  Graphics: '+GFX[0].toUpperCase()+GFX.slice(1),'#2a8f6a');
- btn(386,(NH||NG)?'\ud83d\udeaa  Leave Multiplayer Room':'\ud83d\udeaa  Quit to Main Menu','#b82222');
- g.fillStyle='rgba(255,255,255,.5)';
- g.font='12px "Trebuchet MS",sans-serif';
- g.fillText('Press P or Esc to resume',480,452);
- g.restore();
- g.textAlign='left';
+ btn(116,'▶  Resume Game','#2e7d32');
+ btn(158,NG?'🔄  Restart (Host Only)':'🔄  Restart Race','#d97724');
+ btn(200,'🎮  Steering Sensitivity: '+SENS_NAMES[sensIdx],'#2f6bb2');
+ btn(242,'🔊  Sound Effects: '+(muted?'OFF':'ON'),muted?'#5a4a4a':'#4a4858');
+ btn(284,'🗣️  Anime Voices: '+(voiceOn?'ON':'OFF'),voiceOn?'#6a4aa5':'#4a4858');
+ btn(326,'⚡  Graphics: '+GFX[0].toUpperCase()+GFX.slice(1),'#2a8f6a');
+ btn(372,(NH||NG)?'🚪  Leave Multiplayer Room':'🚪  Quit to Main Menu','#b82222');
+ g.fillStyle='rgba(255,255,255,.5)';g.font='12px "Trebuchet MS",sans-serif';g.fillText('Press P or Esc to resume',480,442);
+ g.restore();g.textAlign='left';
 }
 function pauseClick(x,y){
- if(x<280||x>680)return;
+ if(x<270||x>690)return;
  const ib=by=>y>=by&&y<=by+36;
- if(ib(118)){state='play';if(sfx&&sfx.power)sfx.power()}
- else if(ib(162)){if(NG){popups.push({t:'Only host can restart room',x:480,y:200,l:1.5,s:1})}else reset()}
- else if(ib(206)){cycleSens()}
- else if(ib(250)){toggleMute()}
- else if(ib(294)){toggleVoice()}
- else if(ib(338)){cycleGfx()}
- else if(y>=386&&y<=386+38){quitToMenu()}
+ if(ib(116)){state='play';if(sfx&&sfx.power)sfx.power()}
+ else if(ib(158)){if(NG){popups.push({t:'Only host can restart room',x:480,y:200,l:1.5,s:1})}else reset()}
+ else if(ib(200)){cycleSens()}
+ else if(ib(242)){toggleMute()}
+ else if(ib(284)){toggleVoice()}
+ else if(ib(326)){cycleGfx()}
+ else if(ib(372)){quitToMenu()}
 }
-function drawSettings(){g.save();g.globalAlpha=ea;g.fillStyle='rgba(22,20,30,.94)';g.fillRect(260,52,440,428);g.textAlign='center';g.fillStyle='#f3efe0';g.font='bold 26px "Trebuchet MS",sans-serif';g.fillText('Settings',480,88);
- const btn=(y,label,c)=>{g.fillStyle=c||'#4a4858';g.fillRect(300,y,360,36);g.fillStyle='#fff';g.font='bold 15px "Trebuchet MS",sans-serif';g.fillText(label,480,y+23)};
- btn(108,'Steering Sensitivity: '+SENS_NAMES[sensIdx],'#e07a22');
- btn(150,'Voice Packs','#3a6ea5');btn(192,'Texture Packs','#6a4aa5');btn(234,'Graphics: '+GFX[0].toUpperCase()+GFX.slice(1),'#2a8f6a');btn(276,'Replay Intro','#a5486a');btn(318,'Voices: '+(voiceOn?'ON':'OFF'));btn(360,'Sound: '+(muted?'OFF':'ON'));btn(406,'Back','#7a6428');g.restore();g.textAlign='left'}
-function drawVoices(){g.save();g.globalAlpha=ea;g.fillStyle='rgba(24,22,32,.95)';g.fillRect(40,24,880,472);g.textAlign='center';g.fillStyle='#f3efe0';g.font='bold 28px "Trebuchet MS",sans-serif';g.fillText('Voice Packs',480,58);
- if(charImgOK)g.drawImage(charImg,330,70,300,200);
- PACKS.forEach(([id,name,desc],i)=>{const x=70+i*430,y=290,w=400,inst=!!packs[id],act=activePack===id,st=packSt[id];
-  g.fillStyle='#2a2938';g.fillRect(x,y,w,150);g.fillStyle='#f3efe0';g.font='bold 18px "Trebuchet MS",sans-serif';g.fillText(name,x+w/2,y+26);
-  g.font='12px "Trebuchet MS",sans-serif';g.fillStyle='#b8b8c8';g.fillText(desc,x+w/2,y+46);
-  g.fillStyle=st==='fail'?'#ff8a7a':inst?'#8fd16b':'#ffd23f';g.font='bold 13px "Trebuchet MS",sans-serif';
-  g.fillText(st==='loading'?'Downloading...':st==='fail'?'Download failed: needs internet and the pack file':inst?(act?'Installed - Active':'Installed'):'Not downloaded',x+w/2,y+72);
-  g.fillStyle=!inst?'#3a6ea5':act?'#3fa66b':'#e8b53a';g.fillRect(x+20,y+90,260,44);g.fillStyle=!inst||act?'#fff':'#15151a';g.font='bold 16px "Trebuchet MS",sans-serif';
-  g.fillText(st==='loading'?'Please wait...':!inst?'Download':act?'Active (tap to turn off)':'Use this pack',x+150,y+118);
-  if(inst){g.fillStyle='#6a3a3a';g.fillRect(x+300,y+90,80,44);g.fillStyle='#fff';g.fillText('Remove',x+340,y+118)}});
- g.fillStyle='#4a4858';g.fillRect(400,450,160,36);g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';g.fillText('Back',480,474);g.restore();g.textAlign='left'}
+function drawSettings(){
+ g.save();g.globalAlpha=ea;drawCard(260,44,440,436,20,'rgba(20,18,30,.96)','rgba(255,255,255,.15)',2);
+ g.textAlign='center';g.fillStyle='#f3efe0';g.font='bold 26px "Trebuchet MS",sans-serif';g.fillText('Settings',480,80);
+ const btn=(y,label,c)=>{
+  drawCard(295,y,370,36,12,c||'#4a4858','rgba(255,255,255,.15)',1.5);
+  g.fillStyle='#fff';g.font='bold 15px "Trebuchet MS",sans-serif';g.fillText(label,480,y+24);
+ };
+ btn(100,'🎮  Steering Sensitivity: '+SENS_NAMES[sensIdx],'#e07a22');
+ btn(142,'🗣️  Voice Packs (EN & JA Anime)','#3a6ea5');
+ btn(184,'🎨  Texture Themes (Old School, Modern, Cyber)','#6a4aa5');
+ btn(226,'⚡  Graphics: '+GFX[0].toUpperCase()+GFX.slice(1),'#2a8f6a');
+ btn(268,'🎬  Replay Anime Intro','#a5486a');
+ btn(310,'🔊  Voices: '+(voiceOn?'ON':'OFF'),voiceOn?'#3fa66b':'#5a4a4a');
+ btn(352,'🎵  Sound Effects: '+(muted?'OFF':'ON'),muted?'#5a4a4a':'#3fa66b');
+ btn(400,'Back to Menu','#7a6428');
+ g.restore();g.textAlign='left';
+}
+function settingsClick(x,y){
+ const ib=by=>x>295&&x<665&&y>by&&y<by+36;
+ if(ib(100))cycleSens();
+ else if(ib(142))state='voices';
+ else if(ib(184))state='textures';
+ else if(ib(226))cycleGfx();
+ else if(ib(268))startIntro();
+ else if(ib(310))toggleVoice();
+ else if(ib(352))toggleMute();
+ else if(ib(400))state='ready';
+}
+function drawVoices(){
+ g.save();g.globalAlpha=ea;drawCard(40,24,880,472,20,'rgba(20,18,30,.96)','rgba(255,255,255,.14)',2);
+ g.textAlign='center';g.fillStyle='#f3efe0';g.font='bold 28px "Trebuchet MS",sans-serif';g.fillText('Character Voice Packs',480,58);
+ g.font='13px "Trebuchet MS",sans-serif';g.fillStyle='#b8b8c8';g.fillText('Download & switch real voice lines in English or Japanese anime style',480,82);
+ PACKS.forEach(([id,name,desc],i)=>{
+  const x=60+i*430,y=102,w=410,h=336,inst=!!packs[id],act=activePack===id,st=packSt[id],isJa=id==='ja';
+  drawCard(x,y,w,h,16,act?'rgba(38,34,56,.95)':'rgba(28,26,40,.9)',act?'#6bd16b':'rgba(255,255,255,.12)',act?2.5:1.5);
+  g.textAlign='left';g.font='bold 20px "Trebuchet MS",sans-serif';g.fillStyle=act?'#8fd16b':'#f3efe0';g.fillText((isJa?'🇯🇵 ':'🇺🇸 ')+name,x+20,y+34);
+  const badgeTxt=act?'✔ ACTIVE':inst?'INSTALLED':st==='loading'?'DOWNLOADING':'READY';
+  const badgeCol=act?'#2e7d32':inst?'#2f6bb2':st==='loading'?'#e07a22':'#4a4858';
+  drawCard(x+w-120,y+16,102,24,8,badgeCol,null);
+  g.font='bold 11px "Trebuchet MS",sans-serif';g.fillStyle='#fff';g.textAlign='center';g.fillText(badgeTxt,x+w-69,y+32);
+  g.textAlign='left';g.font='13px "Trebuchet MS",sans-serif';g.fillStyle='#c8c8d8';g.fillText(desc,x+20,y+62);
+  drawCard(x+16,y+76,w-32,60,10,'rgba(15,14,22,.65)','rgba(255,255,255,.08)',1);
+  g.fillStyle='#ffd23f';g.font='bold 11px "Trebuchet MS",sans-serif';g.fillText('Sakamoto Sensi Voice Preview:',x+26,y+94);
+  g.fillStyle='#f0ede4';g.font='italic 12px "Trebuchet MS",sans-serif';
+  const sampleTxt=isJa?'「ちょっと！待ちなさい！そのおもちゃをゴミ箱に捨てるわよ！」':'"Hey! Stop right there! That toy is going in the trash!"';
+  g.fillText(sampleTxt,x+26,y+116);
+  g.fillStyle='#9ab0c8';g.font='11px "Trebuchet MS",sans-serif';
+  g.fillText('• 12+ Sensi Roasts & Confiscation Threats',x+22,y+156);
+  g.fillText('• Action Shouts: Catch, Fall/Miss, Patrol & Ask',x+22,y+174);
+  g.fillText('• Class Heroes & Students Distractions & Gasps',x+22,y+192);
+  g.textAlign='center';g.fillStyle=st==='fail'?'#ff8a7a':act?'#8fd16b':inst?'#ffd23f':'#9a9ab0';g.font='bold 12px "Trebuchet MS",sans-serif';
+  const stMsg=st==='loading'?'Downloading voice pack...':st==='fail'?'Download failed':act?'● Active in-game right now':inst?'Downloaded (Tap Equip to activate)':'Not downloaded yet';
+  g.fillText(stMsg,x+w/2,y+220);
+  drawCard(x+16,y+236,175,42,12,'#3a4a68','rgba(255,255,255,.2)',1.5);
+  g.fillStyle='#fff';g.font='bold 14px "Trebuchet MS",sans-serif';g.fillText('🔊 Test Voice',x+103,y+262);
+  const mainBtnCol=!inst?'#2a75d3':act?'#2e7d32':'#e07a22';
+  drawCard(x+202,y+236,192,42,12,mainBtnCol,'rgba(255,255,255,.25)',1.5);
+  g.fillStyle='#fff';g.font='bold 14px "Trebuchet MS",sans-serif';
+  g.fillText(st==='loading'?'Please wait...':!inst?'⬇ Download':act?'✔ Active (Tap Off)':'★ Equip Pack',x+298,y+262);
+  if(inst){drawCard(x+16,y+288,w-32,34,10,'rgba(120,40,40,.6)','rgba(255,100,100,.3)',1);g.fillStyle='#ffb0b0';g.font='bold 12px "Trebuchet MS",sans-serif';g.fillText('🗑 Remove Pack from Storage',x+w/2,y+310)}
+ });
+ drawCard(400,452,160,36,12,'#4a4858','rgba(255,255,255,.2)',1.5);g.fillStyle='#fff';g.font='bold 15px "Trebuchet MS",sans-serif';g.textAlign='center';
+ g.fillText('Back to Settings',480,475);g.restore();g.textAlign='left';
+}
 let introT=0,introNext=0,introPh=0,introFlags={};
 const SUBS=[[.8,3,'9:00 AM. Class 2-B.'],[3.2,5.4,'Everyone is bored. Everyone is quiet.'],[5.6,7.8,'Everyone... except one little RC car.'],[8.2,9.9,'Sakamoto Sensi: the strictest teacher in school.'],[10.1,11.8,'Sakura-kun and Hinata-chan: the class heroes.'],[12,13,'And a few very curious classmates.'],[13.6,16,'Meet your RC car: the Porsche 911 GTS.'],[16.2,18.8,'Fast. Loud. Absolutely not allowed in class.'],[19.4,21.3,'Then she walked in...'],[21.7,23.6,'"Whose toy is THAT?!"']];
 const MEL=[0,2,4,2,3,4,5,4,2,3,4,6,5,4,2,3],SCL=[220,261.6,293.7,329.6,392,440,523.3];
@@ -1501,8 +1737,16 @@ function draw(){
  else if(state==='over')panel(msg==='caught'?'Caught by the teacher!':'Bell rang!',['Score '+score+', level '+level+', bumps '+bumps,'+'+earned+' coins earned (total '+coins+')'],true);
  else if(state==='pause')drawPause();
  else if(state==='shop')drawShop();else if(state==='settings')drawSettings();else if(state==='voices')drawVoices();else if(state==='textures')drawTex();else if(state==='intro')drawIntro();else if(state==='title')drawTitle();
- if((state==='ready'||state==='over')&&carImgOK){g.save();g.globalAlpha=ea;g.fillStyle='#15151a';g.fillRect(4,96,196,318);g.drawImage(carImg,8,100,188,282);g.fillStyle='#f3efe0';g.font='bold 13px "Trebuchet MS",sans-serif';g.textAlign='center';g.fillText('Your car: 911 GTS',102,402);g.restore()}
- if((state==='ready'||state==='over')&&charImgOK){g.save();g.globalAlpha=ea;g.fillStyle='#15151a';g.fillRect(764,96,196,150);g.drawImage(charImg,768,100,188,125);g.fillStyle='#f3efe0';g.font='bold 13px "Trebuchet MS",sans-serif';g.textAlign='center';g.fillText('Meet the class',862,240);g.restore()}
+ if((state==='ready'||state==='over')&&carImgOK){
+  g.save();g.globalAlpha=ea;drawCard(4,96,196,318,16,'#15151a','rgba(255,255,255,.12)',1.5);
+  g.save();rr(8,100,188,280,12);g.clip();g.drawImage(carImg,8,100,188,280);g.restore();
+  g.fillStyle='#f3efe0';g.font='bold 13px "Trebuchet MS",sans-serif';g.textAlign='center';g.fillText('Your car: 911 GTS',102,402);g.restore();
+ }
+ if((state==='ready'||state==='over')&&charImgOK){
+  g.save();g.globalAlpha=ea;drawCard(764,96,196,150,16,'#15151a','rgba(255,255,255,.12)',1.5);
+  g.save();rr(768,100,188,122,12);g.clip();g.drawImage(charImg,768,100,188,122);g.restore();
+  g.fillStyle='#f3efe0';g.font='bold 13px "Trebuchet MS",sans-serif';g.textAlign='center';g.fillText('Meet the class',862,238);g.restore();
+ }
 }
 const carImg=new Image();let carImgOK=false;carImg.onload=()=>carImgOK=true;carImg.src='car.jpg';
 const appIconImg=new Image();let appIconOK=false;appIconImg.onload=()=>appIconOK=true;appIconImg.src='icon-192.png';

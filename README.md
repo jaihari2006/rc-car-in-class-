@@ -21,7 +21,13 @@ Play online or download the native Android app:
 ### Features
 - **3D RC Car Physics & Drifting**: Responsive steering with sensitivity settings (`0.7x` to `1.7x`).
 - **Nitro Boost**: Extended multi-tier exhaust flame plumes and anime speed lines.
+- **Switchable Real Voice Packs**: Real downloadable and switchable voice packs for characters in **English** (`en`) and authentic **Japanese Anime** (`ja`) lines with in-app audio test preview.
+- **3 Visual Texture Themes**:
+  - **1st Old School Type**: Vintage wood classroom, chalkboard green, warm sepia sunlight, walnut desks.
+  - **2nd Modern Type**: Sleek minimalist studio, white porcelain tiles, whiteboard with blue marker, daylight.
+  - **3rd Futuristic Type**: Dark sci-fi cyber academy, neon cyan grid floor, holographic terminal board, neon cyan car underglow.
+- **Clean Rounded UI Design**: Modern rounded cards, smooth pill badges, custom analog joystick, and responsive controls.
 - **Anime Classroom Setting**: Parquet floor, chalkboards, desks, interactive students, and Sakamoto Sensei.
 - **Top Classroom Camera**: Picture-in-picture bird's-eye view monitor.
-- **Multiplayer Mode**: PeerJS networking with Room codes and playable Sensei tag role.
+- **Multiplayer Mode**: PeerJS networking with Room codes and playable Sensei tag role with virtual joystick and CATCH action.
 - **Android APK**: Standalone Android application with native WebView and 100% offline assets.

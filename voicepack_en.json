@@ -1,0 +1,90 @@
+{
+  "id": "en",
+  "name": "English Voice Pack",
+  "lang": "en-US",
+  "desc": "Teacher, heroes and classmates speak English",
+  "teacher": {
+    "pitch": 0.85,
+    "rate": 0.95,
+    "roast": [
+      "If I catch you, I'm gonna tear you apart!",
+      "Hey! Stop right there!",
+      "That toy is going in the trash!",
+      "I'll snap that thing in half!",
+      "Detention for a month!",
+      "You call THAT driving?!",
+      "Your parents will hear about this!",
+      "That car is hideous!",
+      "I'm confiscating that junk!",
+      "Wait till I get my hands on you!",
+      "Get back here, you little pest!",
+      "That thing is an eyesore!"
+    ],
+    "car": "Your {car} is a piece of junk!",
+    "ask": [
+      "Where is that toy?!",
+      "Whose toy is that?!",
+      "Hand over that remote control right now!"
+    ],
+    "way": [
+      "Hmph! This way then!",
+      "Don't waste my time!",
+      "It won't get far!"
+    ],
+    "nope": [
+      "Hmph! You had better not be lying!",
+      "I'm watching you closely!",
+      "Back to studying, all of you!"
+    ],
+    "patrol": [
+      "No running in class!",
+      "Slow down in the hallways!",
+      "Homework on my desk, please!",
+      "Quiet down, class!"
+    ],
+    "catch": [
+      "Gotcha! That toy is confiscated!",
+      "Caught you! Detention after class!",
+      "I got you! You won't get away!",
+      "Game over! Hand over the controller!"
+    ],
+    "fall": [
+      "Gyaaaah! Missed!!",
+      "OOF! My face!!",
+      "I slipped!! Dammit!!",
+      "Ouch! Whose homework was that?!",
+      "Wait till I get back up!!",
+      "Uwaaa! Currrrse you RC car!!"
+    ]
+  },
+  "hero": {
+    "pitch": 1.7,
+    "rate": 1.1,
+    "hide": [
+      "Quick, behind me!",
+      "Hide under my desk!",
+      "I'll cover you, stay low!"
+    ],
+    "way": [
+      "It went that way, Sensi!",
+      "I saw it zoom toward the windows!",
+      "It's over by the front door!"
+    ],
+    "nope": [
+      "I didn't see anything, Sensi...",
+      "What toy? We're just studying physics!",
+      "Didn't hear a thing over here!"
+    ]
+  },
+  "student": {
+    "pitch": 1.4,
+    "rate": 1.12,
+    "cool": [
+      "Cool!",
+      "So cool!",
+      "Whoa, look at that drift!",
+      "Sick car!",
+      "Run! Sensi is mad!"
+    ]
+  }
+}
