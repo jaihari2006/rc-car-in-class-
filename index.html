@@ -120,7 +120,7 @@ function engine(){if(!eng||!AC)return;const on=state==='play'&&!muted,v=Math.abs
  const slip=on&&v>2.4&&Math.abs(steerS)>.55?Math.min(1,(v-2.4)/2):0;sq.g.gain.setTargetAtTime(slip*.06,t,.05);sq.fl.frequency.setTargetAtTime(2200+v*120,t,.1);nit.g.gain.setTargetAtTime(on&&nitroOn?.1:0,t,.05);nit.fl.frequency.setTargetAtTime(500+v*160,t,.08);
  if(on&&time<=10&&Math.ceil(time)!==lastTick){lastTick=Math.ceil(time);sfx.tick()}}
 function toggleMute(){muted=!muted;if(muted&&window.speechSynthesis)speechSynthesis.cancel();document.getElementById('bm').textContent=muted?'\ud83d\udd07':'\ud83d\udd0a'}
-function togglePause(){if(NH||NG)return;if(state==='play')state='pause';else if(state==='pause')state='play'}
+function togglePause(){if(state==='play')state='pause';else if(state==='pause')state='play'}
 const steerVal=()=>Math.max(-1,Math.min(1,keys.right-keys.left+steerA));
 const LAYOUTS=['Classic rows','Two long rows','Zig-zag','Horseshoe','Group tables','Two blocks'];
 function buildDesks(l){desks=[];const v=l%6,D=(x,y)=>desks.push({x,y,w:120,h:60});
@@ -182,7 +182,8 @@ function initChars(){
  teacher={x:80,y:60,sp:1.7+level*.12,t:0,alert:0,wp:null,freeze:0,say:'',sayT:0,delay:2,lx:0,ly:0};
 }
 function end(m){if(state==='over')return;msg=m;state='over';sfx.bell();earned=score+level*5;coins+=earned;save();
- tops.push({s:score,l:level});tops.sort((a,b)=>b.s-a.s);tops=tops.slice(0,5);try{localStorage.setItem('rcTop',JSON.stringify(tops))}catch(e){}}
+ tops.push({s:score,l:level});tops.sort((a,b)=>b.s-a.s);tops=tops.slice(0,5);try{localStorage.setItem('rcTop',JSON.stringify(tops))}catch(e){}
+ if(!NH&&!NG){isSensei=false;senseiMode=false;senseiPlayerId='';senseiCaught=0;updatePedUI()}}
 function pushOut(o,r){
  for(const d of desks){
   const cx=Math.max(d.x,Math.min(o.x,d.x+d.w)),cy=Math.max(d.y,Math.min(o.y,d.y+d.h));
@@ -193,7 +194,7 @@ function pushOut(o,r){
 let papers=[];
 function free(x,y){return !desks.some(d=>x>d.x-20&&x<d.x+d.w+20&&y>d.y-20&&y<d.y+d.h+20)}
 function spawn(){let x,y;do{x=40+Math.random()*(WW-80);y=40+Math.random()*(WH-80)}while(!free(x,y));papers.push({x,y,t:Math.random()*6})}
-function reset(){audioInit();goLand();nitro=100;nitroOK=true;nitroT=0;hide=null;steerS=0;dispScore=0;level=1;score=0;collected=0;combo=0;bumps=0;time=DIFF[diff].t;car.boost=0;skids=[];powers=[];pTimer=5;popups=[];msg='';if(NH&&conns.length>0&&senseiMode){randomSensei()}nextLevel(true);state='play'}
+function reset(){audioInit();goLand();nitro=100;nitroOK=true;nitroT=0;hide=null;steerS=0;dispScore=0;level=1;score=0;collected=0;combo=0;bumps=0;time=DIFF[diff].t;car.boost=0;skids=[];powers=[];pTimer=5;popups=[];msg='';if(NH&&conns.length>0&&senseiMode){randomSensei()}else{isSensei=false;senseiMode=false;senseiPlayerId='';senseiCaught=0;updatePedUI()}nextLevel(true);state='play'}
 function nextLevel(first){hide=null;buildDesks(level-1);car.x=450;car.y=560;car.a=-Math.PI/2;car.v=0;initChars();setupClutter();papers=[];for(let i=0;i<5;i++)spawn();
  if(!first){time+=10;sfx.power();popups.push({t:'Level '+level+': '+LAYOUTS[(level-1)%6],x:480,y:230,l:2.5,s:1})}}
 addEventListener('keydown',e=>{const k=map[e.key];if(k){keys[k]=1;e.preventDefault()}
@@ -209,13 +210,14 @@ cv.addEventListener('pointerdown',e=>{audioInit();if(state==='play'||NG)return;
  const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)*960/r.width,y=(e.clientY-r.top)*520/r.height;
  if(state==='title'){startIntro();return}
  if(state==='intro'){if(x>760&&y<80)endIntro();return}
+ if(state==='pause'){pauseClick(x,y);return}
  if(state==='shop'){shopClick(x,y);return}
  if(state==='settings'){settingsClick(x,y);return}
  if(state==='voices'){voicesClick(x,y);return}
  if(state==='textures'){texClick(x,y);return}
  if(ui.diff&&y>ui.dy&&y<ui.dy+34&&x>290&&x<680){diff=Math.max(0,Math.min(2,Math.floor((x-290)/130)));return}
  if(ui.my>0&&y>ui.my&&y<ui.my+32){if(x>290&&x<470)hostRoom();else if(x>490&&x<670)joinRoom();return}
- if(ui.sy>0&&y>ui.sy&&y<ui.sy+32&&x>290&&x<670){senseiMode=!senseiMode;if(senseiMode)randomSensei();else{senseiPlayerId='';isSensei=false;popups.push({t:'Sensi Mode OFF',x:480,y:200,l:1.5,s:1})};return}
+ if(ui.sy>0&&y>ui.sy&&y<ui.sy+32&&x>290&&x<670){if(conns.length===0){popups.push({t:'Waiting for guests to join room first!',x:480,y:200,l:2,s:1});return}senseiMode=!senseiMode;if(senseiMode)randomSensei();else{senseiPlayerId='';isSensei=false;senseiCaught=0;updatePedUI();popups.push({t:'Sensi Mode OFF',x:480,y:200,l:1.5,s:1})};return}
  if(ui.diff&&x>214&&x<364&&y>ui.py&&y<ui.py+40){state='settings';return}
  if(ui.diff&&x>596&&x<746&&y>ui.py&&y<ui.py+40){shopSel=carSel;applyCar(carSel);state='shop';return}
  if(x>380&&x<580&&y>ui.py&&y<ui.py+40){if(state==='pause')state='play';else reset()}});
@@ -507,6 +509,7 @@ function drawParts(){
  g.globalAlpha=1;
 }
 function panel(title,lines,showDiff){
+ if(!NH&&!NG&&isSensei){isSensei=false;senseiMode=false;senseiPlayerId='';senseiCaught=0;updatePedUI()}
  g.save();g.globalAlpha=ea;g.translate(0,(1-ea)*40);g.fillStyle='rgba(24,22,32,.9)';g.fillRect(200,50,560,470);g.textAlign='center';g.fillStyle='#f3efe0';
  g.font='bold 32px "Trebuchet MS",sans-serif';g.fillText(title,480,96);g.font='bold 15px "Trebuchet MS",sans-serif';g.fillStyle='#ffd23f';g.fillText('Coins: '+coins,690,78);g.fillStyle='#f3efe0';
  g.font='16px "Trebuchet MS",sans-serif';lines.forEach((l,i)=>g.fillText(l,480,130+i*24));
@@ -596,7 +599,7 @@ function draw2D(){
  ui.diff=false;
  if(state==='ready')panel('RC Car in Class?',['Grab homework before the bell.','Dodge students, desks and the teacher.','Steer buttons on the left, gas and reverse on the right.','Keys: arrows or WASD, P pauses, M mutes.'],true);
  else if(state==='over')panel(msg==='caught'?'Caught by the teacher!':'Bell rang!',['Score '+score+', level '+level+', bumps '+bumps,'+'+earned+' coins earned (total '+coins+')'],true);
- else if(state==='pause')panel('Paused',[],false);
+ else if(state==='pause')drawPause();
  else if(state==='shop')drawShop();else if(state==='settings')drawSettings();else if(state==='voices')drawVoices();else if(state==='textures')drawTex();else if(state==='intro')drawIntro();else if(state==='title')drawTitle();
  g.restore();
 }
@@ -612,7 +615,7 @@ function setNetUI(){
 }
 function loadPeer(cb){if(window.Peer)return cb();const sc=document.createElement('script');sc.src='peerjs.min.js';sc.onerror=()=>{const s2=document.createElement('script');s2.src='https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js';s2.onload=cb;s2.onerror=()=>popups.push({t:'Could not load multiplayer',x:480,y:200,l:2.5,s:1});document.head.appendChild(s2)};sc.onload=cb;
  sc.onerror=()=>popups.push({t:'Could not load multiplayer',x:480,y:200,l:2.5,s:1});document.head.appendChild(sc)}
-function leave(m){try{peer&&peer.destroy()}catch(e){}peer=null;hostConn=null;NH=NG=false;conns=[];remote={};netStatus='';room='';state='ready';setNetUI();if(m)popups.push({t:m,x:480,y:200,l:2.5,s:1})}
+function leave(m){try{peer&&peer.destroy()}catch(e){}peer=null;hostConn=null;NH=NG=false;conns=[];remote={};netStatus='';room='';state='ready';isSensei=false;senseiMode=false;senseiPlayerId='';senseiCaught=0;updatePedUI();setNetUI();if(m)popups.push({t:m,x:480,y:200,l:2.5,s:1})}
 function hostRoom(){if(peer)return;loadPeer(()=>{const code=Math.random().toString(36).slice(2,6).toUpperCase(),p=new Peer('rccg-'+code);peer=p;
  p.on('open',()=>{room=code;NH=true;NG=false;myId='host';netStatus='Room '+code;setNetUI();reset()});
  p.on('error',e=>{if(e.type==='unavailable-id'){p.destroy();peer=null;hostRoom()}else leave('Network error')});
@@ -622,9 +625,11 @@ function hostRoom(){if(peer)return;loadPeer(()=>{const code=Math.random().toStri
    if(d.t==='c'){r.x=d.x;r.y=d.y;r.a=d.a;r.v=d.v;if(d.col)r.col=d.col}
    else if(d.t==='h'&&state==='play'){time=Math.max(0,time-d.p);combo=0}
    else if(d.t==='sm'&&senseiMode&&senseiPlayerId===c.peer){teacher.x=d.tx;teacher.y=d.ty;teacher.dir=d.dir||1;teacher.t=d.t_val||teacher.t;}});
-  c.on('close',()=>{delete remote[c.peer];conns=conns.filter(k=>k!==c);if(senseiPlayerId===c.peer){senseiPlayerId='';randomSensei()}})})})}
+  c.on('close',()=>{delete remote[c.peer];conns=conns.filter(k=>k!==c);if(conns.length===0){senseiMode=false;senseiPlayerId='';isSensei=false;updatePedUI();popups.push({t:'Guests left. Switched to Solo RC Car.',x:480,y:200,l:2,s:1})}else if(senseiPlayerId===c.peer){senseiPlayerId='';randomSensei()}})})})}
 function randomSensei(){
- const pool=['host',...Object.keys(remote)];
+ const guestIds=Object.keys(remote);
+ if(!guestIds.length){isSensei=false;senseiMode=false;senseiPlayerId='';updatePedUI();return}
+ const pool=['host',...guestIds];
  senseiPlayerId=pool[Math.floor(Math.random()*pool.length)];
  isSensei=(senseiPlayerId==='host'||senseiPlayerId===myId);
  senseiMode=true;
@@ -686,7 +691,10 @@ function netTick(dt){
 document.getElementById('bl').onclick=function(){leave('Left room')};
 const bsModeBtn=document.getElementById('b-sensei');
 if(bsModeBtn)bsModeBtn.onclick=function(){
- if(NH){if(!senseiMode){senseiMode=true;randomSensei()}else randomSensei()}
+ if(NH){
+  if(conns.length===0){popups.push({t:'Need at least 1 guest for Sensi Tag',x:480,y:200,l:2,s:1});this.blur();return}
+  if(!senseiMode){senseiMode=true;randomSensei()}else randomSensei();
+ }
  else popups.push({t:'Only host can re-roll Sensi',x:480,y:200,l:2,s:1});
  this.blur();
 };
@@ -1088,6 +1096,67 @@ function voicesClick(x,y){
   if(x>cx+20&&x<cx+280&&y>cy+90&&y<cy+134){if(!packs[id]){if(packSt[id]!=='loading')dlPack(id)}else{activePack=activePack===id?'':id;savePacks()}}
   if(packs[id]&&x>cx+300&&x<cx+380&&y>cy+90&&y<cy+134){packs[id]=null;packSt[id]='';if(activePack===id)activePack='';savePacks()}});
  if(x>400&&x<560&&y>450&&y<486)state='settings'}
+function quitToMenu(){
+ if(NH||NG){
+  leave('Left multiplayer game');
+ }else{
+  isSensei=false;
+  senseiMode=false;
+  senseiPlayerId='';
+  senseiCaught=0;
+  updatePedUI();
+  state='ready';
+ }
+ car.v=0;
+ nitroOn=false;
+ if(window.speechSynthesis)speechSynthesis.cancel();
+}
+function drawPause(){
+ g.save();
+ g.globalAlpha=ea;
+ g.fillStyle='rgba(18,16,26,.95)';
+ g.fillRect(250,38,460,444);
+ g.strokeStyle='rgba(255,255,255,.12)';
+ g.lineWidth=2;
+ g.strokeRect(250,38,460,444);
+ g.textAlign='center';
+ g.fillStyle='#ffd23f';
+ g.font='bold 28px "Trebuchet MS",sans-serif';
+ g.fillText('GAME PAUSED',480,74);
+ g.font='13px "Trebuchet MS",sans-serif';
+ g.fillStyle='#b8b8c8';
+ g.fillText('Level '+level+'  \u2022  Score '+Math.round(score)+'  \u2022  Coins '+coins,480,98);
+ const btn=(y,label,bgCol,txtCol)=>{
+  g.fillStyle=bgCol;
+  g.fillRect(280,y,400,36);
+  g.fillStyle=txtCol||'#fff';
+  g.font='bold 15px "Trebuchet MS",sans-serif';
+  g.fillText(label,480,y+23);
+ };
+ btn(118,'\u25b6  Resume Game','#2e7d32');
+ btn(162,NG?'\ud83d\udd04  Restart (Host Only)':'\ud83d\udd04  Restart Race','#d97724');
+ btn(206,'\ud83c\udfae  Steering Sensitivity: '+SENS_NAMES[sensIdx],'#2f6bb2');
+ btn(250,'\ud83d\udd0a  Sound Effects: '+(muted?'OFF':'ON'),muted?'#5a4a4a':'#4a4858');
+ btn(294,'\ud83d\udde3\ufe0f  Anime Voices: '+(voiceOn?'ON':'OFF'),voiceOn?'#6a4aa5':'#4a4858');
+ btn(338,'\u26a1  Graphics: '+GFX[0].toUpperCase()+GFX.slice(1),'#2a8f6a');
+ btn(386,(NH||NG)?'\ud83d\udeaa  Leave Multiplayer Room':'\ud83d\udeaa  Quit to Main Menu','#b82222');
+ g.fillStyle='rgba(255,255,255,.5)';
+ g.font='12px "Trebuchet MS",sans-serif';
+ g.fillText('Press P or Esc to resume',480,452);
+ g.restore();
+ g.textAlign='left';
+}
+function pauseClick(x,y){
+ if(x<280||x>680)return;
+ const ib=by=>y>=by&&y<=by+36;
+ if(ib(118)){state='play';if(sfx&&sfx.power)sfx.power()}
+ else if(ib(162)){if(NG){popups.push({t:'Only host can restart room',x:480,y:200,l:1.5,s:1})}else reset()}
+ else if(ib(206)){cycleSens()}
+ else if(ib(250)){toggleMute()}
+ else if(ib(294)){toggleVoice()}
+ else if(ib(338)){cycleGfx()}
+ else if(y>=386&&y<=386+38){quitToMenu()}
+}
 function drawSettings(){g.save();g.globalAlpha=ea;g.fillStyle='rgba(22,20,30,.94)';g.fillRect(260,52,440,428);g.textAlign='center';g.fillStyle='#f3efe0';g.font='bold 26px "Trebuchet MS",sans-serif';g.fillText('Settings',480,88);
  const btn=(y,label,c)=>{g.fillStyle=c||'#4a4858';g.fillRect(300,y,360,36);g.fillStyle='#fff';g.font='bold 15px "Trebuchet MS",sans-serif';g.fillText(label,480,y+23)};
  btn(108,'Steering Sensitivity: '+SENS_NAMES[sensIdx],'#e07a22');
@@ -1197,7 +1266,7 @@ function draw(){
  ui.diff=false;
  if(state==='ready')panel('RC Car in Class?',['Grab homework before the bell.','Dodge students, desks and the teacher.','Steer buttons on the left, gas and reverse on the right.','Keys: arrows or WASD, P pauses, M mutes.'],true);
  else if(state==='over')panel(msg==='caught'?'Caught by the teacher!':'Bell rang!',['Score '+score+', level '+level+', bumps '+bumps,'+'+earned+' coins earned (total '+coins+')'],true);
- else if(state==='pause')panel('Paused',[],false);
+ else if(state==='pause')drawPause();
  else if(state==='shop')drawShop();else if(state==='settings')drawSettings();else if(state==='voices')drawVoices();else if(state==='textures')drawTex();else if(state==='intro')drawIntro();else if(state==='title')drawTitle();
  if((state==='ready'||state==='over')&&carImgOK){g.save();g.globalAlpha=ea;g.fillStyle='#15151a';g.fillRect(4,96,196,318);g.drawImage(carImg,8,100,188,282);g.fillStyle='#f3efe0';g.font='bold 13px "Trebuchet MS",sans-serif';g.textAlign='center';g.fillText('Your car: 911 GTS',102,402);g.restore()}
  if((state==='ready'||state==='over')&&charImgOK){g.save();g.globalAlpha=ea;g.fillStyle='#15151a';g.fillRect(764,96,196,150);g.drawImage(charImg,768,100,188,125);g.fillStyle='#f3efe0';g.font='bold 13px "Trebuchet MS",sans-serif';g.textAlign='center';g.fillText('Meet the class',862,240);g.restore()}
