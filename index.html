@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
 <title>RC Car in Class?</title>
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#15151a">
 <style>
 :root{--bg:#2b2a33;--ink:#f3efe0;--btn:#e8b53a;--btnink:#2b2a33}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -1132,10 +1136,15 @@ function drawIntro(){if(!T3)introStep();const T=introT,W=960,H=520;
  if(T>=28.4)endIntro()}
 function drawTitle(){const W=960,H=520;g.fillStyle='#0c0a14';g.fillRect(0,0,W,H);
  if(charImgOK){const z=1.15+Math.sin(Date.now()/4000)*.03,iw=charImg.width,ih=charImg.height,sw=iw/z,sh=sw/(W/H);g.drawImage(charImg,(iw-sw)/2,ih*.04,sw,sh,0,0,W,H)}
- g.fillStyle='rgba(8,6,16,.55)';g.fillRect(0,0,W,H);g.textAlign='center';g.save();g.shadowColor='#ff2bd6';g.shadowBlur=24;g.fillStyle='#fff';g.font='bold 64px "Trebuchet MS",sans-serif';g.fillText('RC Car in Class?',W/2,230);g.restore();
- g.font='bold 20px "Trebuchet MS",sans-serif';g.fillStyle='#ffd23f';g.fillText('A 3D RC car classroom escape',W/2,268);
- if(Math.sin(Date.now()/350)>-.3){g.fillStyle='#fff';g.font='bold 26px "Trebuchet MS",sans-serif';g.fillText('Tap to start',W/2,380)}
- g.font='13px "Trebuchet MS",sans-serif';g.fillStyle='rgba(255,255,255,.7)';g.fillText('Best played in landscape with sound on',W/2,420);g.textAlign='left'}
+ g.fillStyle='rgba(8,6,16,.55)';g.fillRect(0,0,W,H);
+ if(appIconOK){
+  g.save();g.shadowColor='rgba(0,0,0,.6)';g.shadowBlur=16;g.shadowOffsetY=4;
+  g.drawImage(appIconImg,W/2-55,50,110,110);g.restore();
+ }
+ g.textAlign='center';g.save();g.shadowColor='#ff2bd6';g.shadowBlur=24;g.fillStyle='#fff';g.font='bold 64px "Trebuchet MS",sans-serif';g.fillText('RC Car in Class?',W/2,215);g.restore();
+ g.font='bold 20px "Trebuchet MS",sans-serif';g.fillStyle='#ffd23f';g.fillText('A 3D RC car classroom escape',W/2,255);
+ if(Math.sin(Date.now()/350)>-.3){g.fillStyle='#fff';g.font='bold 26px "Trebuchet MS",sans-serif';g.fillText('Tap to start',W/2,375)}
+ g.font='13px "Trebuchet MS",sans-serif';g.fillStyle='rgba(255,255,255,.7)';g.fillText('Best played in landscape with sound on',W/2,415);g.textAlign='left'}
 function drawPip(){if(state!=='play'&&state!=='pause')return;
  const x=PX,y=PY,w=PW,h=PH,pt=(px,py,pz)=>{const v=T3.v.set(px*.1,(pz||0)*.1,py*.1).project(T3.top);return[x+(v.x+1)/2*w,y+(1-v.y)/2*h]},
  dot=(p,r,c,st)=>{g.fillStyle=c;g.beginPath();g.arc(p[0],p[1],r,0,7);g.fill();if(st){g.strokeStyle=st;g.lineWidth=1.5;g.stroke()}};
@@ -1194,6 +1203,7 @@ function draw(){
  if((state==='ready'||state==='over')&&charImgOK){g.save();g.globalAlpha=ea;g.fillStyle='#15151a';g.fillRect(764,96,196,150);g.drawImage(charImg,768,100,188,125);g.fillStyle='#f3efe0';g.font='bold 13px "Trebuchet MS",sans-serif';g.textAlign='center';g.fillText('Meet the class',862,240);g.restore()}
 }
 const carImg=new Image();let carImgOK=false;carImg.onload=()=>carImgOK=true;carImg.src='car.jpg';
+const appIconImg=new Image();let appIconOK=false;appIconImg.onload=()=>appIconOK=true;appIconImg.src='icon-192.png';
 try{T3=window.THREE?init3D():null}catch(e){T3=null}
 if(T3){applyCar();if(TP)applyTex()}
 try{if(!localStorage.getItem('rcIntro'))state='title'}catch(e){}

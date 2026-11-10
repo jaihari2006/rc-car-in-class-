@@ -1,4 +1,4 @@
-# 🏎️ RC Car in Class
+# <img src="images/icon.png" width="48" height="48" alt="App Icon" style="vertical-align:middle;border-radius:10px;"> RC Car in Class
 
 ![RC Car in Class Banner](images/banner.jpg)
 
@@ -12,9 +12,9 @@ Play online or download the native Android app:
 
 ## 📸 Screenshots & Artwork
 
-| Nitro Boost & Power Slide | Multiplayer Classroom Chase |
-| :---: | :---: |
-| ![Nitro Boost Action](images/gameplay-nitro.jpg) | ![Multiplayer Sensei Tag](images/multiplayer-sensei.jpg) |
+| Official App Icon | Nitro Boost & Power Slide | Multiplayer Classroom Chase |
+| :---: | :---: | :---: |
+| ![Official App Icon](images/icon.png) | ![Nitro Boost Action](images/gameplay-nitro.jpg) | ![Multiplayer Sensei Tag](images/multiplayer-sensei.jpg) |
 
 ---
 
