@@ -10,7 +10,8 @@
 html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:"Trebuchet MS",Verdana,sans-serif;touch-action:none;user-select:none}
 body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:8px}
 canvas{width:100%;max-width:960px;height:auto;aspect-ratio:960/520;border-radius:8px;background:#000}
-#pad{display:flex;justify-content:space-between;align-items:flex-end;width:100%;max-width:960px}
+#pad{display:none;justify-content:space-between;align-items:flex-end;width:100%;max-width:960px}
+body.in-game #pad{display:flex}
 #steer{display:flex;gap:12px}
 #steer button{width:84px;height:84px;border:0;border-radius:18px;background:var(--btn);color:var(--btnink);font-size:34px;font-weight:bold}
 #steer button.on{filter:brightness(.8);transform:translateY(2px)}
@@ -33,6 +34,8 @@ canvas{box-shadow:0 8px 30px rgba(0,0,0,.5)}
  body{padding:0;gap:0;height:100dvh;overflow:hidden}
  #stage{width:min(100vw,calc(100dvh*960/520));max-width:none;border-radius:0;box-shadow:none}
  #pad{position:fixed;left:max(14px,env(safe-area-inset-left));right:max(14px,env(safe-area-inset-right));bottom:12px;width:auto;max-width:none;pointer-events:none}
+ body:not(.in-game) #pad{display:none !important}
+ body.in-game #pad{display:flex !important}
  #pad button{pointer-events:auto;opacity:.82}
  #steer button{width:78px;height:78px}
  #ped button{width:104px}#ped button[data-k=up]{height:74px}#ped button[data-k=down]{height:46px}#ped button[data-k=nitro]{height:42px}
@@ -50,7 +53,7 @@ canvas{box-shadow:0 8px 30px rgba(0,0,0,.5)}
 #ped button[data-k=nitro]{background:linear-gradient(#2a8fd6,#16547f);color:#fff;width:84px;height:146px}
 @media (orientation:landscape) and (pointer:coarse){#ped button[data-k=up],#ped button[data-k=down]{width:104px}#ped button[data-k=up]{height:74px}#ped button[data-k=down]{height:46px}#ped button[data-k=nitro]{width:78px;height:130px}}
 body.cine #pad,body.cine #bar{visibility:hidden}
-@media (hover:hover) and (pointer:fine){#pad{display:none}}
+@media (hover:hover) and (pointer:fine){#pad{display:none !important}}
 </style>
 <script src="three.min.js"></script>
 <script>if(!window.THREE){document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\\/script>')}</script>
@@ -59,7 +62,7 @@ body.cine #pad,body.cine #bar{visibility:hidden}
 <div id="bar"><button id="b-sensei" hidden style="background:#b82b2b;color:#fff;font-weight:bold" title="Toggle Sensei Mode">👑 Sensi Tag</button><button id="bs" hidden>Invite</button><button id="bl" hidden>Leave</button><button id="bp">⏸</button><button id="bv">🗣</button><button id="bm">🔊</button></div>
 <div id="rot"><b>📱</b>Rotate your phone to landscape to play</div>
 <div id="stage"><canvas id="gl"></canvas><canvas id="c" width="960" height="520"></canvas></div>
-<div id="pad"><div id="steer"><button data-k="left">◀</button><button data-k="right">▶</button></div><div id="ped"><button data-k="nitro">NITRO</button><div id="gr"><button data-k="up">GAS</button><button data-k="down">REVERSE</button></div></div></div>
+<div id="pad" style="display:none"><div id="steer"><button data-k="left">◀</button><button data-k="right">▶</button></div><div id="ped"><button data-k="nitro">NITRO</button><div id="gr"><button data-k="up">GAS</button><button data-k="down">REVERSE</button></div></div></div>
 <script>
 const cv=document.getElementById('c'),g=cv.getContext('2d');
 const WW=900,WH=600,OX=30,OY=130,SY=0.6,DH=30;
@@ -1157,8 +1160,15 @@ function drawPip(){if(state!=='play'&&state!=='pause')return;
  g.fillStyle='rgba(0,0,0,.45)';g.fillRect(434,40,94,18);g.fillStyle='#f3efe0';g.fillText(isSensei?'SENSI CAM':'CHASE CAM',462,53);g.fillStyle=Math.sin(Date.now()/300)>0?'#ff3b30':'#701510';g.beginPath();g.arc(446,49,4,0,7);g.fill();
  g.restore()}
 function draw(){
- if(!T3){draw2D();return}
+ const inGame=(state==='play');
+ document.body.classList.toggle('in-game',inGame);
  document.body.classList.toggle('cine',state==='intro'||state==='title');
+ const padEl=document.getElementById('pad');
+ if(padEl)padEl.style.display=inGame?'':'none';
+ const bpEl=document.getElementById('bp');
+ if(bpEl)bpEl.style.display=inGame?'':'none';
+ if(!inGame){for(const k in keys)keys[k]=0;document.querySelectorAll('#pad button.on').forEach(b=>b.classList.remove('on'))}
+ if(!T3){draw2D();return}
  g.clearRect(0,0,960,520);camX=camY=0;render3D();
  const vg=g.createRadialGradient(480,260,260,480,260,620);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(10,6,0,.5)');g.fillStyle=vg;g.fillRect(0,0,960,520);
  if(nitroOn||car.boost>0){
