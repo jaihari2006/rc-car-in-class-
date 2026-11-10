@@ -57,6 +57,31 @@ canvas{box-shadow:0 8px 30px rgba(0,0,0,.5)}
 #ped button[data-k=nitro]{background:linear-gradient(#2a8fd6,#16547f);color:#fff;width:84px;height:146px}
 @media (orientation:landscape) and (pointer:coarse){#ped button[data-k=up],#ped button[data-k=down]{width:104px}#ped button[data-k=up]{height:74px}#ped button[data-k=down]{height:46px}#ped button[data-k=nitro]{width:78px;height:130px}}
 body.cine #pad,body.cine #bar{visibility:hidden}
+#car-controls,#sensei-controls{width:100%;display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none}
+#joy-zone{display:flex;align-items:center;justify-content:center;pointer-events:auto;touch-action:none;user-select:none;-webkit-user-select:none}
+#joy-base{position:relative;width:126px;height:126px;border-radius:50%;background:radial-gradient(circle,rgba(35,30,48,.88) 0%,rgba(16,14,24,.96) 100%);border:3px solid rgba(255,210,63,.85);box-shadow:0 6px 20px rgba(0,0,0,.65),inset 0 0 18px rgba(255,210,63,.25);touch-action:none;user-select:none;cursor:pointer}
+#joy-knob{position:absolute;top:50%;left:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffd23f 0%,#e0302a 65%,#8b100b 100%);border:2.5px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.6),inset 0 2px 4px rgba(255,255,255,.5);pointer-events:none;transform:translate(0px,0px);will-change:transform}
+.joy-dir{position:absolute;color:rgba(255,210,63,.55);font-size:11px;font-weight:bold;pointer-events:none}
+.joy-u{top:4px;left:50%;transform:translateX(-50%)}
+.joy-d{bottom:4px;left:50%;transform:translateX(-50%)}
+.joy-l{left:6px;top:50%;transform:translateY(-50%)}
+.joy-r{right:6px;top:50%;transform:translateY(-50%)}
+#sensei-actions{display:flex;align-items:flex-end;gap:12px;pointer-events:auto}
+#btn-sensei-sprint{width:86px;height:62px;border-radius:16px;background:linear-gradient(135deg,#2a8fd6,#154e76);color:#fff;border:3px solid #82d4ff;font-weight:bold;font-size:13px;letter-spacing:1px;box-shadow:0 5px 0 rgba(0,0,0,.4);pointer-events:auto;cursor:pointer}
+#btn-sensei-sprint.on{transform:translateY(3px);filter:brightness(.85)}
+#btn-sensei-catch{width:116px;height:88px;border-radius:22px;background:linear-gradient(135deg,#e52d27,#9c1216);color:#fff;border:3px solid #ffd23f;box-shadow:0 6px 0 #6e080b,0 8px 18px rgba(229,45,39,.55);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent}
+#btn-sensei-catch:active,#btn-sensei-catch.on{transform:translateY(4px) scale(.97);box-shadow:0 2px 0 #6e080b,0 0 20px rgba(255,210,63,.85)}
+#btn-sensei-catch.stunned{background:linear-gradient(135deg,#5a5563,#322e3b);border-color:#8a8698;box-shadow:0 4px 0 #222;opacity:.88}
+.catch-icon{font-size:32px;line-height:1}
+.catch-txt{font-size:17px;font-weight:900;letter-spacing:1px;text-shadow:0 2px 4px rgba(0,0,0,.6)}
+@media (orientation:landscape) and (pointer:coarse){
+ #joy-base{width:114px;height:114px}
+ #joy-knob{width:48px;height:48px;margin:-24px 0 0 -24px}
+ #btn-sensei-sprint{width:76px;height:54px;font-size:12px}
+ #btn-sensei-catch{width:104px;height:78px}
+ .catch-icon{font-size:28px}
+ .catch-txt{font-size:15px}
+}
 @media (hover:hover) and (pointer:fine){#pad{display:none !important}}
 </style>
 <script src="three.min.js"></script>
@@ -66,7 +91,30 @@ body.cine #pad,body.cine #bar{visibility:hidden}
 <div id="bar"><button id="b-sensei" hidden style="background:#b82b2b;color:#fff;font-weight:bold" title="Toggle Sensei Mode">👑 Sensi Tag</button><button id="bs" hidden>Invite</button><button id="bl" hidden>Leave</button><button id="bp">⏸</button><button id="bv">🗣</button><button id="bm">🔊</button></div>
 <div id="rot"><b>📱</b>Rotate your phone to landscape to play</div>
 <div id="stage"><canvas id="gl"></canvas><canvas id="c" width="960" height="520"></canvas></div>
-<div id="pad" style="display:none"><div id="steer"><button data-k="left">◀</button><button data-k="right">▶</button></div><div id="ped"><button data-k="nitro">NITRO</button><div id="gr"><button data-k="up">GAS</button><button data-k="down">REVERSE</button></div></div></div>
+<div id="pad" style="display:none">
+ <div id="car-controls" style="display:flex;justify-content:space-between;align-items:flex-end;width:100%">
+  <div id="steer"><button data-k="left">◀</button><button data-k="right">▶</button></div>
+  <div id="ped"><button data-k="nitro">NITRO</button><div id="gr"><button data-k="up">GAS</button><button data-k="down">REVERSE</button></div></div>
+ </div>
+ <div id="sensei-controls" style="display:none;justify-content:space-between;align-items:flex-end;width:100%">
+  <div id="joy-zone">
+   <div id="joy-base">
+    <div id="joy-knob"></div>
+    <div class="joy-dir joy-u">▲</div>
+    <div class="joy-dir joy-d">▼</div>
+    <div class="joy-dir joy-l">◀</div>
+    <div class="joy-dir joy-r">▶</div>
+   </div>
+  </div>
+  <div id="sensei-actions">
+   <button id="btn-sensei-sprint" data-k="nitro">⚡ SPRINT</button>
+   <button id="btn-sensei-catch">
+    <span class="catch-icon">🫳</span>
+    <span class="catch-txt">CATCH!</span>
+   </button>
+  </div>
+ </div>
+</div>
 <script>
 const cv=document.getElementById('c'),g=cv.getContext('2d');
 const WW=900,WH=600,OX=30,OY=130,SY=0.6,DH=30;
@@ -179,10 +227,11 @@ function initChars(){
  const heroN=Math.min(3,1+(level>2?1:0)+(level>4?1:0)),hk=['sakura','hinata','ren'],hn=['Sakura-kun','Hinata-chan','Ren-kun'],FN=['Akari-chan','Mio-chan','Yuki-chan','Aoi-chan'],MN=['Haruto-kun','Kenji-kun','Sora-kun','Riku-kun'];students=[];for(let i=0;i<n;i++){const y=L[Math.floor((i+.5)*L.length/n)];let x=60+Math.random()*780;if(y>500&&Math.abs(x-450)<120)x=(x+300)%780+60;
   const lk=i<heroN?hk[i]:(i%2?'npcF':'npcM'),nm=i<heroN?hn[i]:(i%2?FN:MN)[((i>>1)+level)%4];
   students.push({x,y,dir:i%2?1:-1,sp:.9+Math.random()*.7+level*.05,col:cols[i%7],t:i,hc:hcs[i%4],look:lk,name:nm,girl:lk==='hinata'||lk==='npcF',hero:i<heroN,cd:3})}
- teacher={x:80,y:60,sp:1.7+level*.12,t:0,alert:0,wp:null,freeze:0,say:'',sayT:0,delay:2,lx:0,ly:0};
+ teacher={x:80,y:60,sp:1.7+level*.12,t:0,alert:0,wp:null,freeze:0,say:'',sayT:0,delay:2,lx:0,ly:0,downT:0,dir:1};
 }
 function end(m){if(state==='over')return;msg=m;state='over';sfx.bell();earned=score+level*5;coins+=earned;save();
  tops.push({s:score,l:level});tops.sort((a,b)=>b.s-a.s);tops=tops.slice(0,5);try{localStorage.setItem('rcTop',JSON.stringify(tops))}catch(e){}
+ teacher.downT=0;
  if(!NH&&!NG){isSensei=false;senseiMode=false;senseiPlayerId='';senseiCaught=0;updatePedUI()}}
 function pushOut(o,r){
  for(const d of desks){
@@ -194,17 +243,49 @@ function pushOut(o,r){
 let papers=[];
 function free(x,y){return !desks.some(d=>x>d.x-20&&x<d.x+d.w+20&&y>d.y-20&&y<d.y+d.h+20)}
 function spawn(){let x,y;do{x=40+Math.random()*(WW-80);y=40+Math.random()*(WH-80)}while(!free(x,y));papers.push({x,y,t:Math.random()*6})}
-function reset(){audioInit();goLand();nitro=100;nitroOK=true;nitroT=0;hide=null;steerS=0;dispScore=0;level=1;score=0;collected=0;combo=0;bumps=0;time=DIFF[diff].t;car.boost=0;skids=[];powers=[];pTimer=5;popups=[];msg='';if(NH&&conns.length>0&&senseiMode){randomSensei()}else{isSensei=false;senseiMode=false;senseiPlayerId='';senseiCaught=0;updatePedUI()}nextLevel(true);state='play'}
+function reset(){audioInit();goLand();nitro=100;nitroOK=true;nitroT=0;hide=null;steerS=0;dispScore=0;level=1;score=0;collected=0;combo=0;bumps=0;time=DIFF[diff].t;car.boost=0;skids=[];powers=[];pTimer=5;popups=[];msg='';teacher.downT=0;if(NH&&conns.length>0&&senseiMode){randomSensei()}else{isSensei=false;senseiMode=false;senseiPlayerId='';senseiCaught=0;updatePedUI()}nextLevel(true);state='play'}
 function nextLevel(first){hide=null;buildDesks(level-1);car.x=450;car.y=560;car.a=-Math.PI/2;car.v=0;initChars();setupClutter();papers=[];for(let i=0;i<5;i++)spawn();
  if(!first){time+=10;sfx.power();popups.push({t:'Level '+level+': '+LAYOUTS[(level-1)%6],x:480,y:230,l:2.5,s:1})}}
 addEventListener('keydown',e=>{const k=map[e.key];if(k){keys[k]=1;e.preventDefault()}
  if(e.key==='p'||e.key==='Escape')togglePause();if(e.key==='m')toggleMute();
  const go=e.key===' '||e.key==='Enter';
  if(state==='title'&&go)startIntro();else if(state==='intro'&&(go||e.key==='Escape'))endIntro();else if(state==='pause'&&go)state='play';else if(state!=='play'&&state!=='pause'&&state!=='shop'&&state!=='settings'&&state!=='voices'&&state!=='textures'&&go&&!NG)reset();
+ if(isSensei&&state==='play'&&(e.code==='Space'||e.key==='c'||e.key==='C')){e.preventDefault();attemptCatch()}
  if(state==='ready'&&'123'.includes(e.key))diff=+e.key-1});
 addEventListener('keyup',e=>{const k=map[e.key];if(k)keys[k]=0});
+let joyActive=false,joyPointerId=null,joyVec={x:0,y:0},joyMag=0;
+function setupJoystick(){
+ const base=document.getElementById('joy-base'),knob=document.getElementById('joy-knob');
+ if(!base||!knob)return;
+ const maxR=38;
+ function updateKnob(cx,cy){
+  const r=base.getBoundingClientRect(),ox=cx-(r.left+r.width/2),oy=cy-(r.top+r.height/2);
+  let dist=Math.hypot(ox,oy),nx=ox,ny=oy;
+  if(dist>maxR){nx=(ox/dist)*maxR;ny=(oy/dist)*maxR;dist=maxR}
+  knob.style.transform='translate('+nx+'px,'+ny+'px)';
+  if(dist<5){joyVec.x=0;joyVec.y=0;joyMag=0}
+  else{joyVec.x=nx/maxR;joyVec.y=ny/maxR;joyMag=dist/maxR}
+ }
+ function resetKnob(){
+  joyActive=false;joyPointerId=null;joyVec.x=0;joyVec.y=0;joyMag=0;
+  knob.style.transform='translate(0px,0px)';
+ }
+ base.addEventListener('pointerdown',e=>{
+  e.preventDefault();joyActive=true;joyPointerId=e.pointerId;
+  try{base.setPointerCapture(e.pointerId)}catch(_){}
+  updateKnob(e.clientX,e.clientY);
+ });
+ base.addEventListener('pointermove',e=>{
+  if(!joyActive||e.pointerId!==joyPointerId)return;
+  e.preventDefault();updateKnob(e.clientX,e.clientY);
+ });
+ ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>{
+  base.addEventListener(ev,e=>{if(e.pointerId===joyPointerId)resetKnob()});
+ });
+}
+setupJoystick();
 document.querySelectorAll('#pad button').forEach(b=>{const k=b.dataset.k;
- const on=e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}keys[k]=1;b.classList.add('on')},off=e=>{e.preventDefault();keys[k]=0;b.classList.remove('on')};
+ const on=e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}if(k)keys[k]=1;b.classList.add('on');if(b.id==='btn-sensei-catch')attemptCatch()},off=e=>{e.preventDefault();if(k)keys[k]=0;b.classList.remove('on')};
  b.addEventListener('pointerdown',on);['pointerup','pointercancel','lostpointercapture'].forEach(t=>b.addEventListener(t,off))});
 cv.addEventListener('pointerdown',e=>{audioInit();if(state==='play'||NG)return;
  const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)*960/r.width,y=(e.clientY-r.top)*520/r.height;
@@ -281,19 +362,39 @@ function update(dt){
   if(pushHit(car,car.r,true)&&!hide)hit(1,-.35);
  }else{
   // Sensei Player Movement & Controls
-  const sSprint=(keys.nitro||(keys.up&&keys.down))&&senseiStamina>10;
-  if(sSprint)senseiStamina=Math.max(0,senseiStamina-32*dt);else senseiStamina=Math.min(100,senseiStamina+18*dt);
-  const sSpd=(sSprint?3.8:2.3)*(teacher.freeze>0?.3:1);
-  let mx=(keys.right?1:0)-(keys.left?1:0),my=(keys.down?1:0)-(keys.up?1:0);
-  if(mx!==0||my!==0){
-   const len=Math.hypot(mx,my);mx/=len;my/=len;
-   teacher.x+=mx*sSpd;teacher.y+=my*sSpd;teacher.dir=mx>=0?1:-1;
-   teacher.t+=dt*(sSprint?15:9);
-   const ph=Math.floor(teacher.t/Math.PI);if(ph!==teacher.ph){teacher.ph=ph;stepSfx(teacher,true)}
+  if(teacher.downT>0){
+   teacher.downT-=dt;
+   if(teacher.downT<=0){
+    teacher.downT=0;
+    popups.push({t:'⚡ SAKAMOTO SENSI IS BACK UP!',x:480,y:200,l:2.0,s:1,c:'#ffd23f'});
+    tone(520,.18,'sine',.2,880);
+   }
+  } else {
+   let mx=0,my=0;
+   if(joyMag>0.1){
+    mx=joyVec.x;my=joyVec.y;
+   } else {
+    mx=(keys.right?1:0)-(keys.left?1:0);
+    my=(keys.down?1:0)-(keys.up?1:0);
+    if(mx!==0||my!==0){const len=Math.hypot(mx,my);mx/=len;my/=len}
+   }
+   const sSprint=(keys.nitro||joyMag>0.72)&&senseiStamina>10;
+   if(sSprint)senseiStamina=Math.max(0,senseiStamina-32*dt);
+   else senseiStamina=Math.min(100,senseiStamina+18*dt);
+   const spdBase=sSprint?3.8:2.3;
+   const inputSpeed=(joyMag>0.1?Math.max(0.4,joyMag):1.0);
+   const sSpd=spdBase*inputSpeed*(teacher.freeze>0?.3:1);
+   if(Math.hypot(mx,my)>0.1){
+    teacher.x+=mx*sSpd;teacher.y+=my*sSpd;
+    if(Math.abs(mx)>0.15)teacher.dir=mx>=0?1:-1;
+    teacher.t+=dt*(sSprint?15:9);
+    const ph=Math.floor(teacher.t/Math.PI);
+    if(ph!==teacher.ph){teacher.ph=ph;stepSfx(teacher,true)}
+   }
+   teacher.x=Math.max(30,Math.min(WW-30,teacher.x));teacher.y=Math.max(30,Math.min(WH-30,teacher.y));
+   pushHit(teacher,14);
   }
-  teacher.x=Math.max(30,Math.min(WW-30,teacher.x));teacher.y=Math.max(30,Math.min(WH-30,teacher.y));
-  pushHit(teacher,14);
-  if(NG&&hostConn&&hostConn.open)hostConn.send({t:'sm',tx:teacher.x,ty:teacher.y,dir:teacher.dir,sprint:sSprint?1:0,t_val:teacher.t});
+  if(NG&&hostConn&&hostConn.open)hostConn.send({t:'sm',tx:teacher.x,ty:teacher.y,dir:teacher.dir,sprint:(keys.nitro||joyMag>0.72)?1:0,t_val:teacher.t,downT:teacher.downT||0});
  }
 
  skids.forEach(k=>k.l-=dt*.25);skids=skids.filter(k=>k.l>0);
@@ -328,16 +429,15 @@ function update(dt){
   else{
    // Guest is Sensei, position updated via sm packet
   }
-  // Host handles catches in Sensei Mode
+  // Bumping collision in Sensei Mode (Catches are actively triggered by CATCH button)
   if(NH||!NG){
    for(const c of allCars()){
     if(c.id===senseiPlayerId||(c===car&&isSensei))continue;
     const d=Math.hypot(c.x-T.x,c.y-T.y);
-    if(d<30){
-     sfx.catchSfx&&sfx.catchSfx();burst(c.x,c.y,12,14,'#ff3b30',2.5);
-     senseiCaught++;T.say=ROAST();T.sayT=2.4;speak(T,T.say);
-     if(c===car){popups.push({t:'SENSI CAUGHT YOU! -10s',x:480,y:200,l:2.5,s:1});car.x=450+(Math.random()-.5)*80;car.y=560;car.v=0;time=Math.max(0,time-10)}
-     else{toPeer(c.id,{t:'b',msg:'Caught by Sakamoto Sensi!'});popups.push({t:'SENSI CAUGHT '+(c.name||'Student')+'!',x:480,y:200,l:2.5,s:1})}
+    if(d<24){
+     const dx=c.x-T.x,dy=c.y-T.y,mag=d||1;
+     c.x+=dx/mag*(24-d);c.y+=dy/mag*(24-d);
+     if(c===car)hit(1,-.2);
     }
    }
   }
@@ -480,6 +580,10 @@ function hud(){
  if(isSensei){
   g.fillStyle='#e0302a';g.font='bold 13px "Trebuchet MS",sans-serif';g.fillText('\ud83d\udc51 ROLE: SAKAMOTO SENSI',16,OY+18);
   g.fillStyle='#ffd23f';g.font='bold 24px "Trebuchet MS",sans-serif';g.fillText('Cars Caught: '+senseiCaught,16,OY+44);
+  if(teacher.downT>0){
+   g.fillStyle='#ff5a4a';g.font='bold 13px "Trebuchet MS",sans-serif';
+   g.fillText('💫 DOWN: '+teacher.downT.toFixed(1)+'s',16,OY+62);
+  }
  }else{
   g.fillStyle='#f3efe0';g.font='12px "Trebuchet MS",sans-serif';g.fillText('Score',16,OY+20);g.fillText('Level '+level,84,OY+20);
   g.font='bold '+Math.round(26+Math.min(1,Math.abs(score-dispScore)*.3)*8)+'px "Trebuchet MS",sans-serif';g.fillText(Math.round(dispScore),16,OY+48);
@@ -540,7 +644,37 @@ function bubble(T){const p=P(T.x,T.y,106),x=p[0],y=p[1]-10;if(p[0]<0||p[0]>960||
   g.save();g.fillStyle='#ff2222';g.font='bold 28px sans-serif';g.shadowColor='#ff0000';g.shadowBlur=12;g.fillText('\uD83D\uDCA2 !',x-10,y+6);g.restore();
  }}
 function drawPerson(o,kind){
- const [sx,sy]=P(o.x,o.y),k=kind==='t'?1.3:1,bob=Math.sin(o.t||0)*1.5,step=Math.sin(o.t||0)*3;
+ const [sx,sy]=P(o.x,o.y),k=kind==='t'?1.3:1;
+ if(kind==='t'&&o.downT>0){
+  const getUp=o.downT<0.5?(1-o.downT/0.5):0;
+  const dir=o.fallDir||o.dir||1;
+  g.save();g.translate(sx,sy);
+  g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.ellipse(dir*12,4,28*k,9*k,0,0,7);g.fill();
+  g.scale(k,k);
+  g.rotate(dir*(Math.PI/2*(1-getUp)));
+  g.translate(0,-10*(1-getUp));
+  const skin='#f1c9a0';
+  g.fillStyle='#3b2416';g.beginPath();g.arc(0,-32,7.5,0,7);g.fill();
+  g.fillStyle=skin;g.beginPath();g.arc(0,-28,7,0,7);g.fill();
+  g.strokeStyle='#222';g.lineWidth=1;g.strokeRect(-6,-30,4,3);g.strokeRect(0,-31,4,3);
+  g.fillStyle='#3b2416';g.fillRect(-8,-22,16,22);
+  g.fillStyle='#4a2a5e';g.fillRect(-7,-10,14,12);
+  g.fillStyle=skin;g.fillRect(-12,-26,4,12);g.fillRect(8,-26,4,12);
+  g.fillStyle=skin;g.fillRect(-5,0,4,10);g.fillRect(1,0,4,10);
+  g.fillStyle='#7a1a1a';g.fillRect(-6,8,5,3);g.fillRect(1,8,5,3);
+  g.restore();
+  
+  const starT=Date.now()/220;
+  g.save();g.font='bold 16px sans-serif';g.textAlign='center';
+  g.fillText('💫',sx+Math.cos(starT)*16,sy-28+Math.sin(starT)*6);
+  g.fillText('💫',sx-Math.cos(starT)*16,sy-28-Math.sin(starT)*6);
+  g.font='bold 12px "Trebuchet MS",sans-serif';g.fillStyle='#ff3b30';g.strokeStyle='#000';g.lineWidth=3;
+  g.strokeText('STUNNED '+Math.ceil(o.downT)+'s',sx,sy-42);
+  g.fillText('STUNNED '+Math.ceil(o.downT)+'s',sx,sy-42);
+  g.restore();
+  return;
+ }
+ const bob=Math.sin(o.t||0)*1.5,step=Math.sin(o.t||0)*3;
  g.fillStyle='rgba(0,0,0,.18)';g.beginPath();g.ellipse(sx+2,sy,11*k,4.5*k,0,0,7);g.fill();
  g.fillStyle='rgba(0,0,0,.18)';g.beginPath();g.ellipse(sx,sy,8*k,3.5*k,0,0,7);g.fill();
  g.save();g.translate(sx,sy);g.scale(k,k);
@@ -624,7 +758,21 @@ function hostRoom(){if(peer)return;loadPeer(()=>{const code=Math.random().toStri
   c.on('data',d=>{const r=remote[c.peer];if(!r)return;
    if(d.t==='c'){r.x=d.x;r.y=d.y;r.a=d.a;r.v=d.v;if(d.col)r.col=d.col}
    else if(d.t==='h'&&state==='play'){time=Math.max(0,time-d.p);combo=0}
-   else if(d.t==='sm'&&senseiMode&&senseiPlayerId===c.peer){teacher.x=d.tx;teacher.y=d.ty;teacher.dir=d.dir||1;teacher.t=d.t_val||teacher.t;}});
+   else if(d.t==='sm'&&senseiMode&&senseiPlayerId===c.peer){teacher.x=d.tx;teacher.y=d.ty;teacher.dir=d.dir||1;teacher.t=d.t_val||teacher.t;teacher.downT=d.downT||0}
+   else if(d.t==='scat'&&senseiMode&&senseiPlayerId===c.peer){
+    if(d.hit){
+     senseiCaught++;
+     if(d.cId==='host'){
+      car.x=450+(Math.random()-.5)*80;car.y=560;car.v=0;time=Math.max(0,time-10);
+      popups.push({t:'👑 SENSI CAUGHT YOU! -10s',x:480,y:200,l:2.5,s:1,c:'#ff3b30'});
+     }
+    }else{
+     teacher.downT=3.0;teacher.fallDir=d.dir||teacher.dir||1;
+     if(d.tx!==undefined){teacher.x=d.tx;teacher.y=d.ty}
+     burst(teacher.x,teacher.y,14,12,'rgba(255,255,255,.9)',2.0,true);
+     popups.push({t:'💥 SENSI MISSED AND FELL! (3s)',x:480,y:200,l:2.5,s:1,c:'#ff7766'});
+    }
+   }});
   c.on('close',()=>{delete remote[c.peer];conns=conns.filter(k=>k!==c);if(conns.length===0){senseiMode=false;senseiPlayerId='';isSensei=false;updatePedUI();popups.push({t:'Guests left. Switched to Solo RC Car.',x:480,y:200,l:2,s:1})}else if(senseiPlayerId===c.peer){senseiPlayerId='';randomSensei()}})})})}
 function randomSensei(){
  const guestIds=Object.keys(remote);
@@ -638,7 +786,65 @@ function randomSensei(){
  if(isSensei)popups.push({t:'\ud83d\udc51 YOU ARE SENSI! Catch the RC cars!',x:480,y:245,l:4,s:1});
  updatePedUI();
 }
+function attemptCatch(){
+ if(state!=='play'||!isSensei)return;
+ if(teacher.downT>0||teacher.freeze>0)return;
+ const reach=58;
+ const targets=allCars().filter(c=>c.id!==senseiPlayerId&&!(c===car&&isSensei));
+ let caughtCar=null;
+ for(const c of targets){
+  const d=Math.hypot(c.x-teacher.x,c.y-teacher.y);
+  if(d<reach){caughtCar=c;break}
+ }
+ if(caughtCar){
+  senseiCaught++;
+  if(sfx.catchSfx)sfx.catchSfx();
+  else{tone(880,.15,'sawtooth',.3);tone(1320,.25,'triangle',.35,null,.08)}
+  burst(caughtCar.x,caughtCar.y,18,18,'#ff3b30',2.8);
+  flash=0.45;
+  teacher.say=ROAST();teacher.sayT=2.4;speak(teacher,teacher.say);
+  if(caughtCar===car){
+   popups.push({t:'👑 SENSI CAUGHT YOU! -10s',x:480,y:200,l:2.5,s:1,c:'#ff3b30'});
+   car.x=450+(Math.random()-.5)*80;car.y=560;car.v=0;time=Math.max(0,time-10);
+  }else{
+   toPeer(caughtCar.id,{t:'b',msg:'Caught by Sakamoto Sensi!'});
+   popups.push({t:'👑 SENSI CAUGHT '+(caughtCar.name||'Student')+'!',x:480,y:200,l:2.5,s:1,c:'#ffd23f'});
+  }
+  if(NG&&hostConn&&hostConn.open)hostConn.send({t:'scat',hit:1,cId:caughtCar.id});
+ }else{
+  teacher.downT=3.0;
+  teacher.fallDir=teacher.dir||1;
+  teacher.x=Math.max(30,Math.min(WW-30,teacher.x+(teacher.dir||1)*22));
+  pushHit(teacher,14);
+  burst(teacher.x,teacher.y,14,12,'rgba(255,255,255,.9)',2.0,true);
+  burst(teacher.x,teacher.y,6,8,'#f1c9a0',1.2);
+  shake=8;
+  tone(110,.3,'triangle',.45,30);
+  tone(320,.2,'sawtooth',.25,90);
+  const cries=['Gyaaaah! Missed!!','OOF! My face!!','I slipped!! Dammit!!','Ouch! Whose homework was that?!','Wait till I get back up!!','Uwaaa! Currrrse you RC car!!'];
+  teacher.say=cries[Math.floor(Math.random()*cries.length)];
+  teacher.sayT=2.8;speak(teacher,teacher.say);
+  popups.push({t:'💥 MISSED! SENSI FELL! (3s stun)',x:480,y:200,l:2.5,s:1,c:'#ff7766'});
+  if(NG&&hostConn&&hostConn.open)hostConn.send({t:'scat',hit:0,downT:3.0,tx:teacher.x,ty:teacher.y,dir:teacher.dir});
+ }
+ updatePedUI();
+}
 function updatePedUI(){
+ const isSenseiActive=isSensei&&(senseiMode||NH||NG);
+ const cc=document.getElementById('car-controls');
+ const sc=document.getElementById('sensei-controls');
+ if(cc)cc.style.display=isSenseiActive?'none':'flex';
+ if(sc)sc.style.display=isSenseiActive?'flex':'none';
+ const cb=document.getElementById('btn-sensei-catch');
+ if(cb){
+  if(teacher.downT>0){
+   cb.classList.add('stunned');
+   cb.innerHTML='<span class="catch-icon">💫</span><span class="catch-txt">'+Math.ceil(teacher.downT)+'s STUN</span>';
+  }else{
+   cb.classList.remove('stunned');
+   cb.innerHTML='<span class="catch-icon">🫳</span><span class="catch-txt">CATCH!</span>';
+  }
+ }
  const nb=document.querySelector('[data-k=nitro]'),gu=document.querySelector('[data-k=up]'),gd=document.querySelector('[data-k=down]');
  if(nb)nb.textContent=isSensei?'SPRINT':'NITRO';
  if(gu)gu.textContent=isSensei?'RUN':'GAS';
@@ -654,7 +860,7 @@ function joinRoom(code){code=(code||prompt('Enter room code')||'').trim().toUppe
 function snap(){return{t:'s',st:state==='pause'?'play':state,lv:level,time,score,cb:combo,cT:comboT,msg,
  sm:senseiMode,sId:senseiPlayerId,sCnt:senseiCaught,
  cars:[['host',car.x,car.y,car.a,car.v,'#'+CARS[carSel][2].toString(16).padStart(6,'0'),'Host'],...Object.entries(remote).map(([id,r])=>[id,r.x,r.y,r.a,r.v,r.col,r.name])],
- T:{alert:teacher.alert,freeze:teacher.freeze,say:teacher.say,sayT:teacher.sayT,tx:teacher.x,ty:teacher.y},
+ T:{alert:teacher.alert,freeze:teacher.freeze,say:teacher.say,sayT:teacher.sayT,tx:teacher.x,ty:teacher.y,downT:teacher.downT||0,dir:teacher.dir||1},
  stu:students.map(o=>[Math.round(o.x),Math.round(o.y),o.dir,o.col,o.hc,o.sp,o.sayT>0?o.say:'',o.hero?1:0,o.name,o.look]),
  pap:papers.map(p=>[Math.round(p.x),Math.round(p.y)]),pw:powers.map(p=>[Math.round(p.x),Math.round(p.y),p.k]),
  cl:clutter.map(c=>[Math.round(c.x),Math.round(c.y),c.r,c.k==='bag'?1:0,c.c])}}
@@ -669,6 +875,7 @@ function onSnap(d){if(d.t!=='s')return;
   updatePedUI();
  }
  const ns=d.T.sayT>0&&d.T.say&&d.T.say!==teacher.say;Object.assign(teacher,d.T);if(ns)speak(teacher,teacher.say);if(teacher.x===undefined){teacher.x=d.T.tx;teacher.y=d.T.ty}
+ if(d.T.downT!==undefined)teacher.downT=d.T.downT;if(d.T.dir!==undefined)teacher.dir=d.T.dir;
  students=d.stu.map((a,i)=>{const p=students[i];return{x:a[0],y:a[1],dir:a[2],col:a[3],hc:a[4],sp:a[5],say:a[6]||'',sayT:a[6]?1:0,hero:!!a[7],name:a[8],look:a[9],girl:a[9]==='hinata'||a[9]==='npcF',t:p?p.t:i,rx:p?p.rx:a[0],ry:p?p.ry:a[1],qx:p?p.qx:a[0],qy:p?p.qy:a[1],wa:p?p.wa:0,wt:p?p.wt:0}});
  papers=d.pap.map((a,i)=>({x:a[0],y:a[1],t:papers[i]?papers[i].t:i}));
  powers=d.pw.map((a,i)=>({x:a[0],y:a[1],k:a[2],t:powers[i]?powers[i].t:0}));
@@ -685,7 +892,7 @@ function netTick(dt){
  nAcc+=dt;if(nAcc<.05)return;nAcc=0;
  if(NH&&conns.length){const m=snap();conns.forEach(c=>c.open&&c.send(m))}
  else if(NG&&hostConn&&hostConn.open){
-  if(isSensei)hostConn.send({t:'sm',tx:teacher.x,ty:teacher.y,dir:teacher.dir,sprint:keys.nitro?1:0,t_val:teacher.t});
+  if(isSensei)hostConn.send({t:'sm',tx:teacher.x,ty:teacher.y,dir:teacher.dir,sprint:(keys.nitro||joyMag>0.72)?1:0,t_val:teacher.t,downT:teacher.downT||0});
   else hostConn.send({t:'c',x:car.x,y:car.y,a:car.a,v:car.v,col:'#'+CARS[carSel][2].toString(16).padStart(6,'0')});
  }}
 document.getElementById('bl').onclick=function(){leave('Left room')};
@@ -818,6 +1025,17 @@ function setPerson(m,o,col,hc){
  o.qx=o.x;o.qy=o.y;o.wa+=(mvNow-o.wa)*Math.min(1,fdt*8);
  const k=Math.min(1,fdt*22);o.rx+=(o.x-o.rx)*k;o.ry+=(o.y-o.ry)*k;
  m.position.set(o.rx*S,0,o.ry*S);
+ if(o.downT>0){
+  const getUp=o.downT<0.5?(1-o.downT/0.5):0;
+  m.position.y=0.45*(1-getUp);
+  m.rotation.x=(-Math.PI/2)*(1-getUp);
+  if(m.userData.head){m.userData.head.rotation.y=Math.sin(Date.now()/120)*0.3;m.userData.head.rotation.x=-0.3}
+  if(m.userData.a){m.userData.a[0].rotation.z=-2.6*(1-getUp);m.userData.a[1].rotation.z=2.6*(1-getUp)}
+  if(m.userData.l){m.userData.l[0].rotation.z=0.2*(1-getUp);m.userData.l[1].rotation.z=-0.2*(1-getUp)}
+  if(col)m.userData.tc.material.color.set(col);if(hc)m.userData.hair.material.color.set(hc);
+  return;
+ }
+ m.rotation.x=0;
  o.wt+=fdt*(4.5+o.wa*9);
  const amp=.10+o.wa*.46,sw=Math.sin(o.wt)*amp,A=m.userData.a;
  m.userData.l[0].rotation.z=sw;m.userData.l[1].rotation.z=-sw;
@@ -830,6 +1048,7 @@ function setPerson(m,o,col,hc){
  if(m.userData.head){
   m.userData.head.rotation.y=Math.sin(o.wt*.5)*.14;
   if(o.alert>0)m.userData.head.rotation.x=-.22;
+  else m.userData.head.rotation.x=0;
  }
  m.position.y=Math.abs(Math.sin(o.wt))*.14*Math.min(1,o.wa*1.4+.12)+(o.reflex>0?Math.sin(Math.min(1,(.8-o.reflex)/.8)*Math.PI)*2.4:0);
  if(col)m.userData.tc.material.color.set(col);if(hc)m.userData.hair.material.color.set(hc)}
@@ -1065,8 +1284,21 @@ function drawTags(){g.font='bold 11px "Trebuchet MS",sans-serif';g.textAlign='ce
  const tag=(o,h,txt,col)=>{const p=P(o.x,o.y,h);if(p[0]<0||p[0]>960||p[1]<20||p[1]>520)return;const w=g.measureText(txt).width+8;g.fillStyle='rgba(0,0,0,.45)';g.fillRect(p[0]-w/2,p[1]-11,w,14);g.fillStyle=col;g.fillText(txt,p[0],p[1])};
  students.forEach(o=>{if(o.name&&(o.hero||Math.hypot(o.x-car.x,o.y-car.y)<250))tag(o,82,(o.hero?'\u2605 ':'')+o.name,o.hero?'#ffd23f':'#cfe3ff')});
  if(teacher.x!==undefined){
-  const sLabel=senseiMode&&senseiPlayerId?('\ud83d\udc51 SENSI ['+(senseiPlayerId==='host'?'Host':(remote[senseiPlayerId]?.name||'P'))+']'):'Sakamoto Sensi';
+  const sLabel=senseiMode&&senseiPlayerId?('👑 SENSI ['+(senseiPlayerId==='host'?'Host':(remote[senseiPlayerId]?.name||'P'))+']'):'Sakamoto Sensi';
   tag(teacher,96,sLabel,senseiMode&&senseiPlayerId?'#ffd23f':'#ff9a9a');
+  if(teacher.downT>0){
+   const tp=P(teacher.x,teacher.y,55);
+   if(tp[0]>0&&tp[0]<960&&tp[1]>0&&tp[1]<520){
+    const starT=Date.now()/220;
+    g.save();g.font='bold 16px sans-serif';g.textAlign='center';
+    g.fillText('💫',tp[0]+Math.cos(starT)*18,tp[1]-14+Math.sin(starT)*7);
+    g.fillText('💫',tp[0]-Math.cos(starT)*18,tp[1]-14-Math.sin(starT)*7);
+    g.font='bold 12px "Trebuchet MS",sans-serif';g.fillStyle='#ffd23f';g.strokeStyle='#000';g.lineWidth=3;
+    g.strokeText('💫 STUNNED '+Math.ceil(teacher.downT)+'s',tp[0],tp[1]-30);
+    g.fillText('💫 STUNNED '+Math.ceil(teacher.downT)+'s',tp[0],tp[1]-30);
+    g.restore();
+   }
+  }
  }g.textAlign='left'}
 const charImg=new Image();let charImgOK=false;charImg.onload=()=>charImgOK=true;charImg.src='characters.jpg';
 const PACKS=[['en','English Voice Pack','Teacher, heroes and students speak English'],['ja','Japanese Voice Pack','Anime-style Japanese lines (needs a Japanese voice on your phone)']];
@@ -1245,6 +1477,7 @@ function draw(){
  if(padEl)padEl.style.display=inGame?'':'none';
  const bpEl=document.getElementById('bp');
  if(bpEl)bpEl.style.display=inGame?'':'none';
+ if(inGame)updatePedUI();
  if(!inGame){for(const k in keys)keys[k]=0;document.querySelectorAll('#pad button.on').forEach(b=>b.classList.remove('on'))}
  if(!T3){draw2D();return}
  g.clearRect(0,0,960,520);camX=camY=0;render3D();
