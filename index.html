@@ -86,6 +86,8 @@ body.cine #pad,body.cine #bar,body.home #pad,body.home #bar{visibility:hidden;di
 </style>
 <script src="three.min.js"></script>
 <script>if(!window.THREE){document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\\/script>')}</script>
+<script src="GLTFLoader.js"></script>
+<script>if(!window.THREE||!THREE.GLTFLoader){document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"><\\/script>')}</script>
 </head>
 <body>
 <div id="bar"><button id="b-sensei" hidden style="background:#b82b2b;color:#fff;font-weight:bold" title="Toggle Sensei Mode">👑 Sensi Tag</button><button id="bs" hidden>Invite</button><button id="bl" hidden>Leave</button><button id="bp">⏸</button><button id="bv">🗣</button><button id="bm">🔊</button></div>
@@ -1170,7 +1172,11 @@ const LOOKS={
  ren:{g:0,skin:0xf0cbaf,hair:0x141418,top:0x151518,pants:0x151518,eye:0x202024,shoe:0xf5f5fa},
  npcF:{g:1,skin:0xf8d8c2,hair:0x5c3422,top:0xfafaff,skirt:0x151518,skl:1.4,eye:0x683824,shoe:0x111114,sock:0x151518},
  npcM:{g:0,skin:0xf0cbaf,hair:0x141418,top:0x151518,pants:0x151518,eye:0x202024,shoe:0xf5f5fa}};
-function mkPerson(teach,i,look){look=teach?'teacher':(look||'npcM');const L=LOOKS[look];
+function mkPerson(teach,i,look){look=teach?'teacher':(look||'npcM');
+ if(!teach&&look==='sakura'&&sakuraModelType==='meshy'&&sakuraKunModel){
+  const sm=mkSakuraModel();if(sm)return sm;
+ }
+ const L=LOOKS[look];
  const g3=new THREE.Group(),girl=!!L.g,M=(c,o)=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.7},o||{})),
  mk=(geo,mat,x,y,z,par)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);m.castShadow=true;(par||g3).add(m);return m},
  CY=(a,b,h)=>new THREE.CylinderGeometry(a,b,h,GFX==='ultra'?20:GFX==='low'?8:12),SP=r=>new THREE.SphereGeometry(r,GFX==='ultra'?22:GFX==='low'?9:14,GFX==='ultra'?16:GFX==='low'?6:10),BX=(w,h,d)=>new THREE.BoxGeometry(w,h,d),
@@ -1278,6 +1284,190 @@ function mkPerson(teach,i,look){look=teach?'teacher':(look||'npcM');const L=LOOK
   [-.35,-.15,.15,.35].forEach((z,k)=>{const c=mk(new THREE.ConeGeometry(.17,.55,6),hm,0,LG+3.92+Math.abs(z)*.1,z);c.rotation.set(z*.5,0,.15-k*.1)});
  }
  g3.userData={l,a,tc,hair:cap,head:hd,look};g3.scale.setScalar(teach?1.08:1);return g3}
+let defaultTeacher=null,fierySensiModel=null;
+let sensiModelType=localStorage.getItem('rc_sensi_model')||'fiery';
+function loadFierySensi(cb){
+ if(fierySensiModel){if(cb)cb(fierySensiModel);return}
+ if(!window.THREE||!THREE.GLTFLoader)return;
+ const loader=new THREE.GLTFLoader();
+ loader.load('fiery_sensi.glb',gltf=>{
+  const root=new THREE.Group();
+  const model=gltf.scene;
+  const box=new THREE.Box3().setFromObject(model);
+  const size=box.getSize(new THREE.Vector3());
+  const center=box.getCenter(new THREE.Vector3());
+  model.position.set(-center.x,-box.min.y,-center.z);
+  model.rotation.y=Math.PI/2;
+  const wrapper=new THREE.Group();
+  wrapper.add(model);
+  const targetHeight=8.2;
+  const s=targetHeight/(size.y||1.903);
+  wrapper.scale.setScalar(s);
+  const mats=[];
+  wrapper.traverse(c=>{
+   if(c.isMesh){
+    c.castShadow=true;
+    c.receiveShadow=true;
+    if(c.material){
+     c.material.roughness=Math.max(0.35,c.material.roughness||0.5);
+     mats.push(c.material);
+    }
+   }
+  });
+  const flameCount=22,flameGeo=new THREE.BufferGeometry(),flamePos=new Float32Array(flameCount*3);
+  for(let i=0;i<flameCount;i++){
+   flamePos[i*3]=(Math.random()-0.5)*2.2;
+   flamePos[i*3+1]=1.0+Math.random()*6.5;
+   flamePos[i*3+2]=(Math.random()-0.5)*2.2;
+  }
+  flameGeo.setAttribute('position',new THREE.BufferAttribute(flamePos,3));
+  const flameMat=new THREE.PointsMaterial({color:0xff6b1a,size:0.28,transparent:true,opacity:0.75,blending:THREE.AdditiveBlending,depthWrite:false});
+  const flames=new THREE.Points(flameGeo,flameMat);
+  flames.position.y=0;
+  root.add(wrapper,flames);
+  const auraLight=new THREE.PointLight(0xff6622,0.75,14);
+  auraLight.position.set(0,4.5,0);
+  root.add(auraLight);
+  root.userData={
+   isGlb:true,look:'teacher',mats:mats,flames:flames,flamePos:flamePos,auraLight:auraLight,wrapper:wrapper,
+   tc:{material:{emissive:{setHex:h=>mats.forEach(m=>m.emissive&&m.emissive.setHex(h))}}},
+   head:{material:{emissive:{setHex:()=>{}}}}
+  };
+  fierySensiModel=root;
+  applySensiModel();
+  if(cb)cb(root);
+ },undefined,err=>{
+  console.warn('Could not load fiery_sensi.glb, using procedural teacher:',err);
+ });
+}
+function cycleSensiModel(){
+ sensiModelType=(sensiModelType==='fiery')?'classic':'fiery';
+ try{localStorage.setItem('rc_sensi_model',sensiModelType)}catch(_){}
+ applySensiModel();
+}
+function applySensiModel(){
+ if(!T3||!T3.sc)return;
+ const wantFiery=(sensiModelType==='fiery');
+ if(wantFiery&&fierySensiModel){
+  if(T3.tea!==fierySensiModel){
+   T3.sc.remove(T3.tea);
+   T3.tea=fierySensiModel;
+   T3.sc.add(T3.tea);
+  }
+ }else if(!wantFiery&&defaultTeacher){
+  if(T3.tea!==defaultTeacher){
+   T3.sc.remove(T3.tea);
+   T3.tea=defaultTeacher;
+   T3.sc.add(T3.tea);
+  }
+ }
+}
+
+let sakuraKunModel=null;
+let sakuraModelType=localStorage.getItem('rc_sakura_model')||'meshy';
+function loadSakuraKun(cb){
+ if(sakuraKunModel){if(cb)cb(sakuraKunModel);return}
+ if(!window.THREE||!THREE.GLTFLoader)return;
+ const loader=new THREE.GLTFLoader();
+ const onLoad=gltf=>{
+  const root=new THREE.Group();
+  const model=gltf.scene;
+  const box=new THREE.Box3().setFromObject(model);
+  const size=box.getSize(new THREE.Vector3());
+  const center=box.getCenter(new THREE.Vector3());
+  model.position.set(-center.x,-box.min.y,-center.z);
+  model.rotation.y=Math.PI/2;
+  const wrapper=new THREE.Group();
+  wrapper.add(model);
+  const targetHeight=7.5;
+  const s=targetHeight/(size.y||1.897);
+  wrapper.scale.setScalar(s);
+  const mats=[];
+  wrapper.traverse(c=>{
+   if(c.isMesh){
+    c.castShadow=true;
+    c.receiveShadow=true;
+    if(c.material){
+     c.material.roughness=Math.max(0.35,c.material.roughness||0.5);
+     mats.push(c.material);
+    }
+   }
+  });
+  const sparkCount=16,sparkGeo=new THREE.BufferGeometry(),sparkPos=new Float32Array(sparkCount*3);
+  for(let i=0;i<sparkCount;i++){
+   sparkPos[i*3]=(Math.random()-0.5)*1.8;
+   sparkPos[i*3+1]=0.8+Math.random()*5.8;
+   sparkPos[i*3+2]=(Math.random()-0.5)*1.8;
+  }
+  sparkGeo.setAttribute('position',new THREE.BufferAttribute(sparkPos,3));
+  const sparkMat=new THREE.PointsMaterial({color:0xffd23f,size:0.22,transparent:true,opacity:0.7,blending:THREE.AdditiveBlending,depthWrite:false});
+  const sparks=new THREE.Points(sparkGeo,sparkMat);
+  sparks.position.y=0;
+  root.add(wrapper,sparks);
+  const heroLight=new THREE.PointLight(0xffcc44,0.45,10);
+  heroLight.position.set(0,3.8,0);
+  root.add(heroLight);
+  root.userData={
+   isGlb:true,isSakura:true,look:'sakura',mats:mats,sparks:sparks,sparkPos:sparkPos,heroLight:heroLight,wrapper:wrapper,
+   tc:{material:{emissive:{setHex:h=>mats.forEach(m=>m.emissive&&m.emissive.setHex(h))}}},
+   head:{material:{emissive:{setHex:()=>{}}}}
+  };
+  sakuraKunModel=root;
+  applySakuraModel();
+  if(cb)cb(root);
+ };
+ loader.load('sakura_kun.glb',onLoad,undefined,()=>{
+  loader.load('Sakura-kun_ The Protagonist_Meshy_AI_2026-11-11_a84518.glb',onLoad,undefined,err=>{
+   console.warn('Could not load Sakura-kun GLB model:',err);
+  });
+ });
+}
+function cycleSakuraModel(){
+ sakuraModelType=(sakuraModelType==='meshy')?'classic':'meshy';
+ try{localStorage.setItem('rc_sakura_model',sakuraModelType)}catch(_){}
+ applySakuraModel();
+}
+function applySakuraModel(){
+ if(!T3||!T3.sc||!T3.stu)return;
+ students.forEach((o,i)=>{
+  if(o.look==='sakura'){
+   const cur=T3.stu[i];
+   const wantMeshy=(sakuraModelType==='meshy'&&!!sakuraKunModel);
+   if(cur&&!!cur.userData.isGlb!==wantMeshy){
+    T3.sc.remove(cur);
+    const m=mkPerson(false,i,'sakura');
+    T3.sc.add(m);
+    T3.stu[i]=m;
+   }
+  }
+ });
+}
+function mkSakuraModel(){
+ if(!sakuraKunModel)return null;
+ const root=new THREE.Group();
+ const wrapper=sakuraKunModel.userData.wrapper.clone(true);
+ const sparkCount=16,sparkGeo=new THREE.BufferGeometry(),sparkPos=new Float32Array(sparkCount*3);
+ for(let i=0;i<sparkCount;i++){
+  sparkPos[i*3]=(Math.random()-0.5)*1.8;
+  sparkPos[i*3+1]=0.8+Math.random()*5.8;
+  sparkPos[i*3+2]=(Math.random()-0.5)*1.8;
+ }
+ sparkGeo.setAttribute('position',new THREE.BufferAttribute(sparkPos,3));
+ const sparkMat=new THREE.PointsMaterial({color:0xffd23f,size:0.22,transparent:true,opacity:0.7,blending:THREE.AdditiveBlending,depthWrite:false});
+ const sparks=new THREE.Points(sparkGeo,sparkMat);
+ root.add(wrapper,sparks);
+ const heroLight=new THREE.PointLight(0xffcc44,0.45,10);
+ heroLight.position.set(0,3.8,0);
+ root.add(heroLight);
+ const mats=[];
+ wrapper.traverse(c=>{if(c.isMesh&&c.material)mats.push(c.material)});
+ root.userData={
+  isGlb:true,isSakura:true,look:'sakura',mats:mats,sparks:sparks,sparkPos:sparkPos,heroLight:heroLight,wrapper:wrapper,
+  tc:{material:{emissive:{setHex:h=>mats.forEach(m=>m.emissive&&m.emissive.setHex(h))}}},
+  head:{material:{emissive:{setHex:()=>{}}}}
+ };
+ return root;
+}
 
 function mkDesk(d){const g3=new THREE.Group();g3.position.set((d.x+d.w/2)*S,0,(d.y+d.h/2)*S);
  const t=bx(12,.5,6,0xffffff,{roughness:.45,map:wood()});t.position.y=2.85;t.material.envMapIntensity=.25;g3.add(t);
@@ -1304,6 +1494,60 @@ function setPerson(m,o,col,hc){
  o.qx=o.x;o.qy=o.y;o.wa+=(mvNow-o.wa)*Math.min(1,fdt*8);
  const k=Math.min(1,fdt*22);o.rx+=(o.x-o.rx)*k;o.ry+=(o.y-o.ry)*k;
  m.position.set(o.rx*S,0,o.ry*S);
+ if(m.userData&&m.userData.isGlb){
+  if(o.downT>0){
+   const getUp=o.downT<0.5?(1-o.downT/0.5):0;
+   m.position.y=0.45*(1-getUp);
+   m.rotation.x=(-Math.PI/2)*(1-getUp);
+   m.rotation.z=Math.sin(Date.now()/120)*0.08*(1-getUp);
+   if(m.userData.auraLight)m.userData.auraLight.intensity=0.1;
+   if(m.userData.heroLight)m.userData.heroLight.intensity=0.1;
+   return;
+  }
+  m.rotation.x=o.alert>0?-0.12:(hide&&hide.hero===o)?-0.15:0;
+  o.wt+=fdt*(4.5+o.wa*9);
+  const amp=.10+o.wa*.46;
+  m.position.y=Math.abs(Math.sin(o.wt))*.18*Math.min(1,o.wa*1.4+.12)+(o.reflex>0?Math.sin(Math.min(1,(.8-o.reflex)/.8)*Math.PI)*2.4:0);
+  m.rotation.z=Math.sin(o.wt)*(0.04+o.wa*0.06);
+  if(m.userData.flames&&m.userData.flamePos){
+   const fp=m.userData.flamePos,attr=m.userData.flames.geometry.attributes.position;
+   for(let i=0;i<fp.length/3;i++){
+    fp[i*3+1]+=fdt*(3.5+Math.random()*2.0);
+    fp[i*3]+=Math.sin(Date.now()*0.005+i)*0.015;
+    fp[i*3+2]+=Math.cos(Date.now()*0.005+i)*0.015;
+    if(fp[i*3+1]>7.8){
+     fp[i*3+1]=1.0+Math.random()*1.5;
+     fp[i*3]=(Math.random()-0.5)*2.0;
+     fp[i*3+2]=(Math.random()-0.5)*2.0;
+    }
+   }
+   attr.needsUpdate=true;
+  }
+  if(m.userData.sparks&&m.userData.sparkPos){
+   const sp=m.userData.sparkPos,attr=m.userData.sparks.geometry.attributes.position;
+   for(let i=0;i<sp.length/3;i++){
+    sp[i*3+1]+=fdt*(2.4+Math.random()*1.6);
+    sp[i*3]+=Math.sin(Date.now()*0.004+i)*0.012;
+    sp[i*3+2]+=Math.cos(Date.now()*0.004+i)*0.012;
+    if(sp[i*3+1]>7.2){
+     sp[i*3+1]=0.8+Math.random()*1.2;
+     sp[i*3]=(Math.random()-0.5)*1.8;
+     sp[i*3+2]=(Math.random()-0.5)*1.8;
+    }
+   }
+   attr.needsUpdate=true;
+  }
+  if(m.userData.heroLight){
+   const hiding=(hide&&hide.hero===o);
+   m.userData.heroLight.intensity=hiding?0.85:(0.4+Math.sin(Date.now()*0.003)*0.15);
+  }
+  if(m.userData.auraLight){
+   const frozen=o.freeze>0,rage=senseiMode&&senseiPlayerId;
+   m.userData.auraLight.color.setHex(frozen?0x2288ff:(rage?0xff1100:0xff6622));
+   m.userData.auraLight.intensity=frozen?0.2:(0.65+Math.random()*0.35+(rage?0.6:0));
+  }
+  return;
+ }
  if(o.downT>0){
   const getUp=o.downT<0.5?(1-o.downT/0.5):0;
   m.position.y=0.45*(1-getUp);
@@ -1356,7 +1600,7 @@ function boardTex(){return mkTex(1536,307,(c,w,h)=>{const g2=c.createLinearGradi
  c.fillStyle='rgba(255,255,255,.05)';for(let i=0;i<8;i++){c.fillRect(40+Math.random()*60,30+i*32,w-180+Math.random()*60,18+Math.random()*10)}
  for(let i=0;i<12;i++){c.fillStyle='rgba(235,245,230,.03)';c.beginPath();c.arc(80+Math.random()*(w-160),40+Math.random()*(h-80),30+Math.random()*40,0,7);c.fill()}
  const ch=tv('board.chalk','#f4f7f0');c.fillStyle=ch;c.globalAlpha=.92;if(tv('board.glow',false)){c.shadowColor=ch;c.shadowBlur=12}
- c.font='bold 44px "Comic Sans MS",cursive';c.fillText('\u270e CLASS 2-B: PHYSICS & RC DRIFT',60,58);c.font='italic 24px "Comic Sans MS",cursive';c.fillStyle='#85e3a8';c.fillText('Teacher: Sakamoto Sensi  |  Period 1: Mechanics',60,94);
+ c.font='bold 44px "Comic Sans MS",cursive';c.fillText('\u270e CLASS 2-B: PHYSICS & RC DRIFT',60,58);c.font='italic 24px "Comic Sans MS",cursive';c.fillStyle='#85e3a8';c.fillText('Teacher: '+(sensiModelType==='fiery'?'Fiery Sakamoto Sensi':'Sakamoto Sensi')+'  |  Period 1: Mechanics',60,94);
  c.fillStyle=ch;c.font='26px "Comic Sans MS",cursive';
  ['\u2022 Objective: Grab the homework papers before the final bell!',
   '\u2022 Cornering fast initiates a drift \u2014 countersteer to control your line!',
@@ -1473,23 +1717,44 @@ function init3D(){
  addProps(sc);
  const spot=new THREE.SpotLight(0xfff0c0,1,34,.55,.6,1);sc.add(spot,spot.target);
  const envMap=mkEnv();sc.environment=GFX==='low'?null:envMap;const dust=mkDust();dust.visible=GFX!=='low';sc.add(dust);
+ defaultTeacher=mkPerson(true);
+ const curTea=(sensiModelType==='fiery'&&fierySensiModel)?fierySensiModel:defaultTeacher;
  T3={r,sc,cam,top,v:new THREE.Vector3(),look:new THREE.Vector3(45,0,50),t:0,dk:'',ck:'',dg:[],cg:[],stu:[],pap:[],pow:[],rem:{},spot,envMap,dust,
-  car:mkCar(0x1c3a9e),pv:0,pz:0,cp:new THREE.Vector3(45,6,60),lk:new THREE.Vector3(45,1,30),tea:mkPerson(true),tx:0,tz:0,face:0};
- sc.add(T3.car,T3.tea);cam.position.set(45,3,40);cam.lookAt(45,3,0);cam.updateMatrixWorld();applyGfx();return T3}
+  car:mkCar(0x1c3a9e),pv:0,pz:0,cp:new THREE.Vector3(45,6,60),lk:new THREE.Vector3(45,1,30),tea:curTea,tx:0,tz:0,face:0};
+ sc.add(T3.car,T3.tea);cam.position.set(45,3,40);cam.lookAt(45,3,0);cam.updateMatrixWorld();applyGfx();
+ if(!fierySensiModel)loadFierySensi();
+ if(!sakuraKunModel)loadSakuraKun();
+ return T3}
 function render3D(){
  const t=T3,sc=t.sc;t.t+=fdt;
  const dk=desks.map(d=>d.x+','+d.y).join(';');
  if(dk!==t.dk){t.dk=dk;t.dg.forEach(o=>sc.remove(o));t.dg=desks.map(d=>{const o=mkDesk(d);sc.add(o);return o})}
  const ck=clutter.map(c=>c.x+','+c.y+c.k).join(';');
  if(ck!==t.ck){t.ck=ck;t.cg.forEach(o=>sc.remove(o));t.cg=clutter.map(c=>{const o=mkClutter(c);sc.add(o);return o})}
-  students.forEach((o,i)=>{let m=t.stu[i];if(!m||m.userData.look!==o.look){if(m)sc.remove(m);m=mkPerson(false,i,o.look);sc.add(m);t.stu[i]=m}m.visible=true;setPerson(m,o);m.rotation.y=o.dir>0?0:Math.PI});
+ students.forEach((o,i)=>{
+  let m=t.stu[i];
+  const wantGlb=(o.look==='sakura')?(sakuraModelType==='meshy'&&!!sakuraKunModel):false;
+  const isGlb=!!(m&&m.userData&&m.userData.isGlb);
+  if(!m||m.userData.look!==o.look||isGlb!==wantGlb){
+   if(m)sc.remove(m);
+   m=mkPerson(false,i,o.look);
+   sc.add(m);
+   t.stu[i]=m;
+  }
+  m.visible=true;
+  setPerson(m,o);
+  m.rotation.y=o.dir>0?0:Math.PI;
+ });
  for(let i=students.length;i<t.stu.length;i++)t.stu[i].visible=false;
  fit(t.pap,papers.length,mkPaper);
  papers.forEach((p,i)=>{const m=t.pap[i];m.position.set(p.x*S,1.3+Math.sin(p.t)*.35,p.y*S);m.rotation.y=p.t*.7});
  fit(t.pow,powers.length,mkPower);
  powers.forEach((p,i)=>{const m=t.pow[i],u=m.userData;u.c.visible=p.k==='coffee';u.e.visible=p.k==='eraser';u.k.visible=p.k==='clock';m.position.set(p.x*S,1.6+Math.sin(p.t)*.4,p.y*S);m.rotation.y=p.t*.8});
  if(teacher.x!==undefined){const m=t.tea,dx=teacher.x*S-t.tx,dz=teacher.y*S-t.tz;if(Math.hypot(dx,dz)>.02)t.face=-Math.atan2(dz,dx);t.tx=teacher.x*S;t.tz=teacher.y*S;
-  setPerson(m,teacher);m.rotation.y=t.face;m.visible=true;const em=teacher.freeze>0?0x2a77cc:(senseiMode&&senseiPlayerId?0xcc2a1e:0);m.userData.tc.material.emissive.setHex(em);m.userData.head.material.emissive.setHex(em)}else t.tea.visible=false;
+  setPerson(m,teacher);m.rotation.y=t.face;m.visible=true;const em=teacher.freeze>0?0x2a77cc:(senseiMode&&senseiPlayerId?0xcc2a1e:0);
+  if(m.userData&&m.userData.mats){m.userData.mats.forEach(mat=>{if(mat.emissive)mat.emissive.setHex(em)})}
+  if(m.userData&&m.userData.tc&&m.userData.tc.material)m.userData.tc.material.emissive.setHex(em);
+  if(m.userData&&m.userData.head&&m.userData.head.material)m.userData.head.material.emissive.setHex(em)}else t.tea.visible=false;
  const cm=t.car,tilt=Math.min(1,Math.abs(car.v)/4)*steerS*.12;
  cm.position.set(car.x*S,0,car.y*S);cm.rotation.y=-car.a;cm.rotation.x=tilt+(car.roll||0);cm.userData.fl.forEach(f=>{f.visible=nitroOn;const len=1.8+Math.random()*1.2;f.scale.set(len,1+Math.random()*.3,1+Math.random()*.3);});cm.userData.flL&&cm.userData.flL.forEach(l=>l.intensity=nitroOn?2+Math.random()*1.2:0);
  t.pz+=(Math.max(-.07,Math.min(.07,(car.v-t.pv)*.6))-t.pz)*.2;t.pv=car.v;cm.rotation.z=t.pz+(car.pitch||0)+(car.wobble?(Math.random()-.5)*car.wobble:0);cm.position.y=Math.sin(t.t*45)*.025*Math.min(1,Math.abs(car.v)/4);
@@ -1593,7 +1858,7 @@ function drawTags(){g.font='bold 11px "Trebuchet MS",sans-serif';g.textAlign='ce
  const tag=(o,h,txt,col)=>{const p=P(o.x,o.y,h);if(p[0]<0||p[0]>960||p[1]<20||p[1]>520)return;const w=g.measureText(txt).width+10;fillRoundRect(p[0]-w/2,p[1]-12,w,15,5,'rgba(0,0,0,.55)');g.fillStyle=col;g.fillText(txt,p[0],p[1])};
  students.forEach(o=>{if(o.name&&(o.hero||Math.hypot(o.x-car.x,o.y-car.y)<250))tag(o,82,(o.hero?'★ ':'')+o.name,o.hero?'#ffd23f':'#cfe3ff')});
  if(teacher.x!==undefined){
-  const sLabel=senseiMode&&senseiPlayerId?('👑 SENSI ['+(senseiPlayerId==='host'?'Host':(remote[senseiPlayerId]?.name||'P'))+']'):'Sakamoto Sensi';
+  const sLabel=senseiMode&&senseiPlayerId?('👑 SENSI ['+(senseiPlayerId==='host'?'Host':(remote[senseiPlayerId]?.name||'P'))+']'):(sensiModelType==='fiery'?'Fiery Sensi':'Sakamoto Sensi');
   tag(teacher,96,sLabel,senseiMode&&senseiPlayerId?'#ffd23f':'#ff9a9a');
   if(teacher.downT>0){
    const tp=P(teacher.x,teacher.y,55);
@@ -1769,32 +2034,36 @@ function pauseClick(x,y){
  else if(ib(372)){quitToMenu()}
 }
 function drawSettings(){
- g.save();g.globalAlpha=ea;drawCard(260,44,440,436,20,'rgba(20,18,30,.96)','rgba(255,255,255,.15)',2);
- g.textAlign='center';g.fillStyle='#f3efe0';g.font='bold 26px "Trebuchet MS",sans-serif';g.fillText('Settings',480,80);
+ g.save();g.globalAlpha=ea;drawCard(260,20,440,480,20,'rgba(20,18,30,.96)','rgba(255,255,255,.15)',2);
+ g.textAlign='center';g.fillStyle='#f3efe0';g.font='bold 26px "Trebuchet MS",sans-serif';g.fillText('Settings',480,52);
  const btn=(y,label,c)=>{
-  drawCard(295,y,370,36,12,c||'#4a4858','rgba(255,255,255,.15)',1.5);
-  g.fillStyle='#fff';g.font='bold 15px "Trebuchet MS",sans-serif';g.fillText(label,480,y+24);
+  drawCard(295,y,370,32,12,c||'#4a4858','rgba(255,255,255,.15)',1.5);
+  g.fillStyle='#fff';g.font='bold 14px "Trebuchet MS",sans-serif';g.fillText(label,480,y+21);
  };
- btn(100,'🎮  Steering Sensitivity: '+SENS_NAMES[sensIdx],'#e07a22');
- btn(142,'🗣️  Voice Packs (EN & JA Anime)','#3a6ea5');
- btn(184,'🎨  Texture Themes (Old School, Modern, Cyber)','#6a4aa5');
- btn(226,'⚡  Graphics: '+GFX[0].toUpperCase()+GFX.slice(1),'#2a8f6a');
- btn(268,'🎬  Replay Anime Intro','#a5486a');
- btn(310,'🔊  Voices: '+(voiceOn?'ON':'OFF'),voiceOn?'#3fa66b':'#5a4a4a');
- btn(352,'🎵  Sound Effects: '+(muted?'OFF':'ON'),muted?'#5a4a4a':'#3fa66b');
- btn(400,'Back to Menu','#7a6428');
+ btn(66,'🎮  Steering Sensitivity: '+SENS_NAMES[sensIdx],'#e07a22');
+ btn(104,'🔥  Sensi Model: '+(sensiModelType==='fiery'?'Fiery Sensi (3D Mesh)':'Classic Sensi'),sensiModelType==='fiery'?'#d9461e':'#4a4858');
+ btn(142,'🌸  Sakura Model: '+(sakuraModelType==='meshy'?'Sakura-kun (3D Mesh)':'Classic Sakura'),sakuraModelType==='meshy'?'#e05070':'#4a4858');
+ btn(180,'🗣️  Voice Packs (EN & JA Anime)','#3a6ea5');
+ btn(218,'🎨  Texture Themes (Old School, Modern, Cyber)','#6a4aa5');
+ btn(256,'⚡  Graphics: '+GFX[0].toUpperCase()+GFX.slice(1),'#2a8f6a');
+ btn(294,'🎬  Replay Anime Intro','#a5486a');
+ btn(332,'🔊  Voices: '+(voiceOn?'ON':'OFF'),voiceOn?'#3fa66b':'#5a4a4a');
+ btn(370,'🎵  Sound Effects: '+(muted?'OFF':'ON'),muted?'#5a4a4a':'#3fa66b');
+ btn(416,'Back to Menu','#7a6428');
  g.restore();g.textAlign='left';
 }
 function settingsClick(x,y){
- const ib=by=>x>295&&x<665&&y>by&&y<by+36;
- if(ib(100))cycleSens();
- else if(ib(142))state='voices';
- else if(ib(184))state='textures';
- else if(ib(226))cycleGfx();
- else if(ib(268))startIntro();
- else if(ib(310))toggleVoice();
- else if(ib(352))toggleMute();
- else if(ib(400))state='home';
+ const ib=by=>x>295&&x<665&&y>by&&y<by+32;
+ if(ib(66))cycleSens();
+ else if(ib(104))cycleSensiModel();
+ else if(ib(142))cycleSakuraModel();
+ else if(ib(180))state='voices';
+ else if(ib(218))state='textures';
+ else if(ib(256))cycleGfx();
+ else if(ib(294))startIntro();
+ else if(ib(332))toggleVoice();
+ else if(ib(370))toggleMute();
+ else if(ib(416))state='home';
 }
 function drawVoices(){
  g.save();g.globalAlpha=ea;drawCard(40,24,880,472,20,'rgba(20,18,30,.96)','rgba(255,255,255,.14)',2);
@@ -1833,7 +2102,7 @@ function drawVoices(){
  g.fillText('Back to Settings',480,475);g.restore();g.textAlign='left';
 }
 let introT=0,introNext=0,introPh=0,introFlags={};
-const SUBS=[[.8,3,'9:00 AM. Class 2-B.'],[3.2,5.4,'Everyone is bored. Everyone is quiet.'],[5.6,7.8,'Everyone... except one little RC car.'],[8.2,9.9,'Sakamoto Sensi: the strictest teacher in school.'],[10.1,11.8,'Sakura-kun and Hinata-chan: the class heroes.'],[12,13,'And a few very curious classmates.'],[13.6,16,'Meet your RC car: the Porsche 911 GTS.'],[16.2,18.8,'Fast. Loud. Absolutely not allowed in class.'],[19.4,21.3,'Then she walked in...'],[21.7,23.6,'"Whose toy is THAT?!"']];
+const SUBS=[[.8,3,'9:00 AM. Class 2-B.'],[3.2,5.4,'Everyone is bored. Everyone is quiet.'],[5.6,7.8,'Everyone... except one little RC car.'],[8.2,9.9,(sensiModelType==='fiery'?'Fiery Sensi':'Sakamoto Sensi')+': the strictest teacher in school.'],[10.1,11.8,(sakuraModelType==='meshy'?'Sakura-kun (The Protagonist)':'Sakura-kun')+' and Hinata-chan: the class heroes.'],[12,13,'And a few very curious classmates.'],[13.6,16,'Meet your RC car: the Porsche 911 GTS.'],[16.2,18.8,'Fast. Loud. Absolutely not allowed in class.'],[19.4,21.3,'Then she walked in...'],[21.7,23.6,'"Whose toy is THAT?!"']];
 const MEL=[0,2,4,2,3,4,5,4,2,3,4,6,5,4,2,3],SCL=[220,261.6,293.7,329.6,392,440,523.3];
 function introStage(){level=1;nextLevel(true);teacher.x=80;teacher.y=60;car.v=0}
 function startIntro(){audioInit();goLand();introStage();introT=0;introNext=0;introPh=0;introFlags={};state='intro';try{localStorage.setItem('rcIntro','1')}catch(e){}
@@ -2292,6 +2561,8 @@ function draw(){
 const carImg=new Image();let carImgOK=false;carImg.onload=()=>carImgOK=true;carImg.src='car.jpg';
 const appIconImg=new Image();let appIconOK=false;appIconImg.onload=()=>appIconOK=true;appIconImg.src='icon-192.png';
 try{T3=window.THREE?init3D():null}catch(e){T3=null}
+try{loadFierySensi()}catch(_){}
+try{loadSakuraKun()}catch(_){}
 if(T3){applyCar();if(TP)applyTex()}
 // Dedicated Home Screen opens by default
 state='home';

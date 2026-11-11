@@ -28,6 +28,8 @@ Play online or download the native Android app:
   - **3rd Futuristic Type**: Dark sci-fi cyber academy, neon cyan grid floor, holographic terminal board, neon cyan car underglow.
 - **Clean Rounded UI Design**: Modern rounded cards, smooth pill badges, custom analog joystick, and responsive controls.
 - **Anime Classroom Setting**: Parquet floor, chalkboards, desks, interactive students, and Sakamoto Sensei.
+- **🔥 Fiery Sensi 3D Character Model**: High-detail Meshy AI 3D character with PBR materials, dynamic fiery ember aura, point lighting, running/walking bobbing animation, stun recovery, and ice/rage emissive reaction (switchable in Settings).
+- **🌸 Sakura-kun (The Protagonist) 3D Character Model**: Authentic Meshy AI 3D anime protagonist character with signature two-tone blonde/red spiky hair, unbuttoned gakuran jacket, gold buttons, Chicago AJ1 sneakers, heroic spark aura, dynamic walking bob, and interactive cover/hide mechanics (switchable in Settings).
 - **Top Classroom Camera**: Picture-in-picture bird's-eye view monitor.
 - **Multiplayer Mode**: PeerJS networking with Room codes and playable Sensei tag role with virtual joystick and CATCH action.
 - **Android APK**: Standalone Android application with native WebView and 100% offline assets.
