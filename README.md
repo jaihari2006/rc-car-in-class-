@@ -21,7 +21,7 @@ Play online or download the native Android app:
 ### Features
 - **3D RC Car Physics & Drifting**: Responsive steering with sensitivity settings (`0.7x` to `1.7x`).
 - **Nitro Boost**: Extended multi-tier exhaust flame plumes and anime speed lines.
-- **Switchable Real Voice Packs**: Real downloadable and switchable voice packs for characters in **English** (`en`) and authentic **Japanese Anime** (`ja`) lines with in-app audio test preview.
+- **Switchable Real Voice Packs**: Real downloadable and switchable voice packs for characters in **English** (`en`), authentic **Japanese Anime** (`ja`), and vibrant **Tamil** (`ta`) lines with in-app audio test preview.
 - **3 Visual Texture Themes**:
   - **1st Old School Type**: Vintage wood classroom, chalkboard green, warm sepia sunlight, walnut desks.
   - **2nd Modern Type**: Sleek minimalist studio, white porcelain tiles, whiteboard with blue marker, daylight.

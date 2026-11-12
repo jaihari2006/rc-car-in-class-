@@ -270,6 +270,23 @@ const BUILTIN_VOICE_PACKS={
    nope:["えっ？何も見てませんけど…","おもちゃ？真面目に自習してました！","僕たちのところには来てないですよ！"]},
   student:{pitch:1.45,rate:1.2,
    cool:["すっげー！","超かっこいい！","すげえドリフト！","先生が怒ってるぞー！","速すぎる！"]}
+ },
+ ta:{id:"ta",name:"Tamil Voice Pack",lang:"ta-IN",desc:"Teacher, heroes and classmates speak Tamil",
+  teacher:{pitch:0.9,rate:1.0,
+   roast:["ஏய்! அங்கேயே நில்லு!","அந்த பொம்மையை குப்பைத்தொட்டியில போடப்போறேன்!","உன்னை மட்டும் பிடிச்சேன், தோலை உரிச்சிடுவேன்!","அதை ரெண்டா உடைச்சிடுவேன்!","ஒரு மாசம் கிளாஸ் முடிஞ்சதும் வெளிய போக முடியாது!","இதுக்கு பேரு தான் டிரைவிங்கா?!","உங்க அப்பா அம்மா கிட்ட இத பத்தி சொல்றேன்!","அந்த கார் பார்க்கவே படு கேவலமா இருக்கு!","அந்த பழைய வண்டியை பறிமுதல் பண்றேன்!","என் கைல சிக்குற வரைக்கும் இரு!","இங்க வாடா வாண்டு!","வகுப்பறையில் என்ன கலாட்டா பண்ற?!"],
+   car:"உன் {car} ஒரு பழைய டப்பா வண்டி!",
+   ask:["அந்த பொம்மை யாருடையது?!","அந்த பொம்மை எங்க போச்சு?!","அந்த ரிமோட் கண்ட்ரோலை உடனே குடுங்க!"],
+   way:["ஹ்ம்! அப்போ இந்த வழியா! நில்லு!","என் நேரத்தை வீணாக்காதீங்க!","அது ரொம்ப தூரம் போயிட முடியாது!"],
+   nope:["பொய் சொன்னா அவ்ளோதான்!","உங்களை எல்லாம் கவனிச்சிட்டு தான் இருக்கேன்!","எல்லாரும் ஒழுங்கா படிங்க!"],
+   patrol:["வகுப்பறையில் ஓடக்கூடாது!","தாழ்வாரத்துல மெதுவா போங்க!","ஹோம்வொர்க் நோட்டை மேஜைல வைங்க!","அமைதியா இருங்க எல்லாரும்!"],
+   catch:["பிடிச்சிட்டேன்! இனிமேல் இந்த பொம்மை கிடைக்காது!","மாட்டுனியா! வகுப்பு முடிஞ்சதும் ஸ்டாப் ரூமுக்கு வா!","பிடிச்சிட்டேன்! இனிமேல் தப்ப முடியாது!","ஆட்டம் முடிஞ்சது! ரிமோட்டை என்கிட்ட குடு!"],
+   fall:["ஐயோ! மிஸ் ஆயிடுச்சே!!","அடிப்பாவி! என் மூஞ்சு!!","வழுக்கி விழுந்துட்டேனே!!","ஆஆ! யாருடைய நோட்டு இது?!","நான் எந்திரிக்குற வரைக்கும் இருங்க!!","அய்யோ! இந்த ஆர்.சி கார் சும்மாவே விடமாட்டேங்குதே!!"]},
+  hero:{pitch:1.25,rate:1.05,
+   hide:["சீக்கிரம், என் பின்னாடி ஒளிஞ்சுக்கோ!","என் மேஜைக்கு அடியில ஒளிஞ்சுக்கோ!","நான் பார்த்துக்கிறேன், தலை குனிஞ்சு இரு!"],
+   way:["டீச்சர்! அது அந்த பக்கமா போச்சு!","ஜன்னல் பக்கமா பறந்து போறத பார்த்தேன்!","முன் கதவு பக்கத்துல நிக்குது!"],
+   nope:["நான் எதுவும் பார்க்கலையே டீச்சர்...","பொம்மையா? நாங்க பிசிக்ஸ் படிச்சிட்டு இருக்கோம்!","இங்க எந்த சத்தமும் வரலையே!"]},
+  student:{pitch:1.35,rate:1.1,
+   cool:["செம!","சூப்பர்!","வாவ், என்ன ஒரு டிரிஃப்ட்!","மாஸான கார்!","ஓடுங்க! டீச்சருக்கு பயங்கர கோபம் வருது!"]}
  }
 };
 const BUILTIN_TEX_PACKS={
@@ -277,7 +294,7 @@ const BUILTIN_TEX_PACKS={
  modern:{id:"modern",name:"Modern Type",desc:"Sleek minimalist studio, white porcelain tiles, whiteboard with blue marker",swatches:["#e4e7eb","#1a73e8","#ffffff"],floor:{style:"tile",hsl:[210,15,88],var:4,line:"rgba(180,190,205,.7)",grid:"rgba(180,190,205,.75)",gloss:0.18},wall:{top:"#fbfcfd",bottom:"#eaeff5",wain:"#d0d8e2",base:"#98a6b8",neon:null,petals:false},board:{top:"#fcfdff",bottom:"#eef3f9",chalk:"#1a73e8",glow:false},desk:{wood:"#e4e7eb",grain:[190,200,215]},ceil:"#ffffff",sky:["#70b5ff"],bg:"#0c1018",light:{sky:"#f4f8ff",ground:"#a0b0c4",hemi:0.75,sun:"#ffffff",sunI:1.1},car:{metal:0.85,rough:0.15,clear:1.0,rim:"#c8d0da",glow:"#4fc3f7"}},
  futuristic:{id:"futuristic",name:"Futuristic Type",desc:"Dark sci-fi cyber academy, neon cyan grid, holographic terminal board",swatches:["#0a0818","#00f0ff","#ff007f"],floor:{style:"tile",hsl:[250,45,10],var:6,line:"rgba(0,240,255,.5)",grid:"#00f0ff",gloss:0.12},wall:{top:"#1a122e",bottom:"#0e091c",wain:"#261545",base:"#ff007f",neon:"#00f0ff",petals:false},board:{top:"#0a0818",bottom:"#060410",chalk:"#00f0ff",glow:true},desk:{wood:"#1e1a33",grain:[0,240,255]},ceil:"#0c0818",sky:["#16082b"],bg:"#05030a",light:{sky:"#8844ff",ground:"#00f0ff",hemi:0.55,sun:"#00f0ff",sunI:0.9},car:{metal:0.95,rough:0.1,clear:1.0,rim:"#00f0ff",glow:"#00f0ff"}}
 };
-let VP=null,activePack='',packs={en:null,ja:null},packSt={en:'',ja:''};
+let VP=null,activePack='',packs={en:null,ja:null,ta:null},packSt={en:'',ja:'',ta:''};
 let TP=null,activeTex='',texPacks={oldschool:null,modern:null,futuristic:null},texSt={oldschool:'',modern:'',futuristic:''};const RF={};
 let GFX=(function(){try{return localStorage.getItem('rcGfx')||'ultra'}catch(e){return'ultra'}})();
 function saveGfx(){try{localStorage.setItem('rcGfx',GFX)}catch(e){}}
@@ -287,12 +304,12 @@ function tv(p,d){let o=TP;for(const k of p.split('.'))o=o&&o[k];return o===undef
 const NAMES=['Sakura','Hinata','Kenji','Yuki','Haruto','Akari','Ren','Mio','Sora','Aoi','Riku','Hana'];
 let hide=null,voiceOn=true,VO=[],lastSp={};
 const R_=["If I catch you, I'm gonna tear you apart!","Hey! Stop right there!","That toy is going in the trash!","I'll snap that thing in half!","Detention for a month!","You call THAT driving?!","Your parents will hear about this!","That car is hideous!","I'm confiscating that junk!","Wait till I get my hands on you!","Get back here, you little pest!","That thing is an eyesore!"];
-try{const pk=JSON.parse(localStorage.getItem('rcPacks')||'{}');packs.en=pk.en||null;packs.ja=pk.ja||null;activePack=localStorage.getItem('rcPackSel')||''}catch(e){}
+try{const pk=JSON.parse(localStorage.getItem('rcPacks')||'{}');packs.en=pk.en||null;packs.ja=pk.ja||null;packs.ta=pk.ta||null;activePack=localStorage.getItem('rcPackSel')||''}catch(e){}
 VP=packs[activePack]||BUILTIN_VOICE_PACKS[activePack]||null;
 function savePacks(){try{localStorage.setItem('rcPacks',JSON.stringify(packs));localStorage.setItem('rcPackSel',activePack)}catch(e){}VP=packs[activePack]||BUILTIN_VOICE_PACKS[activePack]||null}
 const pk_=a=>a[Math.floor(Math.random()*a.length)];
 const LN=(g,k,def)=>{const a=VP&&VP[g]&&VP[g][k];return a&&a.length?a:def};
-const ROAST=()=>{const dR=(VP&&VP.lang&&VP.lang.startsWith('ja'))?BUILTIN_VOICE_PACKS.ja.teacher.roast:R_;const a=LN('teacher','roast',dR).concat([(VP&&VP.teacher&&VP.teacher.car||'Your {car} is a piece of junk!').replace('{car}',CARS[carSel][0])]);return a[Math.floor(Math.random()*a.length)]};
+const ROAST=()=>{const dR=(VP&&VP.lang&&VP.lang.startsWith('ja'))?BUILTIN_VOICE_PACKS.ja.teacher.roast:(VP&&VP.lang&&VP.lang.startsWith('ta'))?BUILTIN_VOICE_PACKS.ta.teacher.roast:R_;const a=LN('teacher','roast',dR).concat([(VP&&VP.teacher&&VP.teacher.car||'Your {car} is a piece of junk!').replace('{car}',CARS[carSel][0])]);return a[Math.floor(Math.random()*a.length)]};
 const lanes=[60,225,375,525];
 let students=[],teacher={};
 function initChars(){
@@ -2229,7 +2246,7 @@ function speak(o,text){if(!voiceOn||muted||!text)return;
  const lang=VP?VP.lang:'en-US',ss=window.speechSynthesis,cfg=VP?VP[kind==='t'?'teacher':kind==='h'?'hero':'student']:null,fb=kind==='t'?120:kind==='h'?420:330;
  if(!ss||!VO.length){blip(text,fb);return}
  const pool=VO.filter(v=>v.lang.toLowerCase().startsWith(lang.slice(0,2)));if(!pool.length){blip(text,fb);return}
- const fem=pool.filter(v=>/female|zira|samantha|susan|hazel|karen|moira|aria|jenny|kyoko|haruka|nanami|google uk english female|google us english|google 日本語/i.test(v.name)),
+ const fem=pool.filter(v=>/female|zira|samantha|susan|hazel|karen|moira|aria|jenny|kyoko|haruka|nanami|vani|valluvar|tamil|google uk english female|google us english|google 日本語|google தமிழ்/i.test(v.name)),
  hs=[...(o.name||'x')].reduce((a,c)=>a+c.charCodeAt(0),0),u=new SpeechSynthesisUtterance(text);
  u.voice=kind==='t'?(fem[0]||pool[0]):(fem.length&&o.girl?fem[hs%fem.length]:pool[hs%pool.length]);u.lang=lang;
  u.pitch=((cfg&&cfg.pitch)||(kind==='t'?.8:kind==='h'?1.7:1.4))+(kind==='t'?0:(hs%5)*.05);u.rate=(cfg&&cfg.rate)||(kind==='t'?.95:1.12);u.volume=.9;
@@ -2274,26 +2291,28 @@ function drawTags(){g.font='bold 11px "Trebuchet MS",sans-serif';g.textAlign='ce
  }g.textAlign='left'}
 const charImg=new Image();let charImgOK=false;charImg.onload=()=>charImgOK=true;charImg.onerror=()=>{if(charImg.src.indexOf('.jpg')!==-1)charImg.src='characters.png'};charImg.src='characters.jpg';
 const PACKS=[
- ['en','English Voice Pack','Sensei, heroes and students speak crisp English'],
- ['ja','Japanese Anime Pack','Authentic anime Japanese lines for Sakamoto Sensi & class']
+ ['en','English Voice Pack','Sensei, heroes & students speak crisp English'],
+ ['ja','Japanese Anime Pack','Authentic anime Japanese for Sakamoto Sensi & class'],
+ ['ta','Tamil Voice Pack','Teacher, heroes & students speak vibrant Tamil']
 ];
 function previewVoice(id){
  const pack=packs[id]||BUILTIN_VOICE_PACKS[id];
  if(!pack)return;
- const phrase=id==='ja'?'ちょっと！待ちなさい！そのおもちゃをゴミ箱に捨てるわよ！':'Hey! Stop right there! That toy is going in the trash!';
- popups.push({t:'🔊 '+(id==='ja'?'Sensi [JA]: ':'Sensi [EN]: ')+phrase,x:480,y:230,l:2.8,s:1,c:'#ffd23f'});
+ const phrase=id==='ja'?'ちょっと！待ちなさい！そのおもちゃをゴミ箱に捨てるわよ！':id==='ta'?'ஏய்! அங்கேயே நில்லு! அந்த பொம்மையை குப்பைத்தொட்டியில போடப்போறேன்!':'Hey! Stop right there! That toy is going in the trash!';
+ const tag=id==='ja'?'Sensi [JA]: ':id==='ta'?'Sensi [TA]: ':'Sensi [EN]: ';
+ popups.push({t:'🔊 '+tag+phrase,x:480,y:230,l:2.8,s:1,c:'#ffd23f'});
  const ss=window.speechSynthesis;
  if(!ss){blip(phrase,120);return}
  try{
   ss.cancel();
   const u=new SpeechSynthesisUtterance(phrase);
-  u.lang=pack.lang||(id==='ja'?'ja-JP':'en-US');
-  u.pitch=(pack.teacher&&pack.teacher.pitch)||(id==='ja'?1.15:0.85);
+  u.lang=pack.lang||(id==='ja'?'ja-JP':id==='ta'?'ta-IN':'en-US');
+  u.pitch=(pack.teacher&&pack.teacher.pitch)||(id==='ja'?1.15:id==='ta'?0.95:0.85);
   u.rate=(pack.teacher&&pack.teacher.rate)||1.0;
   u.volume=1.0;
   if(VO&&VO.length){
    const pool=VO.filter(v=>v.lang.toLowerCase().startsWith(u.lang.slice(0,2)));
-   const fem=pool.filter(v=>/female|zira|samantha|susan|hazel|karen|moira|aria|jenny|kyoko|haruka|nanami|google uk english female|google us english|google 日本語/i.test(v.name));
+   const fem=pool.filter(v=>/female|zira|samantha|susan|hazel|karen|moira|aria|jenny|kyoko|haruka|nanami|vani|valluvar|tamil|google uk english female|google us english|google 日本語|google தமிழ்/i.test(v.name));
    u.voice=fem[0]||pool[0]||null;
   }
   ss.speak(u);
@@ -2303,7 +2322,8 @@ function dlPack(id){
  packSt[id]='loading';
  const applyJ=(j)=>{
   packs[id]=j;packSt[id]='';if(!activePack)activePack=id;savePacks();
-  popups.push({t:(id==='ja'?'Japanese':'English')+' Voice Pack Installed!',x:480,y:200,l:2,s:1,c:'#8fd16b'});
+  const pName=id==='ja'?'Japanese':id==='ta'?'Tamil':'English';
+  popups.push({t:pName+' Voice Pack Installed!',x:480,y:200,l:2,s:1,c:'#8fd16b'});
   if(sfx&&sfx.power)sfx.power();
  };
  fetch('voicepack_'+id+'.json').then(r=>{if(!r.ok)throw 0;return r.json()})
@@ -2382,14 +2402,19 @@ function drawTex(){
 }
 function voicesClick(x,y){
  PACKS.forEach(([id],i)=>{
-  const cx=60+i*430,cy=102,w=410,inst=!!packs[id],act=activePack===id;
-  if(x>cx+16&&x<cx+191&&y>cy+236&&y<cy+278){previewVoice(id);sfx.tick();return}
-  if(x>cx+202&&x<cx+394&&y>cy+236&&y<cy+278){
+  const cx=55+i*292,cy=102,w=276,inst=!!packs[id],act=activePack===id;
+  if(x>cx+14&&x<cx+130&&y>cy+234&&y<cy+276){previewVoice(id);sfx.tick();return}
+  if(x>cx+136&&x<cx+w-14&&y>cy+234&&y<cy+276){
    if(!inst){if(packSt[id]!=='loading')dlPack(id)}
-   else{activePack=(act?'':id);savePacks();popups.push({t:activePack?(id==='ja'?'Japanese':'English')+' Voice Pack Activated!':'Default Voices Activated',x:480,y:200,l:1.8,s:1,c:'#8fd16b'});sfx.pick()}
+   else{
+    activePack=(act?'':id);savePacks();
+    const pName=id==='ja'?'Japanese':id==='ta'?'Tamil':'English';
+    popups.push({t:activePack?pName+' Voice Pack Activated!':'Default Voices Activated',x:480,y:200,l:1.8,s:1,c:'#8fd16b'});
+    sfx.pick();
+   }
    return;
   }
-  if(inst&&x>cx+16&&x<cx+w-16&&y>cy+288&&y<cy+322){
+  if(inst&&x>cx+14&&x<cx+w-14&&y>cy+284&&y<cy+322){
    packs[id]=null;packSt[id]='';if(activePack===id)activePack='';savePacks();popups.push({t:'Voice Pack Removed',x:480,y:200,l:1.5,s:1});sfx.tick();return;
   }
  });
@@ -2445,7 +2470,7 @@ function drawSettings(){
  btn(141,'💙  Hinata Model: '+(hinataModelType==='meshy'?'Hinata-chan (3D Mesh)':'Classic Hinata'),hinataModelType==='meshy'?'#3a6fd8':'#4a4858');
  btn(168,'🎓  Student Male NPC: '+(renModelType==='meshy'?'Ren Sakuragi (3D Mesh)':'Classic NPC'),renModelType==='meshy'?'#2f6bb2':'#4a4858');
  btn(195,'🎀  Student Female NPC: '+(sakuraClassmateModelType==='meshy'?'Sakura Classmate (3D)':'Classic NPC'),sakuraClassmateModelType==='meshy'?'#d84a7e':'#4a4858');
- btn(222,'🗣️  Voice Packs (EN & JA Anime)','#3a6ea5');
+ btn(222,'🗣️  Voice Packs (EN, JA & Tamil)','#3a6ea5');
  btn(249,'🎨  Texture Themes (Old School, Modern, Cyber)','#6a4aa5');
  btn(276,'⚡  Graphics: '+GFX[0].toUpperCase()+GFX.slice(1),'#2a8f6a');
  btn(303,'🎬  Replay Anime Intro','#a5486a');
@@ -2474,35 +2499,40 @@ function settingsClick(x,y){
 function drawVoices(){
  g.save();g.globalAlpha=ea;drawCard(40,24,880,472,20,'rgba(20,18,30,.96)','rgba(255,255,255,.14)',2);
  g.textAlign='center';g.fillStyle='#f3efe0';g.font='bold 28px "Trebuchet MS",sans-serif';g.fillText('Character Voice Packs',480,58);
- g.font='13px "Trebuchet MS",sans-serif';g.fillStyle='#b8b8c8';g.fillText('Download & switch real voice lines in English or Japanese anime style',480,82);
+ g.font='13px "Trebuchet MS",sans-serif';g.fillStyle='#b8b8c8';g.fillText('Download & switch real voice lines in English, Japanese anime or Tamil',480,82);
  PACKS.forEach(([id,name,desc],i)=>{
-  const x=60+i*430,y=102,w=410,h=336,inst=!!packs[id],act=activePack===id,st=packSt[id],isJa=id==='ja';
+  const x=55+i*292,y=102,w=276,h=336,inst=!!packs[id],act=activePack===id,st=packSt[id],isJa=id==='ja',isTa=id==='ta';
   drawCard(x,y,w,h,16,act?'rgba(38,34,56,.95)':'rgba(28,26,40,.9)',act?'#6bd16b':'rgba(255,255,255,.12)',act?2.5:1.5);
-  g.textAlign='left';g.font='bold 20px "Trebuchet MS",sans-serif';g.fillStyle=act?'#8fd16b':'#f3efe0';g.fillText((isJa?'🇯🇵 ':'🇺🇸 ')+name,x+20,y+34);
+  g.textAlign='left';g.font='bold 16px "Trebuchet MS",sans-serif';g.fillStyle=act?'#8fd16b':'#f3efe0';
+  const flag=isJa?'🇯🇵 ':isTa?'🇮🇳 ':'🇺🇸 ';
+  g.fillText(flag+name,x+14,y+34);
   const badgeTxt=act?'✔ ACTIVE':inst?'INSTALLED':st==='loading'?'DOWNLOADING':'READY';
   const badgeCol=act?'#2e7d32':inst?'#2f6bb2':st==='loading'?'#e07a22':'#4a4858';
-  drawCard(x+w-120,y+16,102,24,8,badgeCol,null);
-  g.font='bold 11px "Trebuchet MS",sans-serif';g.fillStyle='#fff';g.textAlign='center';g.fillText(badgeTxt,x+w-69,y+32);
-  g.textAlign='left';g.font='13px "Trebuchet MS",sans-serif';g.fillStyle='#c8c8d8';g.fillText(desc,x+20,y+62);
-  drawCard(x+16,y+76,w-32,60,10,'rgba(15,14,22,.65)','rgba(255,255,255,.08)',1);
-  g.fillStyle='#ffd23f';g.font='bold 11px "Trebuchet MS",sans-serif';g.fillText('Sakamoto Sensi Voice Preview:',x+26,y+94);
-  g.fillStyle='#f0ede4';g.font='italic 12px "Trebuchet MS",sans-serif';
-  const sampleTxt=isJa?'「ちょっと！待ちなさい！そのおもちゃをゴミ箱に捨てるわよ！」':'"Hey! Stop right there! That toy is going in the trash!"';
-  g.fillText(sampleTxt,x+26,y+116);
+  drawCard(x+w-88,y+16,74,22,6,badgeCol,null);
+  g.font='bold 10px "Trebuchet MS",sans-serif';g.fillStyle='#fff';g.textAlign='center';g.fillText(badgeTxt,x+w-51,y+31);
+  g.textAlign='left';g.font='11px "Trebuchet MS",sans-serif';g.fillStyle='#c8c8d8';g.fillText(desc,x+14,y+60);
+  drawCard(x+12,y+74,w-24,62,10,'rgba(15,14,22,.65)','rgba(255,255,255,.08)',1);
+  g.fillStyle='#ffd23f';g.font='bold 11px "Trebuchet MS",sans-serif';g.fillText('Sensi Voice Preview:',x+18,y+92);
+  g.fillStyle='#f0ede4';g.font='italic 11px "Trebuchet MS",sans-serif';
+  const sampleTxt=isJa?'「ちょっと！待ちなさい！」':isTa?'「ஏய்! அங்கேயே நில்லு!」':'"Hey! Stop right there!"';
+  g.fillText(sampleTxt,x+18,y+110);
+  const sampleTxt2=isJa?'ゴミ箱に捨てるわよ！':isTa?'பொம்மைய தூக்கி போடுவேன்!':'Toy is going in trash!';
+  g.fillStyle='#c0b8b0';g.font='10px "Trebuchet MS",sans-serif';
+  g.fillText(sampleTxt2,x+18,y+126);
   g.fillStyle='#9ab0c8';g.font='11px "Trebuchet MS",sans-serif';
-  g.fillText('• 12+ Sensi Roasts & Confiscation Threats',x+22,y+156);
-  g.fillText('• Action Shouts: Catch, Fall/Miss, Patrol & Ask',x+22,y+174);
-  g.fillText('• Class Heroes & Students Distractions & Gasps',x+22,y+192);
-  g.textAlign='center';g.fillStyle=st==='fail'?'#ff8a7a':act?'#8fd16b':inst?'#ffd23f':'#9a9ab0';g.font='bold 12px "Trebuchet MS",sans-serif';
-  const stMsg=st==='loading'?'Downloading voice pack...':st==='fail'?'Download failed':act?'● Active in-game right now':inst?'Downloaded (Tap Equip to activate)':'Not downloaded yet';
-  g.fillText(stMsg,x+w/2,y+220);
-  drawCard(x+16,y+236,175,42,12,'#3a4a68','rgba(255,255,255,.2)',1.5);
-  g.fillStyle='#fff';g.font='bold 14px "Trebuchet MS",sans-serif';g.fillText('🔊 Test Voice',x+103,y+262);
+  g.fillText('• 12+ Sensi Roasts & Threats',x+18,y+156);
+  g.fillText('• Catch, Fall & Patrol Shouts',x+18,y+174);
+  g.fillText('• Hero Saves & Class Gasps',x+18,y+192);
+  g.textAlign='center';g.fillStyle=st==='fail'?'#ff8a7a':act?'#8fd16b':inst?'#ffd23f':'#9a9ab0';g.font='bold 11px "Trebuchet MS",sans-serif';
+  const stMsg=st==='loading'?'Downloading...':st==='fail'?'Download failed':act?'● Active in-game':inst?'Downloaded (Tap Equip)':'Not downloaded';
+  g.fillText(stMsg,x+w/2,y+216);
+  drawCard(x+14,y+234,116,40,10,'#3a4a68','rgba(255,255,255,.2)',1.5);
+  g.fillStyle='#fff';g.font='bold 13px "Trebuchet MS",sans-serif';g.fillText('🔊 Test',x+72,y+259);
   const mainBtnCol=!inst?'#2a75d3':act?'#2e7d32':'#e07a22';
-  drawCard(x+202,y+236,192,42,12,mainBtnCol,'rgba(255,255,255,.25)',1.5);
-  g.fillStyle='#fff';g.font='bold 14px "Trebuchet MS",sans-serif';
-  g.fillText(st==='loading'?'Please wait...':!inst?'⬇ Download':act?'✔ Active (Tap Off)':'★ Equip Pack',x+298,y+262);
-  if(inst){drawCard(x+16,y+288,w-32,34,10,'rgba(120,40,40,.6)','rgba(255,100,100,.3)',1);g.fillStyle='#ffb0b0';g.font='bold 12px "Trebuchet MS",sans-serif';g.fillText('🗑 Remove Pack from Storage',x+w/2,y+310)}
+  drawCard(x+136,y+234,126,40,10,mainBtnCol,'rgba(255,255,255,.25)',1.5);
+  g.fillStyle='#fff';g.font='bold 13px "Trebuchet MS",sans-serif';
+  g.fillText(st==='loading'?'Wait...':!inst?'⬇ Get':act?'✔ Active':'★ Equip',x+199,y+259);
+  if(inst){drawCard(x+14,y+284,w-28,32,8,'rgba(120,40,40,.6)','rgba(255,100,100,.3)',1);g.fillStyle='#ffb0b0';g.font='bold 11px "Trebuchet MS",sans-serif';g.fillText('🗑 Remove Pack',x+w/2,y+304)}
  });
  drawCard(400,452,160,36,12,'#4a4858','rgba(255,255,255,.2)',1.5);g.fillStyle='#fff';g.font='bold 15px "Trebuchet MS",sans-serif';g.textAlign='center';
  g.fillText('Back to Settings',480,475);g.restore();g.textAlign='left';
@@ -2521,7 +2551,7 @@ function introStep(){const T=introT,ev=(t,f)=>{if(T>=t&&!introFlags[t]){introFla
  while(introNext*.42<T+.6){const i=introNext,d=Math.max(0,i*.42-T),up=i%32>=16?1.5:1;if(T>2){tone(SCL[MEL[i%16]]*up,.38,'triangle',.05,null,d);if(i%4===0)tone(110*up,1.5,'sine',.09,null,d)}introNext++}
  ev(14.5,()=>{tone(70,1.4,'sawtooth',.12,320);tone(140,1.2,'square',.05,640)});ev(17,()=>sfx.nitro());
  ev(19,()=>{nburst(300,60,.4,'lowpass',.5);tone(55,.5,'sine',.4,30)});
- ev(21.7,()=>speak(teacher,VP&&/^ja/.test(VP.lang)?'そのおもちゃは誰の？！':'Whose toy is that?!'));
+ ev(21.7,()=>speak(teacher,VP&&/^ja/.test(VP.lang)?'そのおもちゃは誰の？！':VP&&/^ta/.test(VP.lang)?'அந்த பொம்மை யாருடையது？！':'Whose toy is that?!'));
  ev(24,()=>{tone(60,1,'sine',.45,28);nburst(2000,100,.6,'lowpass',.5);sfx.bell()});
  nitroOn=T>17&&T<19;car.v=nitroOn?4:0;
  if(T>19&&T<23.2){const k=(T-19)/4.2;teacher.x=200+k*150;teacher.y=120+k*280;teacher.t+=fdt*10;const ph=Math.floor(teacher.t/Math.PI);if(ph!==introPh){introPh=ph;stepSfx(teacher,true)}}}
