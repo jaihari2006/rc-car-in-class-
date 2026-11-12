@@ -168,15 +168,96 @@ car.latV=0;car.drift=0;car.pitch=0;car.roll=0;car.wobble=0;
 let AC=null,eng=null,muted=false;
 function goLand(){if(!matchMedia('(pointer:coarse)').matches)return;try{const d=document.documentElement;Promise.resolve(d.requestFullscreen&&d.requestFullscreen()).then(()=>screen.orientation&&screen.orientation.lock&&screen.orientation.lock('landscape')).catch(()=>{})}catch(e){}}
 let MG=null,NB=null,sq=null,nit=null,lastTick=-1,gearP=0;
+let porscheRawData=null,porscheBuf=null,porscheLoopBuf=null;
+let porscheSrc=null,porscheGain=null,porscheFilter=null,porschePlaying=false,porscheLoading=false;
+
+function makePorscheLoop(buf,startSec,endSec,xfadeSec=0.35){
+ try{
+  const sr=buf.sampleRate,sIdx=Math.max(0,Math.floor(startSec*sr)),eIdx=Math.min(buf.length,Math.floor(endSec*sr));
+  const tot=eIdx-sIdx,xf=Math.min(Math.floor(xfadeSec*sr),Math.floor(tot/2)),loopLen=tot-xf;
+  if(loopLen<=0)return buf;
+  const out=AC.createBuffer(buf.numberOfChannels,loopLen,sr);
+  for(let c=0;c<buf.numberOfChannels;c++){
+   const src=buf.getChannelData(c),dst=out.getChannelData(c);
+   for(let i=0;i<loopLen;i++)dst[i]=src[sIdx+i];
+   for(let i=0;i<xf;i++){
+    const a=i/xf;
+    dst[i]=dst[i]*a+src[eIdx-xf+i]*(1-a);
+   }
+  }
+  return out;
+ }catch(e){return buf}
+}
+
+function setupPorscheAudio(){
+ if(!AC||!porscheLoopBuf)return;
+ try{
+  if(porscheSrc){try{porscheSrc.onended=null;porscheSrc.stop();porscheSrc.disconnect()}catch(_){}}
+  porscheSrc=AC.createBufferSource();
+  porscheSrc.buffer=porscheLoopBuf;
+  porscheSrc.loop=true;
+  porscheSrc.onended=()=>{porschePlaying=false;porscheSrc=null};
+
+  porscheFilter=AC.createBiquadFilter();
+  porscheFilter.type='lowpass';
+  porscheFilter.frequency.value=1200;
+  porscheFilter.Q.value=1.2;
+
+  porscheGain=AC.createGain();
+  porscheGain.gain.value=0.0001;
+
+  porscheSrc.connect(porscheFilter);
+  porscheFilter.connect(porscheGain);
+  porscheGain.connect(MG);
+
+  porscheSrc.start(0);
+  porschePlaying=true;
+ }catch(e){console.warn('setupPorscheAudio error:',e)}
+}
+
+function decodePorscheAudio(){
+ if(!AC||!porscheRawData||porscheBuf)return;
+ try{
+  AC.decodeAudioData(porscheRawData.slice(0)).then(buf=>{
+   porscheBuf=buf;
+   porscheLoopBuf=makePorscheLoop(buf,0.6,6.0,0.35);
+   setupPorscheAudio();
+  }).catch(e=>{console.warn('Porsche audio decode failed:',e)});
+ }catch(e){console.warn('decodePorscheAudio error:',e)}
+}
+
+function loadPorscheAudio(){
+ if(porscheRawData||porscheBuf||porscheLoading)return;
+ porscheLoading=true;
+ fetch('accelerated_porsche_911wav-93455.mp3')
+  .then(r=>{if(!r.ok)throw new Error(r.status);return r.arrayBuffer()})
+  .then(ab=>{
+   porscheRawData=ab;
+   porscheLoading=false;
+   if(AC)decodePorscheAudio();
+  }).catch(e=>{porscheLoading=false;console.warn('Porsche audio fetch failed:',e)});
+}
+try{loadPorscheAudio()}catch(_){}
+
 function nz(f,q,type){const s=AC.createBufferSource();s.buffer=NB;s.loop=true;const fl=AC.createBiquadFilter();fl.type=type;fl.frequency.value=f;fl.Q.value=q;const g=AC.createGain();g.gain.value=0;s.connect(fl);fl.connect(g);g.connect(MG);s.start();return{g,fl}}
-function audioInit(){if(AC){AC.resume&&AC.resume();return}try{
- AC=new(window.AudioContext||window.webkitAudioContext)();
- const cp=AC.createDynamicsCompressor();MG=AC.createGain();MG.gain.value=.9;MG.connect(cp);cp.connect(AC.destination);
- NB=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate);const d=NB.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
- const o1=AC.createOscillator(),o2=AC.createOscillator(),o3=AC.createOscillator(),lp=AC.createBiquadFilter(),gn=AC.createGain();
- o1.type='sawtooth';o2.type='square';o3.type='sawtooth';lp.type='lowpass';lp.Q.value=4;gn.gain.value=0;
- [o1,o2,o3].forEach(o=>{o.connect(lp);o.start()});lp.connect(gn);gn.connect(MG);eng={o1,o2,o3,lp,gn};
- sq=nz(2500,.3,'bandpass');nit=nz(500,.8,'bandpass')}catch(e){}}
+function audioInit(){
+ if(AC){
+  if(AC.resume)AC.resume();
+  if(porscheRawData&&!porscheBuf)decodePorscheAudio();
+  else if(!porscheRawData&&!porscheBuf)loadPorscheAudio();
+  else if(porscheLoopBuf&&(!porscheSrc||!porschePlaying))setupPorscheAudio();
+  return;
+ }
+ try{
+  AC=new(window.AudioContext||window.webkitAudioContext)();
+  const cp=AC.createDynamicsCompressor();MG=AC.createGain();MG.gain.value=.9;MG.connect(cp);cp.connect(AC.destination);
+  NB=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate);const d=NB.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+  const o1=AC.createOscillator(),o2=AC.createOscillator(),o3=AC.createOscillator(),lp=AC.createBiquadFilter(),gn=AC.createGain();
+  o1.type='sawtooth';o2.type='square';o3.type='sawtooth';lp.type='lowpass';lp.Q.value=4;gn.gain.value=0;
+  [o1,o2,o3].forEach(o=>{o.connect(lp);o.start()});lp.connect(gn);gn.connect(MG);eng={o1,o2,o3,lp,gn};
+  sq=nz(2500,.3,'bandpass');nit=nz(500,.8,'bandpass');
+  if(porscheRawData)decodePorscheAudio();else loadPorscheAudio();
+ }catch(e){}}
 function tone(f,d=.12,type='sine',vol=.15,f2,delay=0){if(!AC||muted)return;const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime+delay;
  o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);
  g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(vol,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(MG);o.start(t);o.stop(t+d+.02)}
@@ -188,16 +269,63 @@ const sfx={
  bump:()=>{nburst(900,120,.25,'lowpass',.5);tone(110,.25,'sine',.35,45)},
  power:()=>[523,659,784,1047].forEach((f,i)=>tone(f,.18,'triangle',.16,null,i*.07)),
  alert:()=>{tone(1800,.3,'sine',.12,2400);tone(1800,.3,'sine',.12,2400,.35)},
- nitro:()=>{nburst(300,3500,.7,'bandpass',.5);tone(90,.7,'sawtooth',.14,260)},
+ nitro:()=>{
+  nburst(300,3500,.7,'bandpass',.5);tone(90,.7,'sawtooth',.14,260);
+  if(AC&&porscheBuf&&!muted){
+   try{
+    const bst=AC.createBufferSource();bst.buffer=porscheBuf;
+    const bg=AC.createGain();bg.gain.setValueAtTime(.35,AC.currentTime);
+    bg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+1.1);
+    bst.connect(bg);bg.connect(MG);bst.playbackRate.value=1.35;
+    bst.start(0,2.5,1.1);
+   }catch(_){}
+  }
+ },
  catchSfx:()=>{tone(160,.25,'sawtooth',.35,80);nburst(1600,200,.3,'bandpass',.4);[520,392,261].forEach((f,i)=>tone(f,.16,'square',.14,null,i*.07))},
  whack:()=>{nburst(2200,280,.14,'bandpass',.4);tone(340,.12,'sawtooth',.22,90)},
  tick:()=>tone(1200,.04,'square',.06),backfire:()=>[0,.06,.13].forEach(t=>nburst(1200,300,.05,'bandpass',.25,t)),
  bell:()=>[0,.6,1.2,1.8].forEach(t=>[[880,.5],[1320,.3],[2090,.2],[2960,.12]].forEach(([f,v])=>tone(f,1.1,'sine',v*.18,null,t)))};
-function engine(){if(!eng||!AC)return;const on=state==='play'&&!muted,v=Math.abs(car.v),gear=Math.min(5,Math.floor(v/1.1)),r=Math.min(1,(v-gear*1.1)/1.1),
- thr=(keys.up||nitroOn)?1:.35,f=48+gear*6+r*(70+gear*4)+(nitroOn?25:0),t=AC.currentTime;
+function engine(){
+ if(!AC)return;
+ const on=(state==='play'||state==='intro')&&!muted&&!hide&&!isSensei,v=Math.abs(car.v);
+ const gear=Math.min(5,Math.floor(v/1.1)),r=Math.min(1,(v-gear*1.1)/1.1);
+ const isRev=car.v<-0.1,thr=(keys.up||nitroOn)?1:(isRev?.7:.25),t=AC.currentTime;
  if(gear!==gearP){if(gear>gearP&&on&&v>.5)nburst(500,200,.12,'lowpass',.08);gearP=gear}
- eng.o1.frequency.setTargetAtTime(f,t,.05);eng.o2.frequency.setTargetAtTime(f/2,t,.05);eng.o3.frequency.setTargetAtTime(f*1.5,t,.05);
- eng.lp.frequency.setTargetAtTime(350+f*8*thr,t,.05);eng.gn.gain.setTargetAtTime(on?(.03+thr*.035+(nitroOn?.03:0)):0,t,.08);
+
+ if(porscheGain&&porscheSrc){
+  if(eng&&eng.gn)eng.gn.gain.setTargetAtTime(0,t,.04);
+  if(!on){
+   porscheGain.gain.setTargetAtTime(0.0001,t,.08);
+  } else {
+   let targetRate;
+   if(v<0.15){
+    targetRate=(keys.up||nitroOn)?(0.95+(nitroOn?.35:0)):0.68;
+   } else {
+    const sRat=Math.min(1.4,v/4.8);
+    targetRate=0.72+sRat*0.72+(keys.up?.12:0)+(nitroOn?.35:0)+(isRev?-.1:0);
+   }
+   targetRate=Math.max(0.55,Math.min(2.4,targetRate));
+   porscheSrc.playbackRate.setTargetAtTime(targetRate,t,0.04);
+
+   let targetGain;
+   if(v<0.15){
+    targetGain=(keys.up||nitroOn)?0.32:0.16;
+   } else {
+    const sRat=Math.min(1.2,v/4.8);
+    targetGain=0.20+sRat*0.22+thr*0.14+(nitroOn?0.22:0);
+   }
+   targetGain=Math.max(0,Math.min(0.85,targetGain));
+   porscheGain.gain.setTargetAtTime(targetGain,t,0.05);
+
+   let targetFreq=1000+Math.min(1,v/4.5)*5500+thr*3500+(nitroOn?6000:0);
+   targetFreq=Math.min(18000,targetFreq);
+   porscheFilter.frequency.setTargetAtTime(targetFreq,t,0.05);
+  }
+ } else if(eng){
+  const f=48+gear*6+r*(70+gear*4)+(nitroOn?25:0);
+  eng.o1.frequency.setTargetAtTime(f,t,.05);eng.o2.frequency.setTargetAtTime(f/2,t,.05);eng.o3.frequency.setTargetAtTime(f*1.5,t,.05);
+  eng.lp.frequency.setTargetAtTime(350+f*8*thr,t,.05);eng.gn.gain.setTargetAtTime(on?(.03+thr*.035+(nitroOn?.03:0)):0,t,.08);
+ }
  const slip=on&&v>2.4&&Math.abs(steerS)>.55?Math.min(1,(v-2.4)/2):0;sq.g.gain.setTargetAtTime(slip*.06,t,.05);sq.fl.frequency.setTargetAtTime(2200+v*120,t,.1);nit.g.gain.setTargetAtTime(on&&nitroOn?.1:0,t,.05);nit.fl.frequency.setTargetAtTime(500+v*160,t,.08);
  if(on&&time<=10&&Math.ceil(time)!==lastTick){lastTick=Math.ceil(time);sfx.tick()}}
 function toggleMute(){muted=!muted;if(muted&&window.speechSynthesis)speechSynthesis.cancel();document.getElementById('bm').textContent=muted?'\ud83d\udd07':'\ud83d\udd0a'}
@@ -2604,7 +2732,17 @@ function startIntro(){audioInit();goLand();introStage();introT=0;introNext=0;int
 function endIntro(){state='home';nitroOn=false;car.v=0;if(window.speechSynthesis)speechSynthesis.cancel()}
 function introStep(){const T=introT,ev=(t,f)=>{if(T>=t&&!introFlags[t]){introFlags[t]=1;f()}};
  while(introNext*.42<T+.6){const i=introNext,d=Math.max(0,i*.42-T),up=i%32>=16?1.5:1;if(T>2){tone(SCL[MEL[i%16]]*up,.38,'triangle',.05,null,d);if(i%4===0)tone(110*up,1.5,'sine',.09,null,d)}introNext++}
- ev(14.5,()=>{tone(70,1.4,'sawtooth',.12,320);tone(140,1.2,'square',.05,640)});ev(17,()=>sfx.nitro());
+ ev(14.5,()=>{
+  tone(70,1.4,'sawtooth',.12,320);tone(140,1.2,'square',.05,640);
+  if(AC&&porscheBuf&&!muted){
+   try{
+    const rev=AC.createBufferSource();rev.buffer=porscheBuf;
+    const rg=AC.createGain();rg.gain.setValueAtTime(.4,AC.currentTime);rg.gain.exponentialRampToValueAtTime(.001,AC.currentTime+2.2);
+    rev.connect(rg);rg.connect(MG);rev.playbackRate.value=1.1;
+    rev.start(0,0.8,2.2);
+   }catch(_){}
+  }
+ });ev(17,()=>sfx.nitro());
  ev(19,()=>{nburst(300,60,.4,'lowpass',.5);tone(55,.5,'sine',.4,30)});
  ev(21.7,()=>speak(teacher,VP&&/^ja/.test(VP.lang)?'そのおもちゃは誰の？！':VP&&/^ta/.test(VP.lang)?'அந்த பொம்மை யாருடையது？！':'Whose toy is that?!'));
  ev(24,()=>{tone(60,1,'sine',.45,28);nburst(2000,100,.6,'lowpass',.5);sfx.bell()});
