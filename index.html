@@ -2639,45 +2639,73 @@ function pauseClick(x,y){
  else if(ib(326)){cycleGfx()}
  else if(ib(372)){quitToMenu()}
 }
+function areAllCharacters3D(){
+ return senseiModelType==='fiery'&&sakuraModelType==='meshy'&&hinataModelType==='meshy'&&renModelType==='meshy'&&sakuraClassmateModelType==='meshy';
+}
+function areAllCharactersClassic(){
+ return senseiModelType==='classic'&&sakuraModelType==='classic'&&hinataModelType==='classic'&&renModelType==='classic'&&sakuraClassmateModelType==='classic';
+}
+function cycleAllCharactersModel(){
+ const to3D=!areAllCharacters3D();
+ senseiModelType=to3D?'fiery':'classic';
+ sakuraModelType=to3D?'meshy':'classic';
+ hinataModelType=to3D?'meshy':'classic';
+ renModelType=to3D?'meshy':'classic';
+ sakuraClassmateModelType=to3D?'meshy':'classic';
+ try{
+  localStorage.setItem('rc_sensei_model',senseiModelType);
+  localStorage.setItem('rc_sakura_model',sakuraModelType);
+  localStorage.setItem('rc_hinata_model',hinataModelType);
+  localStorage.setItem('rc_ren_model',renModelType);
+  localStorage.setItem('rc_classmate_f_model',sakuraClassmateModelType);
+ }catch(_){}
+ if(to3D){
+  if(!fierySenseiModel)loadFierySensei();
+  if(!sakuraKunModel)loadSakuraKun();
+  if(!hinataChanModel)loadHinataChan();
+  if(!renSakuragiModel)loadRenSakuragi();
+  if(!sakuraClassmateModel)loadSakuraClassmate();
+ }
+ applySenseiModel();applySakuraModel();applyHinataModel();applyRenModel();applySakuraClassmateModel();
+ if(window.popups)popups.push({
+  t:to3D?'👥 Character Models: 3D ANIME (All 5 Active)':'👥 Character Models: CLASSIC RETRO (All 5)',
+  x:480,y:190,l:1.6,s:1,c:to3D?'#ff77aa':'#ffd23f'
+ });
+ if(window.sfx&&sfx.tick)sfx.tick();
+}
 function drawSettings(){
- g.save();g.globalAlpha=ea;drawCard(260,4,440,524,20,'rgba(20,18,30,.96)','rgba(255,255,255,.15)',2);
- g.textAlign='center';g.fillStyle='#f3efe0';g.font='bold 22px "Trebuchet MS",sans-serif';g.fillText('Settings',480,24);
+ g.save();g.globalAlpha=ea;drawCard(270,14,420,492,18,'rgba(20,18,30,.96)','rgba(255,255,255,.15)',2);
+ g.textAlign='center';g.fillStyle='#f3efe0';g.font='bold 24px "Trebuchet MS",sans-serif';g.fillText('Settings',480,44);
  const btn=(y,label,c)=>{
-  drawCard(295,y,370,23,8,c||'#4a4858','rgba(255,255,255,.15)',1.5);
-  g.fillStyle='#fff';g.font='bold 12px "Trebuchet MS",sans-serif';g.fillText(label,480,y+16);
+  drawCard(290,y,380,32,9,c||'#4a4858','rgba(255,255,255,.16)',1.5);
+  g.fillStyle='#fff';g.font='bold 13px "Trebuchet MS",sans-serif';g.fillText(label,480,y+21);
  };
- btn(33,'🎮  Steering Sensitivity: '+SENS_NAMES[sensIdx],'#e07a22');
- btn(60,'🏎️  Car Model: '+(porscheModelType==='meshy'?'Blue Horizon Porsche (3D)':'Classic 911'),porscheModelType==='meshy'?'#1a66cc':'#4a4858');
- btn(87,'🔥  Sensei Model: '+(senseiModelType==='fiery'?'Fiery Sensei (3D Mesh)':'Classic Sensei'),senseiModelType==='fiery'?'#d9461e':'#4a4858');
- btn(114,'🌸  Sakura Model: '+(sakuraModelType==='meshy'?'Sakura-kun (3D Mesh)':'Classic Sakura'),sakuraModelType==='meshy'?'#e05070':'#4a4858');
- btn(141,'💙  Hinata Model: '+(hinataModelType==='meshy'?'Hinata-chan (3D Mesh)':'Classic Hinata'),hinataModelType==='meshy'?'#3a6fd8':'#4a4858');
- btn(168,'🎓  Student Male NPC: '+(renModelType==='meshy'?'Ren Sakuragi (3D Mesh)':'Classic NPC'),renModelType==='meshy'?'#2f6bb2':'#4a4858');
- btn(195,'🎀  Student Female NPC: '+(sakuraClassmateModelType==='meshy'?'Sakura Classmate (3D)':'Classic NPC'),sakuraClassmateModelType==='meshy'?'#d84a7e':'#4a4858');
- btn(222,'🗣️  Voice Packs (EN, JA & Tamil)','#3a6ea5');
- btn(249,'🎨  Texture Themes (Old School, Modern, Cyber)','#6a4aa5');
- btn(276,'⚡  Graphics: '+GFX[0].toUpperCase()+GFX.slice(1),'#2a8f6a');
- btn(303,'🎬  Replay Anime Intro','#a5486a');
- btn(330,'🔊  Voices: '+(voiceOn?'ON':'OFF'),voiceOn?'#3fa66b':'#5a4a4a');
- btn(357,'🎵  Sound Effects: '+(muted?'OFF':'ON'),muted?'#5a4a4a':'#3fa66b');
- btn(387,'Back to Menu','#7a6428');
+ btn(60,'🎮  Steering Sensitivity: '+SENS_NAMES[sensIdx],'#e07a22');
+ btn(100,'🏎️  Car Model: '+(porscheModelType==='meshy'?'Blue Horizon Porsche (3D)':'Classic 911'),porscheModelType==='meshy'?'#1a66cc':'#4a4858');
+ const charCol=areAllCharacters3D()?'#a238b0':(areAllCharactersClassic()?'#4a4858':'#d97724');
+ const charLabel=areAllCharacters3D()?'👥  Character Models: 3D Anime (All 5 Active)':(areAllCharactersClassic()?'👥  Character Models: Classic Retro (All 5)':'👥  Character Models: Mixed (Tap for 3D)');
+ btn(140,charLabel,charCol);
+ btn(180,'🗣️  Voice Packs (EN, JA & Tamil)','#3a6ea5');
+ btn(220,'🎨  Texture Themes (Old School, Modern, Cyber)','#6a4aa5');
+ btn(260,'⚡  Graphics: '+GFX[0].toUpperCase()+GFX.slice(1),'#2a8f6a');
+ btn(300,'🎬  Replay Anime Intro','#a5486a');
+ btn(340,'🔊  Voices: '+(voiceOn?'ON':'OFF'),voiceOn?'#2e7d32':'#5a4a4a');
+ btn(380,'🎵  Sound Effects: '+(muted?'OFF':'ON'),muted?'#5a4a4a':'#2e7d32');
+ btn(432,'Back to Menu','#7a6428');
  g.restore();g.textAlign='left';
 }
 function settingsClick(x,y){
- const ib=by=>x>295&&x<665&&y>by&&y<by+23;
- if(ib(33))cycleSens();
- else if(ib(60))cyclePorscheModel();
- else if(ib(87))cycleSenseiModel();
- else if(ib(114))cycleSakuraModel();
- else if(ib(141))cycleHinataModel();
- else if(ib(168))cycleRenModel();
- else if(ib(195))cycleSakuraClassmateModel();
- else if(ib(222))state='voices';
- else if(ib(249))state='textures';
- else if(ib(276))cycleGfx();
- else if(ib(303))startIntro();
- else if(ib(330))toggleVoice();
- else if(ib(357))toggleMute();
- else if(x>295&&x<665&&y>387&&y<415)state='home';
+ const ib=by=>x>=290&&x<=670&&y>=by&&y<=by+32;
+ if(ib(60))cycleSens();
+ else if(ib(100))cyclePorscheModel();
+ else if(ib(140))cycleAllCharactersModel();
+ else if(ib(180))state='voices';
+ else if(ib(220))state='textures';
+ else if(ib(260))cycleGfx();
+ else if(ib(300))startIntro();
+ else if(ib(340))toggleVoice();
+ else if(ib(380))toggleMute();
+ else if(ib(432)||(x>=290&&x<=670&&y>=428&&y<=470))state='home';
 }
 function drawVoices(){
  g.save();g.globalAlpha=ea;drawCard(40,24,880,472,20,'rgba(20,18,30,.96)','rgba(255,255,255,.14)',2);
