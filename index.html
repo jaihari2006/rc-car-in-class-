@@ -1176,6 +1176,9 @@ function mkPerson(teach,i,look){look=teach?'teacher':(look||'npcM');
  if(!teach&&look==='sakura'&&sakuraModelType==='meshy'&&sakuraKunModel){
   const sm=mkSakuraModel();if(sm)return sm;
  }
+ if(!teach&&look==='hinata'&&hinataModelType==='meshy'&&hinataChanModel){
+  const hm=mkHinataModel();if(hm)return hm;
+ }
  if(!teach&&(look==='ren'||look==='npcM')&&renModelType==='meshy'&&renSakuragiModel){
   const rm=mkRenModel(look);if(rm)return rm;
  }
@@ -1557,6 +1560,112 @@ function mkRenModel(look){
  return root;
 }
 
+let hinataChanModel=null;
+let hinataModelType=localStorage.getItem('rc_hinata_model')||'meshy';
+function loadHinataChan(cb){
+ if(hinataChanModel){if(cb)cb(hinataChanModel);return}
+ if(!window.THREE||!THREE.GLTFLoader)return;
+ const loader=new THREE.GLTFLoader();
+ const onLoad=gltf=>{
+  const root=new THREE.Group();
+  const model=gltf.scene;
+  const box=new THREE.Box3().setFromObject(model);
+  const size=box.getSize(new THREE.Vector3());
+  const center=box.getCenter(new THREE.Vector3());
+  model.position.set(-center.x,-box.min.y,-center.z);
+  model.rotation.y=Math.PI/2;
+  const wrapper=new THREE.Group();
+  wrapper.add(model);
+  const targetHeight=7.5;
+  const s=targetHeight/(size.y||1.902);
+  wrapper.scale.setScalar(s);
+  const mats=[];
+  wrapper.traverse(c=>{
+   if(c.isMesh){
+    c.castShadow=true;
+    c.receiveShadow=true;
+    if(c.material){
+     c.material.roughness=Math.max(0.35,c.material.roughness||0.5);
+     mats.push(c.material);
+    }
+   }
+  });
+  const sparkCount=14,sparkGeo=new THREE.BufferGeometry(),sparkPos=new Float32Array(sparkCount*3);
+  for(let i=0;i<sparkCount;i++){
+   sparkPos[i*3]=(Math.random()-0.5)*1.8;
+   sparkPos[i*3+1]=0.8+Math.random()*5.8;
+   sparkPos[i*3+2]=(Math.random()-0.5)*1.8;
+  }
+  sparkGeo.setAttribute('position',new THREE.BufferAttribute(sparkPos,3));
+  const sparkMat=new THREE.PointsMaterial({color:0x8cb6ff,size:0.22,transparent:true,opacity:0.75,blending:THREE.AdditiveBlending,depthWrite:false});
+  const sparks=new THREE.Points(sparkGeo,sparkMat);
+  sparks.position.y=0;
+  root.add(wrapper,sparks);
+  const heroLight=new THREE.PointLight(0x6a9eff,0.45,10);
+  heroLight.position.set(0,3.8,0);
+  root.add(heroLight);
+  root.userData={
+   isGlb:true,isHinata:true,look:'hinata',mats:mats,sparks:sparks,sparkPos:sparkPos,heroLight:heroLight,wrapper:wrapper,
+   tc:{material:{emissive:{setHex:h=>mats.forEach(m=>m.emissive&&m.emissive.setHex(h))}}},
+   head:{material:{emissive:{setHex:()=>{}}}}
+  };
+  hinataChanModel=root;
+  applyHinataModel();
+  if(cb)cb(root);
+ };
+ loader.load('hinata_chan.glb',onLoad,undefined,()=>{
+  loader.load('Hinata-chan_Meshy_AI_2026-11-12_146c94.glb',onLoad,undefined,err=>{
+   console.warn('Could not load Hinata-chan GLB model:',err);
+  });
+ });
+}
+function cycleHinataModel(){
+ hinataModelType=(hinataModelType==='meshy')?'classic':'meshy';
+ try{localStorage.setItem('rc_hinata_model',hinataModelType)}catch(_){}
+ applyHinataModel();
+}
+function applyHinataModel(){
+ if(!T3||!T3.sc||!T3.stu)return;
+ students.forEach((o,i)=>{
+  if(o.look==='hinata'){
+   const cur=T3.stu[i];
+   const wantMeshy=(hinataModelType==='meshy'&&!!hinataChanModel);
+   if(cur&&!!cur.userData.isGlb!==wantMeshy){
+    T3.sc.remove(cur);
+    const m=mkPerson(false,i,'hinata');
+    T3.sc.add(m);
+    T3.stu[i]=m;
+   }
+  }
+ });
+}
+function mkHinataModel(){
+ if(!hinataChanModel)return null;
+ const root=new THREE.Group();
+ const wrapper=hinataChanModel.userData.wrapper.clone(true);
+ const sparkCount=14,sparkGeo=new THREE.BufferGeometry(),sparkPos=new Float32Array(sparkCount*3);
+ for(let i=0;i<sparkCount;i++){
+  sparkPos[i*3]=(Math.random()-0.5)*1.8;
+  sparkPos[i*3+1]=0.8+Math.random()*5.8;
+  sparkPos[i*3+2]=(Math.random()-0.5)*1.8;
+ }
+ sparkGeo.setAttribute('position',new THREE.BufferAttribute(sparkPos,3));
+ const sparkMat=new THREE.PointsMaterial({color:0x8cb6ff,size:0.22,transparent:true,opacity:0.75,blending:THREE.AdditiveBlending,depthWrite:false});
+ const sparks=new THREE.Points(sparkGeo,sparkMat);
+ root.add(wrapper,sparks);
+ const heroLight=new THREE.PointLight(0x6a9eff,0.45,10);
+ heroLight.position.set(0,3.8,0);
+ root.add(heroLight);
+ const mats=[];
+ wrapper.traverse(c=>{if(c.isMesh&&c.material)mats.push(c.material)});
+ root.userData={
+  isGlb:true,isHinata:true,look:'hinata',mats:mats,sparks:sparks,sparkPos:sparkPos,heroLight:heroLight,wrapper:wrapper,
+  tc:{material:{emissive:{setHex:h=>mats.forEach(m=>m.emissive&&m.emissive.setHex(h))}}},
+  head:{material:{emissive:{setHex:()=>{}}}}
+ };
+ return root;
+}
+
 function mkDesk(d){const g3=new THREE.Group();g3.position.set((d.x+d.w/2)*S,0,(d.y+d.h/2)*S);
  const t=bx(12,.5,6,0xffffff,{roughness:.45,map:wood()});t.position.y=2.85;t.material.envMapIntensity=.25;g3.add(t);
  const sh=bx(10.8,.2,5,0x9a6a2c);sh.position.y=1.3;g3.add(sh);
@@ -1817,6 +1926,7 @@ function init3D(){
  sc.add(T3.car,T3.tea);cam.position.set(45,3,40);cam.lookAt(45,3,0);cam.updateMatrixWorld();applyGfx();
  if(!fierySensiModel)loadFierySensi();
  if(!sakuraKunModel)loadSakuraKun();
+ if(!hinataChanModel)loadHinataChan();
  if(!renSakuragiModel)loadRenSakuragi();
  return T3}
 function render3D(){
@@ -1828,6 +1938,7 @@ function render3D(){
  students.forEach((o,i)=>{
   let m=t.stu[i];
   const wantGlb=(o.look==='sakura')?(sakuraModelType==='meshy'&&!!sakuraKunModel):
+                (o.look==='hinata')?(hinataModelType==='meshy'&&!!hinataChanModel):
                 (o.look==='ren'||o.look==='npcM')?(renModelType==='meshy'&&!!renSakuragiModel):false;
   const isGlb=!!(m&&m.userData&&m.userData.isGlb);
   if(!m||m.userData.look!==o.look||isGlb!==wantGlb){
@@ -2129,38 +2240,40 @@ function pauseClick(x,y){
  else if(ib(372)){quitToMenu()}
 }
 function drawSettings(){
- g.save();g.globalAlpha=ea;drawCard(260,14,440,492,20,'rgba(20,18,30,.96)','rgba(255,255,255,.15)',2);
- g.textAlign='center';g.fillStyle='#f3efe0';g.font='bold 26px "Trebuchet MS",sans-serif';g.fillText('Settings',480,46);
+ g.save();g.globalAlpha=ea;drawCard(260,10,440,500,20,'rgba(20,18,30,.96)','rgba(255,255,255,.15)',2);
+ g.textAlign='center';g.fillStyle='#f3efe0';g.font='bold 24px "Trebuchet MS",sans-serif';g.fillText('Settings',480,38);
  const btn=(y,label,c)=>{
-  drawCard(295,y,370,30,12,c||'#4a4858','rgba(255,255,255,.15)',1.5);
-  g.fillStyle='#fff';g.font='bold 14px "Trebuchet MS",sans-serif';g.fillText(label,480,y+20);
+  drawCard(295,y,370,27,10,c||'#4a4858','rgba(255,255,255,.15)',1.5);
+  g.fillStyle='#fff';g.font='bold 13px "Trebuchet MS",sans-serif';g.fillText(label,480,y+18);
  };
- btn(56,'🎮  Steering Sensitivity: '+SENS_NAMES[sensIdx],'#e07a22');
- btn(92,'🔥  Sensi Model: '+(sensiModelType==='fiery'?'Fiery Sensi (3D Mesh)':'Classic Sensi'),sensiModelType==='fiery'?'#d9461e':'#4a4858');
- btn(128,'🌸  Sakura Model: '+(sakuraModelType==='meshy'?'Sakura-kun (3D Mesh)':'Classic Sakura'),sakuraModelType==='meshy'?'#e05070':'#4a4858');
- btn(164,'🎓  Student NPC: '+(renModelType==='meshy'?'Ren Sakuragi (3D Mesh)':'Classic NPC'),renModelType==='meshy'?'#2f6bb2':'#4a4858');
- btn(200,'🗣️  Voice Packs (EN & JA Anime)','#3a6ea5');
- btn(236,'🎨  Texture Themes (Old School, Modern, Cyber)','#6a4aa5');
+ btn(48,'🎮  Steering Sensitivity: '+SENS_NAMES[sensIdx],'#e07a22');
+ btn(80,'🔥  Sensi Model: '+(sensiModelType==='fiery'?'Fiery Sensi (3D Mesh)':'Classic Sensi'),sensiModelType==='fiery'?'#d9461e':'#4a4858');
+ btn(112,'🌸  Sakura Model: '+(sakuraModelType==='meshy'?'Sakura-kun (3D Mesh)':'Classic Sakura'),sakuraModelType==='meshy'?'#e05070':'#4a4858');
+ btn(144,'💙  Hinata Model: '+(hinataModelType==='meshy'?'Hinata-chan (3D Mesh)':'Classic Hinata'),hinataModelType==='meshy'?'#3a6fd8':'#4a4858');
+ btn(176,'🎓  Student NPC: '+(renModelType==='meshy'?'Ren Sakuragi (3D Mesh)':'Classic NPC'),renModelType==='meshy'?'#2f6bb2':'#4a4858');
+ btn(208,'🗣️  Voice Packs (EN & JA Anime)','#3a6ea5');
+ btn(240,'🎨  Texture Themes (Old School, Modern, Cyber)','#6a4aa5');
  btn(272,'⚡  Graphics: '+GFX[0].toUpperCase()+GFX.slice(1),'#2a8f6a');
- btn(308,'🎬  Replay Anime Intro','#a5486a');
- btn(344,'🔊  Voices: '+(voiceOn?'ON':'OFF'),voiceOn?'#3fa66b':'#5a4a4a');
- btn(380,'🎵  Sound Effects: '+(muted?'OFF':'ON'),muted?'#5a4a4a':'#3fa66b');
- btn(422,'Back to Menu','#7a6428');
+ btn(304,'🎬  Replay Anime Intro','#a5486a');
+ btn(336,'🔊  Voices: '+(voiceOn?'ON':'OFF'),voiceOn?'#3fa66b':'#5a4a4a');
+ btn(368,'🎵  Sound Effects: '+(muted?'OFF':'ON'),muted?'#5a4a4a':'#3fa66b');
+ btn(404,'Back to Menu','#7a6428');
  g.restore();g.textAlign='left';
 }
 function settingsClick(x,y){
- const ib=by=>x>295&&x<665&&y>by&&y<by+30;
- if(ib(56))cycleSens();
- else if(ib(92))cycleSensiModel();
- else if(ib(128))cycleSakuraModel();
- else if(ib(164))cycleRenModel();
- else if(ib(200))state='voices';
- else if(ib(236))state='textures';
+ const ib=by=>x>295&&x<665&&y>by&&y<by+27;
+ if(ib(48))cycleSens();
+ else if(ib(80))cycleSensiModel();
+ else if(ib(112))cycleSakuraModel();
+ else if(ib(144))cycleHinataModel();
+ else if(ib(176))cycleRenModel();
+ else if(ib(208))state='voices';
+ else if(ib(240))state='textures';
  else if(ib(272))cycleGfx();
- else if(ib(308))startIntro();
- else if(ib(344))toggleVoice();
- else if(ib(380))toggleMute();
- else if(x>295&&x<665&&y>422&&y<456)state='home';
+ else if(ib(304))startIntro();
+ else if(ib(336))toggleVoice();
+ else if(ib(368))toggleMute();
+ else if(x>295&&x<665&&y>404&&y<436)state='home';
 }
 function drawVoices(){
  g.save();g.globalAlpha=ea;drawCard(40,24,880,472,20,'rgba(20,18,30,.96)','rgba(255,255,255,.14)',2);
@@ -2199,10 +2312,13 @@ function drawVoices(){
  g.fillText('Back to Settings',480,475);g.restore();g.textAlign='left';
 }
 let introT=0,introNext=0,introPh=0,introFlags={};
-const SUBS=[[.8,3,'9:00 AM. Class 2-B.'],[3.2,5.4,'Everyone is bored. Everyone is quiet.'],[5.6,7.8,'Everyone... except one little RC car.'],[8.2,9.9,(sensiModelType==='fiery'?'Fiery Sensi':'Sakamoto Sensi')+': the strictest teacher in school.'],[10.1,11.8,(sakuraModelType==='meshy'?'Sakura-kun (The Protagonist)':'Sakura-kun')+' and Hinata-chan: the class heroes.'],[12,13,(renModelType==='meshy'?'Ren Sakuragi and curious classmates.':'And a few very curious classmates.')],[13.6,16,'Meet your RC car: the Porsche 911 GTS.'],[16.2,18.8,'Fast. Loud. Absolutely not allowed in class.'],[19.4,21.3,'Then she walked in...'],[21.7,23.6,'"Whose toy is THAT?!"']];
+const SUBS=[[.8,3,'9:00 AM. Class 2-B.'],[3.2,5.4,'Everyone is bored. Everyone is quiet.'],[5.6,7.8,'Everyone... except one little RC car.'],[8.2,9.9,(sensiModelType==='fiery'?'Fiery Sensi':'Sakamoto Sensi')+': the strictest teacher in school.'],[10.1,11.8,(sakuraModelType==='meshy'?'Sakura-kun (The Protagonist)':'Sakura-kun')+' and '+(hinataModelType==='meshy'?'Hinata-chan (Class Hero)':'Hinata-chan')+': the class heroes.'],[12,13,(renModelType==='meshy'?'Ren Sakuragi and curious classmates.':'And a few very curious classmates.')],[13.6,16,'Meet your RC car: the Porsche 911 GTS.'],[16.2,18.8,'Fast. Loud. Absolutely not allowed in class.'],[19.4,21.3,'Then she walked in...'],[21.7,23.6,'"Whose toy is THAT?!"']];
 const MEL=[0,2,4,2,3,4,5,4,2,3,4,6,5,4,2,3],SCL=[220,261.6,293.7,329.6,392,440,523.3];
 function introStage(){level=1;nextLevel(true);teacher.x=80;teacher.y=60;car.v=0}
 function startIntro(){audioInit();goLand();introStage();introT=0;introNext=0;introPh=0;introFlags={};state='intro';try{localStorage.setItem('rcIntro','1')}catch(e){}
+ SUBS[3][2]=(sensiModelType==='fiery'?'Fiery Sensi':'Sakamoto Sensi')+': the strictest teacher in school.';
+ SUBS[4][2]=(sakuraModelType==='meshy'?'Sakura-kun (The Protagonist)':'Sakura-kun')+' and '+(hinataModelType==='meshy'?'Hinata-chan (Class Hero)':'Hinata-chan')+': the class heroes.';
+ SUBS[5][2]=(renModelType==='meshy'?'Ren Sakuragi and curious classmates.':'And a few very curious classmates.');
  tone(880,1.6,'sine',.18,null,.2);tone(1320,1.4,'sine',.1,null,.2);tone(660,1.8,'sine',.12,null,.9)}
 function endIntro(){state='home';nitroOn=false;car.v=0;if(window.speechSynthesis)speechSynthesis.cancel()}
 function introStep(){const T=introT,ev=(t,f)=>{if(T>=t&&!introFlags[t]){introFlags[t]=1;f()}};
@@ -2660,6 +2776,7 @@ const appIconImg=new Image();let appIconOK=false;appIconImg.onload=()=>appIconOK
 try{T3=window.THREE?init3D():null}catch(e){T3=null}
 try{loadFierySensi()}catch(_){}
 try{loadSakuraKun()}catch(_){}
+try{loadHinataChan()}catch(_){}
 try{loadRenSakuragi()}catch(_){}
 if(T3){applyCar();if(TP)applyTex()}
 // Dedicated Home Screen opens by default
