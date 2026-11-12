@@ -9,29 +9,32 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="theme-color" content="#15151a">
 <style>
-:root{--bg:#2b2a33;--ink:#f3efe0;--btn:#e8b53a;--btnink:#2b2a33}
+:root{--bg:#14131c;--ink:#f8fafc;--btn:#ffd23f;--btnink:#12101b;--cyan:#00f0ff;--neon-pink:#ff007f;--neon-green:#00ff88;--nitro-blue:#00d2ff}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:"Trebuchet MS",Verdana,sans-serif;touch-action:none;user-select:none}
+html,body{margin:0;height:100%;background:radial-gradient(circle at 50% 20%,#201d32 0%,#0e0d16 100%);color:var(--ink);font-family:"Trebuchet MS",Verdana,sans-serif;touch-action:none;user-select:none}
 body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:8px}
-canvas{width:100%;max-width:960px;height:auto;aspect-ratio:960/520;border-radius:8px;background:#000}
+canvas{width:100%;max-width:960px;height:auto;aspect-ratio:960/520;border-radius:12px;background:#000;box-shadow:0 12px 40px rgba(0,0,0,.7),0 0 24px rgba(0,240,255,.08)}
 #pad{display:none;justify-content:space-between;align-items:flex-end;width:100%;max-width:960px}
 body.in-game #pad{display:flex}
 #steer{display:flex;gap:12px}
-#steer button{width:84px;height:84px;border:0;border-radius:18px;background:var(--btn);color:var(--btnink);font-size:34px;font-weight:bold}
-#steer button.on{filter:brightness(.8);transform:translateY(2px)}
-#ped{display:flex;flex-direction:column;gap:10px}
-#ped button{width:120px;border:0;border-radius:14px;background:var(--btn);color:var(--btnink);font-weight:bold;font-size:18px}
-#ped button[data-k=up]{height:84px}#ped button[data-k=down]{height:52px;background:#b86a50;color:#fff}#ped button[data-k=nitro]{height:46px;background:#2a8fd6;color:#fff;letter-spacing:1px}
-#ped button.on{filter:brightness(.8);transform:translateY(2px)}
+#steer button{width:84px;height:84px;border-radius:20px;background:linear-gradient(145deg,#1f2438 0%,#0d111d 100%);color:#00f0ff;border:2.5px solid rgba(0,240,255,.7);font-size:36px;font-weight:900;text-shadow:0 0 12px rgba(0,240,255,.8);box-shadow:0 5px 0 #070911,0 8px 20px rgba(0,240,255,.3),inset 0 1px 1px rgba(255,255,255,.25);cursor:pointer}
+#steer button.on{background:linear-gradient(145deg,#00f0ff 0%,#0066cc 100%);color:#fff;border-color:#fff;box-shadow:0 1px 0 #070911,0 0 28px rgba(0,240,255,1),inset 0 0 14px rgba(255,255,255,.6);transform:translateY(4px) scale(.96)}
+#ped{display:flex;flex-direction:row;align-items:flex-end;gap:10px}
+#gr{display:flex;flex-direction:column;gap:10px}
+#ped button{border-radius:16px;font-weight:900;cursor:pointer;-webkit-touch-callout:none;touch-action:none}
+#ped button[data-k=up]{height:84px;width:120px;background:linear-gradient(145deg,#ff3b30 0%,#ff0844 55%,#990012 100%);color:#fff;border:2.5px solid #ff7b72;font-size:22px;letter-spacing:1px;box-shadow:0 5px 0 #5f0309,0 8px 22px rgba(255,59,48,.5),inset 0 1px 2px rgba(255,255,255,.4);text-shadow:0 2px 4px rgba(0,0,0,.6)}
+#ped button[data-k=up].on{transform:translateY(4px) scale(.96);box-shadow:0 1px 0 #5f0309,0 0 30px rgba(255,59,48,.95),inset 0 0 16px rgba(255,255,255,.6);filter:brightness(1.15)}
+#ped button[data-k=down]{height:52px;width:120px;background:linear-gradient(145deg,#374151 0%,#1f2937 100%);color:#cbd5e1;border:2.5px solid #64748b;font-size:16px;box-shadow:0 5px 0 #0f172a,0 6px 16px rgba(0,0,0,.5),inset 0 1px 1px rgba(255,255,255,.15)}
+#ped button[data-k=down].on{transform:translateY(4px) scale(.96);border-color:#94a3b8;color:#fff;box-shadow:0 1px 0 #0f172a,0 0 20px rgba(148,163,184,.6)}
+#ped button[data-k=nitro]{width:84px;height:146px;background:linear-gradient(145deg,#00f2fe 0%,#0072ff 60%,#7928ca 100%);color:#fff;border:2.5px solid #38bdf8;font-size:17px;letter-spacing:1.5px;box-shadow:0 5px 0 #034f84,0 8px 25px rgba(0,210,255,.6),inset 0 1px 2px rgba(255,255,255,.5);text-shadow:0 0 12px rgba(0,242,254,.9),0 2px 4px rgba(0,0,0,.5)}
+#ped button[data-k=nitro].on{transform:translateY(4px) scale(.96);box-shadow:0 1px 0 #034f84,0 0 36px rgba(56,189,248,1),inset 0 0 22px rgba(255,255,255,.7);filter:brightness(1.2)}
 #bar{display:flex;gap:8px;width:100%;max-width:960px;justify-content:flex-end}
-#bar button{border:0;border-radius:10px;background:#444;color:#fff;font-size:18px;padding:4px 12px}
+#bar button{border:1.5px solid rgba(168,85,247,.5);border-radius:12px;background:linear-gradient(135deg,rgba(30,27,48,.88) 0%,rgba(14,12,24,.95) 100%);color:#f1f5f9;font-size:18px;padding:6px 14px;box-shadow:0 4px 14px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.2);backdrop-filter:blur(8px);cursor:pointer}
+#bar button:active{border-color:#c084fc;box-shadow:0 0 18px rgba(192,132,252,.7);color:#ffd23f;transform:translateY(2px)}
 button{transition:transform .08s ease,filter .15s,box-shadow .2s;-webkit-user-select:none}
-#steer button,#ped button{box-shadow:0 5px 0 rgba(0,0,0,.35),0 8px 14px rgba(0,0,0,.35)}
-#steer button.on,#ped button.on{box-shadow:0 1px 0 rgba(0,0,0,.35),0 0 18px rgba(232,181,58,.55);transform:translateY(4px) scale(.97)}
-canvas{box-shadow:0 8px 30px rgba(0,0,0,.5)}
 @media (prefers-reduced-motion:reduce){button{transition:none}}
-#rot{display:none;position:fixed;inset:0;z-index:99;background:#2b2a33;color:#f3efe0;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-size:20px;text-align:center;padding:24px}
-#rot b{font-size:56px;display:block;animation:rt 1.6s ease-in-out infinite}
+#rot{display:none;position:fixed;inset:0;z-index:99;background:radial-gradient(circle at 50% 30%,#241f38 0%,#0e0d16 100%);color:#f3efe0;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-size:20px;text-align:center;padding:24px}
+#rot b{font-size:56px;display:block;animation:rt 1.6s ease-in-out infinite;color:#ffd23f;filter:drop-shadow(0 0 16px rgba(255,210,63,.6))}
 @keyframes rt{0%,30%{transform:rotate(0)}70%,100%{transform:rotate(-90deg)}}
 @media (orientation:portrait) and (pointer:coarse){#rot{display:flex}}
 @media (orientation:landscape) and (pointer:coarse){
@@ -40,40 +43,35 @@ canvas{box-shadow:0 8px 30px rgba(0,0,0,.5)}
  #pad{position:fixed;left:max(14px,env(safe-area-inset-left));right:max(14px,env(safe-area-inset-right));bottom:12px;width:auto;max-width:none;pointer-events:none}
  body:not(.in-game) #pad{display:none !important}
  body.in-game #pad{display:flex !important}
- #pad button{pointer-events:auto;opacity:.82}
+ #pad button{pointer-events:auto;opacity:.88}
  #steer button{width:78px;height:78px}
- #ped button{width:104px}#ped button[data-k=up]{height:74px}#ped button[data-k=down]{height:46px}#ped button[data-k=nitro]{height:42px}
- #bar{position:fixed;top:24px;left:50%;transform:translateX(-50%);width:auto;z-index:5}
- #bar button{opacity:.75}
+ #ped button[data-k=up],#ped button[data-k=down]{width:104px}
+ #ped button[data-k=up]{height:74px}#ped button[data-k=down]{height:46px}
+ #ped button[data-k=nitro]{width:78px;height:130px}
+ #bar{position:fixed;top:20px;left:50%;transform:translateX(-50%);width:auto;z-index:5}
+ #bar button{opacity:.82}
 }
-#stage{position:relative;width:100%;max-width:960px;aspect-ratio:960/520;border-radius:8px;overflow:hidden;background:#000;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+#stage{position:relative;width:100%;max-width:960px;aspect-ratio:960/520;border-radius:12px;overflow:hidden;background:#000;box-shadow:0 12px 40px rgba(0,0,0,.7),0 0 24px rgba(0,240,255,.08)}
 #stage canvas{position:absolute;inset:0;width:100%!important;height:100%!important;max-width:none;aspect-ratio:auto;border-radius:0;box-shadow:none;background:transparent}
 #gl{pointer-events:none;transition:filter .3s ease}
-#ped{flex-direction:row;align-items:flex-end;gap:10px}
-#gr{display:flex;flex-direction:column;gap:10px}
-#steer button,#ped button{background:linear-gradient(#34343a,#16161a);color:#eceff3;border:3px solid #aeb4bc;-webkit-touch-callout:none;touch-action:none}
-#ped button[data-k=up]{background:linear-gradient(#e2332f,#9b1612);height:84px;width:120px}
-#ped button[data-k=down]{background:linear-gradient(#4a4a52,#222228);height:52px;width:120px}
-#ped button[data-k=nitro]{background:linear-gradient(#2a8fd6,#16547f);color:#fff;width:84px;height:146px}
-@media (orientation:landscape) and (pointer:coarse){#ped button[data-k=up],#ped button[data-k=down]{width:104px}#ped button[data-k=up]{height:74px}#ped button[data-k=down]{height:46px}#ped button[data-k=nitro]{width:78px;height:130px}}
 body.cine #pad,body.cine #bar,body.home #pad,body.home #bar{visibility:hidden;display:none!important}
 #car-controls,#sensei-controls{width:100%;display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none}
 #joy-zone{display:flex;align-items:center;justify-content:center;pointer-events:auto;touch-action:none;user-select:none;-webkit-user-select:none}
-#joy-base{position:relative;width:126px;height:126px;border-radius:50%;background:radial-gradient(circle,rgba(35,30,48,.88) 0%,rgba(16,14,24,.96) 100%);border:3px solid rgba(255,210,63,.85);box-shadow:0 6px 20px rgba(0,0,0,.65),inset 0 0 18px rgba(255,210,63,.25);touch-action:none;user-select:none;cursor:pointer}
-#joy-knob{position:absolute;top:50%;left:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffd23f 0%,#e0302a 65%,#8b100b 100%);border:2.5px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.6),inset 0 2px 4px rgba(255,255,255,.5);pointer-events:none;transform:translate(0px,0px);will-change:transform}
-.joy-dir{position:absolute;color:rgba(255,210,63,.55);font-size:11px;font-weight:bold;pointer-events:none}
-.joy-u{top:4px;left:50%;transform:translateX(-50%)}
-.joy-d{bottom:4px;left:50%;transform:translateX(-50%)}
-.joy-l{left:6px;top:50%;transform:translateY(-50%)}
-.joy-r{right:6px;top:50%;transform:translateY(-50%)}
+#joy-base{position:relative;width:126px;height:126px;border-radius:50%;background:radial-gradient(circle,rgba(32,24,52,.92) 0%,rgba(12,10,22,.98) 100%);border:3px solid #00f0ff;box-shadow:0 6px 24px rgba(0,0,0,.7),0 0 20px rgba(0,240,255,.4),inset 0 0 22px rgba(0,240,255,.25);touch-action:none;user-select:none;cursor:pointer}
+#joy-knob{position:absolute;top:50%;left:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#00f2fe 0%,#0077ff 65%,#002277 100%);border:2.5px solid #fff;box-shadow:0 4px 14px rgba(0,0,0,.7),0 0 16px rgba(0,242,254,.7),inset 0 2px 5px rgba(255,255,255,.7);pointer-events:none;transform:translate(0px,0px);will-change:transform}
+.joy-dir{position:absolute;color:rgba(0,240,255,.8);font-size:11px;font-weight:900;text-shadow:0 0 8px rgba(0,240,255,.7);pointer-events:none}
+.joy-u{top:5px;left:50%;transform:translateX(-50%)}
+.joy-d{bottom:5px;left:50%;transform:translateX(-50%)}
+.joy-l{left:7px;top:50%;transform:translateY(-50%)}
+.joy-r{right:7px;top:50%;transform:translateY(-50%)}
 #sensei-actions{display:flex;align-items:flex-end;gap:12px;pointer-events:auto}
-#btn-sensei-sprint{width:86px;height:62px;border-radius:16px;background:linear-gradient(135deg,#2a8fd6,#154e76);color:#fff;border:3px solid #82d4ff;font-weight:bold;font-size:13px;letter-spacing:1px;box-shadow:0 5px 0 rgba(0,0,0,.4);pointer-events:auto;cursor:pointer}
-#btn-sensei-sprint.on{transform:translateY(3px);filter:brightness(.85)}
-#btn-sensei-catch{width:116px;height:88px;border-radius:22px;background:linear-gradient(135deg,#e52d27,#9c1216);color:#fff;border:3px solid #ffd23f;box-shadow:0 6px 0 #6e080b,0 8px 18px rgba(229,45,39,.55);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent}
-#btn-sensei-catch:active,#btn-sensei-catch.on{transform:translateY(4px) scale(.97);box-shadow:0 2px 0 #6e080b,0 0 20px rgba(255,210,63,.85)}
-#btn-sensei-catch.stunned{background:linear-gradient(135deg,#5a5563,#322e3b);border-color:#8a8698;box-shadow:0 4px 0 #222;opacity:.88}
+#btn-sensei-sprint{width:86px;height:62px;border-radius:18px;background:linear-gradient(135deg,#00c6ff 0%,#0072ff 100%);color:#fff;border:3px solid #38bdf8;font-weight:900;font-size:13px;letter-spacing:1px;box-shadow:0 5px 0 #034f84,0 8px 20px rgba(0,198,255,.5),inset 0 1px 2px rgba(255,255,255,.4);pointer-events:auto;cursor:pointer}
+#btn-sensei-sprint.on{transform:translateY(3px);filter:brightness(1.15);box-shadow:0 2px 0 #034f84,0 0 22px rgba(56,189,248,1)}
+#btn-sensei-catch{width:116px;height:88px;border-radius:24px;background:linear-gradient(135deg,#ff0844 0%,#ff4b2b 100%);color:#fff;border:3.5px solid #ffd23f;box-shadow:0 6px 0 #79081a,0 10px 26px rgba(255,75,43,.65),inset 0 1px 3px rgba(255,255,255,.4);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent}
+#btn-sensei-catch:active,#btn-sensei-catch.on{transform:translateY(4px) scale(.97);box-shadow:0 2px 0 #79081a,0 0 28px rgba(255,210,63,1)}
+#btn-sensei-catch.stunned{background:linear-gradient(135deg,#4b5563 0%,#1f2937 100%);border-color:#9ca3af;box-shadow:0 4px 0 #111827;opacity:.85}
 .catch-icon{font-size:32px;line-height:1}
-.catch-txt{font-size:17px;font-weight:900;letter-spacing:1px;text-shadow:0 2px 4px rgba(0,0,0,.6)}
+.catch-txt{font-size:17px;font-weight:900;letter-spacing:1.5px;text-shadow:0 2px 6px rgba(0,0,0,.7)}
 @media (orientation:landscape) and (pointer:coarse){
  #joy-base{width:114px;height:114px}
  #joy-knob{width:48px;height:48px;margin:-24px 0 0 -24px}
@@ -136,15 +134,60 @@ function rr(x,y,w,h,r){
  g.closePath();
 }
 function fillRoundRect(x,y,w,h,r,col){
- g.save();g.fillStyle=col;rr(x,y,w,h,r);g.fill();g.restore();
+ g.save();
+ if(Array.isArray(col)){
+  const gr=g.createLinearGradient(x,y,x+w,y);
+  gr.addColorStop(0,col[0]);
+  gr.addColorStop(1,col[1]);
+  g.fillStyle=gr;
+ }else{
+  g.fillStyle=col;
+ }
+ rr(x,y,w,h,r);g.fill();g.restore();
 }
 function strokeRoundRect(x,y,w,h,r,col,lw){
- g.save();g.strokeStyle=col;g.lineWidth=lw||1.5;rr(x,y,w,h,r);g.stroke();g.restore();
+ g.save();
+ if(Array.isArray(col)){
+  const bgr=g.createLinearGradient(x,y,x+w,y+h);
+  bgr.addColorStop(0,col[0]);
+  bgr.addColorStop(1,col[1]);
+  g.strokeStyle=bgr;
+ }else{
+  g.strokeStyle=col;
+ }
+ g.lineWidth=lw||1.5;rr(x,y,w,h,r);g.stroke();g.restore();
 }
-function drawCard(x,y,w,h,r,bgCol,borderCol,lw){
+function drawCard(x,y,w,h,r,bgCol,borderCol,lw,glowCol){
+ g.save();
+ if(glowCol){
+  g.shadowColor=typeof glowCol==='string'?glowCol:'rgba(0,240,255,.5)';
+  g.shadowBlur=typeof glowCol==='number'?glowCol:10;
+ }
  rr(x,y,w,h,r);
- if(bgCol){g.fillStyle=bgCol;g.fill()}
- if(borderCol){g.strokeStyle=borderCol;g.lineWidth=lw||1.5;g.stroke()}
+ if(bgCol){
+  if(Array.isArray(bgCol)){
+   const gr=g.createLinearGradient(x,y,x,y+h);
+   gr.addColorStop(0,bgCol[0]);
+   gr.addColorStop(1,bgCol[1]);
+   g.fillStyle=gr;
+  }else{
+   g.fillStyle=bgCol;
+  }
+  g.fill();
+ }
+ if(borderCol){
+  if(Array.isArray(borderCol)){
+   const bgr=g.createLinearGradient(x,y,x+w,y+h);
+   bgr.addColorStop(0,borderCol[0]);
+   bgr.addColorStop(1,borderCol[1]);
+   g.strokeStyle=bgr;
+  }else{
+   g.strokeStyle=borderCol;
+  }
+  g.lineWidth=lw||1.5;
+  g.stroke();
+ }
+ g.restore();
 }
 const P=(x,y,z=0)=>{if(!T3)return[x+OX,y*SY+OY-z];const v=T3.v.set(x*.1,z*.1,y*.1).project(T3.cam);if(v.z>1)return[-999,-999];return[(v.x+1)*480,(1-v.y)*260]};
 const keys={up:0,down:0,left:0,right:0,nitro:0};
@@ -809,35 +852,82 @@ function drawRoom(){
 function hud(){
  dispScore+=(score-dispScore)*.15;dispTime+=(time-dispTime)*.2;
  const t=Math.max(0,dispTime),low=t<10&&state==='play';
- fillRoundRect(8,6,944,10,5,'rgba(0,0,0,.45)');
- const col=low&&Math.sin(Date.now()/100)>0?'#ff5a4a':'hsl('+Math.min(120,t*2.4)+',75%,50%)';
- fillRoundRect(8,6,944*Math.min(1,t/120),10,5,col);
- drawCard(844,20,108,30,10,'rgba(16,14,24,.75)',low?'#ff5a4a':'rgba(255,255,255,.15)',1);
- g.textAlign='center';g.font='bold '+(low?19:16)+'px "Trebuchet MS",sans-serif';g.fillStyle=low?'#ff8a7a':'#f3efe0';
- g.fillText(Math.floor(Math.ceil(t)/60)+':'+String(Math.ceil(t)%60).padStart(2,'0'),898,42);g.textAlign='left';
- const cardH=isSensei?(teacher.downT>0?74:56):56;
- drawCard(8,OY+4,isSensei?156:140,cardH,12,'rgba(16,14,24,.75)','rgba(255,255,255,.12)',1.5);
+ const pulse=(Math.sin(Date.now()/120)+1)*.5;
+ fillRoundRect(8,6,944,11,5.5,'rgba(10,8,18,.75)');
+ strokeRoundRect(8,6,944,11,5.5,'rgba(255,255,255,.12)',1);
+ let timeCol;
+ if(low){
+  timeCol=pulse>.4?['#ff0844','#ff4b2b']:['#990012','#ff0055'];
+ }else if(t>60){
+  timeCol=['#00f0ff','#10b981'];
+ }else if(t>20){
+  timeCol=['#10b981','#f59e0b'];
+ }else{
+  timeCol=['#f59e0b','#ef4444'];
+ }
+ if(t>0){
+  g.save();
+  if(low){g.shadowColor='#ff0844';g.shadowBlur=12}
+  fillRoundRect(8,6,944*Math.min(1,t/120),11,5.5,timeCol);
+  g.restore();
+ }
+ drawCard(844,21,108,31,10,['rgba(26,20,40,.88)','rgba(12,10,22,.95)'],low?(pulse>.4?'#ff0844':'#ff7b72'):['#00f0ff','#7928ca'],1.5,low?'#ff0844':null);
+ g.textAlign='center';g.font='bold '+(low?20:17)+'px "Trebuchet MS",sans-serif';
+ g.fillStyle=low?(pulse>.4?'#ff4b2b':'#ffffff'):'#00f0ff';
+ g.fillText(Math.floor(Math.ceil(t)/60)+':'+String(Math.ceil(t)%60).padStart(2,'0'),898,43);g.textAlign='left';
+
+ const cardH=isSensei?(teacher.downT>0?76:58):58;
+ drawCard(8,OY+4,isSensei?164:144,cardH,12,['rgba(24,18,38,.9)','rgba(12,10,22,.96)'],isSensei?['#ff0844','#ffd23f']:['#00f0ff','#7928ca'],1.5,isSensei?'rgba(255,8,68,.3)':'rgba(0,240,255,.2)');
  if(isSensei){
-  g.fillStyle='#e0302a';g.font='bold 13px "Trebuchet MS",sans-serif';g.fillText('👑 ROLE: SAKAMOTO SENSEI',16,OY+18);
-  g.fillStyle='#ffd23f';g.font='bold 22px "Trebuchet MS",sans-serif';g.fillText('Cars Caught: '+senseiCaught,16,OY+42);
+  g.fillStyle='#ff4b2b';g.font='bold 12px "Trebuchet MS",sans-serif';g.fillText('👑 ROLE: SAKAMOTO SENSEI',16,OY+19);
+  g.fillStyle='#ffd23f';g.font='bold 22px "Trebuchet MS",sans-serif';g.fillText('Cars Caught: '+senseiCaught,16,OY+44);
   if(teacher.downT>0){
    g.fillStyle='#ff5a4a';g.font='bold 13px "Trebuchet MS",sans-serif';
-   g.fillText('💫 DOWN: '+teacher.downT.toFixed(1)+'s',16,OY+64);
+   g.fillText('💫 DOWN: '+teacher.downT.toFixed(1)+'s',16,OY+67);
   }
  }else{
-  g.fillStyle='#f3efe0';g.font='12px "Trebuchet MS",sans-serif';g.fillText('Score',16,OY+20);g.fillText('Level '+level,84,OY+20);
-  g.font='bold '+Math.round(26+Math.min(1,Math.abs(score-dispScore)*.3)*8)+'px "Trebuchet MS",sans-serif';g.fillText(Math.round(dispScore),16,OY+48);
-  if(senseiMode&&senseiPlayerId){g.fillStyle='#ff9a9a';g.font='bold 12px "Trebuchet MS",sans-serif';const sn=senseiPlayerId==='host'?'Host':(remote[senseiPlayerId]?.name||'Player');g.fillText('⚠ AVOID SENSEI ('+sn+')',16,OY-6)}
+  g.fillStyle='#94a3b8';g.font='bold 11px "Trebuchet MS",sans-serif';g.fillText('SCORE',16,OY+19);
+  g.fillStyle='#00ff88';g.fillText('LVL '+level,92,OY+19);
+  g.font='bold '+Math.round(26+Math.min(1,Math.abs(score-dispScore)*.3)*8)+'px "Trebuchet MS",sans-serif';
+  g.fillStyle='#ffd23f';
+  g.fillText(Math.round(dispScore),16,OY+48);
+  if(senseiMode&&senseiPlayerId){
+   g.fillStyle='#ff4b2b';g.font='bold 12px "Trebuchet MS",sans-serif';
+   const sn=senseiPlayerId==='host'?'Host':(remote[senseiPlayerId]?.name||'Player');
+   g.fillText('⚠ AVOID SENSEI ('+sn+')',16,OY-6);
+  }
  }
- if(netStatus){g.fillStyle='#f3efe0';g.font='bold 14px "Trebuchet MS",sans-serif';g.fillText(netStatus+' ('+(Object.keys(remote).length+1)+' players)'+(senseiMode?' [SENSEI MODE]':''),16,38)}
+ if(netStatus){
+  g.fillStyle='#38bdf8';g.font='bold 14px "Trebuchet MS",sans-serif';
+  g.fillText(netStatus+' ('+(Object.keys(remote).length+1)+' players)'+(senseiMode?' [SENSEI MODE]':''),16,38);
+ }
  let y=OY+cardH+12;
- const bar=(w,c,l)=>{fillRoundRect(8,y,100,8,4,'rgba(0,0,0,.45)');fillRoundRect(8,y,100*Math.max(0,Math.min(1,w)),8,4,c);g.fillStyle='#f3efe0';g.font='11px "Trebuchet MS",sans-serif';g.fillText(l,114,y+8);y+=14};
- if(isSensei){bar(senseiStamina/100,senseiStamina>20?'#3fa66b':'#e0302a','Sensei Stamina');}
- else{bar(nitro/100,nitroOK?'#4fc3ff':'#8a6a6a',nitroOK?'Nitro':'Recharging');}
- const nb=document.querySelector('[data-k=nitro]');if(nb){const bgs='linear-gradient(to top,'+(nitroOK?'#2a8fd6':'#6a7a88')+' '+nitro+'%,#22394d '+nitro+'%)';if(nb._b!==bgs){nb._b=bgs;nb.style.background=bgs}}
- if(combo>1)bar(comboT/3,'#ffd23f','Combo x'+combo);
- if(car.boost>0)bar(car.boost/5,'#8fd16b','Boost');
- if(teacher.freeze>0)bar(teacher.freeze/3,'#7fd0ff','Frozen');
+ const bar=(w,c,l,glow)=>{
+  fillRoundRect(8,y,104,9,4.5,'rgba(10,8,18,.75)');
+  strokeRoundRect(8,y,104,9,4.5,'rgba(255,255,255,.12)',1);
+  if(w>0){
+   g.save();
+   if(glow){g.shadowColor=glow;g.shadowBlur=8}
+   fillRoundRect(8,y,104*Math.max(0,Math.min(1,w)),9,4.5,c);
+   g.restore();
+  }
+  g.fillStyle='#f1f5f9';g.font='bold 11px "Trebuchet MS",sans-serif';g.fillText(l,118,y+8);
+  y+=15;
+ };
+ if(isSensei){
+  bar(senseiStamina/100,senseiStamina>20?['#00ff88','#10b981']:['#ff0844','#b91c1c'],'Sensei Stamina',senseiStamina<=20?'#ff0844':null);
+ }else{
+  const nFull=nitroOK&&nitro>=98;
+  bar(nitro/100,nitroOK?['#00f2fe','#0072ff']:['#475569','#1e293b'],nitroOK?(nFull?'⚡ Nitro [FULL]':'⚡ Nitro Ready'):'⏳ Recharging',nFull?'#00f2fe':null);
+ }
+ const nb=document.querySelector('[data-k=nitro]');
+ if(nb){
+  const bgs='linear-gradient(to top,'+(nitroOK?'#00f2fe':'#475569')+' '+nitro+'%,#0f172a '+nitro+'%)';
+  if(nb._b!==bgs){nb._b=bgs;nb.style.background=bgs}
+ }
+ if(combo>1)bar(comboT/3,['#ff9900','#ff0055'],'🔥 Combo x'+combo,'#ff9900');
+ if(car.boost>0)bar(car.boost/5,['#00ff88','#00c6ff'],'🚀 Boost','#00ff88');
+ if(teacher.freeze>0)bar(teacher.freeze/3,['#a0e9ff','#0072ff'],'❄️ Sensei Frozen','#00f0ff');
 }
 function drawParts(){
  parts.forEach(p=>{
@@ -855,55 +945,59 @@ function drawParts(){
 function panel(title,lines,showDiff){
  if(!NH&&!NG&&isSensei){isSensei=false;senseiMode=false;senseiPlayerId='';senseiCaught=0;updatePedUI()}
  g.save();g.globalAlpha=ea;g.translate(0,(1-ea)*40);
- drawCard(190,36,580,474,22,'rgba(20,18,30,.95)','rgba(255,210,63,.25)',2);
- g.textAlign='center';g.fillStyle='#f3efe0';g.font='bold 32px "Trebuchet MS",sans-serif';
+ const pulse=(Math.sin(Date.now()/300)+1)*.5;
+ drawCard(190,36,580,474,22,['rgba(26,20,40,.96)','rgba(12,10,22,.98)'],['#ffd23f','#00f0ff'],2,'rgba(255,210,63,'+(0.2+pulse*0.25)+')');
+ g.textAlign='center';g.fillStyle='#ffffff';g.font='bold 32px "Trebuchet MS",sans-serif';
+ g.shadowColor='#ffd23f';g.shadowBlur=10;
  g.fillText(title,480,80);
- drawCard(640,58,110,26,12,'rgba(0,0,0,.5)','#ffd23f',1);
+ g.shadowBlur=0;
+ drawCard(640,58,110,26,12,['rgba(20,16,32,.7)','rgba(10,8,18,.85)'],'#ffd23f',1.5);
  g.font='bold 14px "Trebuchet MS",sans-serif';g.fillStyle='#ffd23f';
  g.fillText('Coins: '+coins,695,76);
- g.fillStyle='#f3efe0';g.font='15px "Trebuchet MS",sans-serif';
+ g.fillStyle='#cbd5e1';g.font='15px "Trebuchet MS",sans-serif';
  lines.forEach((l,i)=>g.fillText(l,480,112+i*22));
  let y=112+lines.length*22+8;ui.diff=showDiff;ui.dy=y;
  if(showDiff){
   DIFF.forEach((d,i)=>{
    const x=290+i*130;
-   drawCard(x,y,120,34,10,i===diff?'#e8b53a':'#3a3848',i===diff?'#ffd23f':'rgba(255,255,255,.12)',1.5);
-   g.fillStyle=i===diff?'#2b2a33':'#f3efe0';g.font='bold 15px "Trebuchet MS",sans-serif';
+   const isSel=i===diff;
+   drawCard(x,y,120,34,10,isSel?['#f59e0b','#d97706']:['#374151','#1f2937'],isSel?'#fde68a':'rgba(255,255,255,.15)',isSel?2:1,isSel?'#f59e0b':null);
+   g.fillStyle=isSel?'#1e1405':'#f1f5f9';g.font='bold 15px "Trebuchet MS",sans-serif';
    g.fillText(d.n,x+60,y+23);
   });
   y+=48;
  }
  ui.py=y;
- drawCard(380,y,200,40,12,'#e8b53a','#ffd23f',1.5);
- g.fillStyle='#2b2a33';g.font='bold 18px "Trebuchet MS",sans-serif';
+ drawCard(380,y,200,40,12,['#10b981','#059669'],'#34d399',2,'#10b981');
+ g.fillStyle='#ffffff';g.font='bold 18px "Trebuchet MS",sans-serif';
  g.fillText(state==='pause'?'Resume':'Play',480,y+26);
  if(showDiff&&!NG){
-  drawCard(596,y,150,40,12,'#3a6ea5','rgba(255,255,255,.2)',1.5);
+  drawCard(596,y,150,40,12,['#2563eb','#1d4ed8'],'#60a5fa',1.5);
   g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';g.fillText('Garage',671,y+26);
-  drawCard(214,y,150,40,12,'#5a5a70','rgba(255,255,255,.2)',1.5);
+  drawCard(214,y,150,40,12,['#7c3aed','#5b21b6'],'#a78bfa',1.5);
   g.fillStyle='#fff';g.fillText('Settings',289,y+26);
  }
  if(showDiff&&!(NH||NG)){
   ui.my=y+48;
-  [['Create room',290],['Join room',490]].forEach(([l,x])=>{
-   drawCard(x,ui.my,180,32,10,'#4a4858','rgba(255,255,255,.15)',1.5);
-   g.fillStyle='#f3efe0';g.font='bold 15px "Trebuchet MS",sans-serif';g.fillText(l,x+90,ui.my+21);
+  [['Create room',290,['#0284c7','#0369a1'],'#38bdf8'],['Join room',490,['#0d9488','#0f766e'],'#2dd4bf']].forEach(([l,x,bg,bd])=>{
+   drawCard(x,ui.my,180,32,10,bg,bd,1.5);
+   g.fillStyle='#ffffff';g.font='bold 15px "Trebuchet MS",sans-serif';g.fillText(l,x+90,ui.my+21);
   });
   y+=42;
  }else ui.my=-99;
  if(NH){
   ui.sy=y+46;
-  drawCard(290,ui.sy,380,32,10,senseiMode?'#b82222':'#4a4858','rgba(255,255,255,.18)',1.5);
+  drawCard(290,ui.sy,380,32,10,senseiMode?['#dc2626','#991b1b']:['#374151','#1f2937'],senseiMode?'#f87171':'rgba(255,255,255,.2)',1.5,senseiMode?'#dc2626':null);
   g.fillStyle='#fff';g.font='bold 14px "Trebuchet MS",sans-serif';
   const sn=senseiPlayerId?(senseiPlayerId==='host'?'Host':(remote[senseiPlayerId]?.name||'Player')):'Unassigned';
   g.fillText(senseiMode?('👑 Sensei Mode: ON ('+sn+' is Sensei)'):'👑 Enable Sensei Mode (Play as Teacher)',480,ui.sy+21);
   y+=42;
  }else ui.sy=-99;
  y+=54;
- drawCard(310,y-16,340,78,12,'rgba(0,0,0,.45)','rgba(255,255,255,.08)',1);
+ drawCard(310,y-16,340,78,12,['rgba(18,14,28,.8)','rgba(10,8,18,.9)'],['rgba(255,255,255,.1)','rgba(255,210,63,.2)'],1);
  g.fillStyle='#ffd23f';g.font='bold 13px "Trebuchet MS",sans-serif';
  g.fillText('🏆 Top 5 Scores on this Device',480,y);
- g.font='13px "Trebuchet MS",sans-serif';g.fillStyle='#e0e0ea';
+ g.font='13px "Trebuchet MS",sans-serif';g.fillStyle='#cbd5e1';
  if(!tops.length)g.fillText('No scores yet',480,y+20);
  tops.forEach((t,i)=>{if(i<3)g.fillText((i+1)+'.  '+t.s+' pts  (Level '+t.l+')',480,y+18+i*18)});
  g.textAlign='left';g.restore();
@@ -914,60 +1008,62 @@ function drawGameOver(){
  g.save();g.globalAlpha=ea;g.translate(0,(1-ea)*30);
  const isCaught=msg==='caught';
  const sName=senseiModelType==='fiery'?'Fiery Sensei':'Sakamoto Sensei';
- const cardBorder=isCaught?'rgba(255,70,70,.55)':'rgba(255,210,63,.45)';
- drawCard(195,30,570,460,22,'rgba(18,14,26,.97)',cardBorder,2.5);
+ const pulse=(Math.sin(Date.now()/250)+1)*.5;
+ const cardBorder=isCaught?['#ff0844','#ff7b72']:['#ffd23f','#00f0ff'];
+ const cardGlow=isCaught?'rgba(255,8,68,'+(0.3+pulse*0.3)+')':'rgba(255,210,63,'+(0.25+pulse*0.25)+')';
+ drawCard(195,30,570,460,22,['rgba(26,20,40,.97)','rgba(12,10,22,.99)'],cardBorder,2.5,cardGlow);
  
- const badgeW=180,badgeH=24,badgeX=480-badgeW/2,badgeY=44;
- drawCard(badgeX,badgeY,badgeW,badgeH,8,isCaught?'#b82222':'#d97724',null);
+ const badgeW=190,badgeH=26,badgeX=480-badgeW/2,badgeY=44;
+ drawCard(badgeX,badgeY,badgeW,badgeH,8,isCaught?['#ff0844','#b91c1c']:['#f59e0b','#d97706'],isCaught?'#ff7b72':'#fde68a',1.5,isCaught?'#ff0844':'#f59e0b');
  g.textAlign='center';g.fillStyle='#fff';g.font='bold 11px "Trebuchet MS",sans-serif';
- g.fillText(isCaught?'🚨 CONFISCATED! 🚨':'🔔 TIME EXPIRED! 🔔',480,badgeY+16);
+ g.fillText(isCaught?'🚨 CONFISCATED! 🚨':'🔔 TIME EXPIRED! 🔔',480,badgeY+17);
 
- g.fillStyle='#f3efe0';g.font='bold 28px "Trebuchet MS",sans-serif';
+ g.fillStyle='#ffffff';g.font='bold 28px "Trebuchet MS",sans-serif';
  g.fillText(isCaught?('Caught by '+sName+'!'):'The Bell Rang!',480,96);
 
- drawCard(218,110,524,64,12,'rgba(12,10,18,.85)','rgba(255,255,255,.09)',1);
+ drawCard(218,110,524,64,12,['rgba(18,14,28,.9)','rgba(10,8,18,.95)'],['rgba(255,255,255,.15)','rgba(0,240,255,.2)'],1);
  g.textAlign='left';g.fillStyle='#ffd23f';g.font='bold 11px "Trebuchet MS",sans-serif';
  g.fillText(isCaught?(sName+' confiscated your RC car:'):'School Bell announcement:',232,128);
  const defCatch=VP&&/^ja/.test(VP.lang)?'捕まえたわよ！没収です！':VP&&/^ta/.test(VP.lang)?'பிடிச்சிட்டேன்! இனிமேல் இந்த பொம்மை கிடைக்காது!':'Gotcha! That toy is confiscated!';
  const qText=isCaught?(teacher.say||defCatch):'The period bell rang! Detention if you keep playing in class!';
- g.fillStyle='#f5ede0';g.font='italic 13px "Trebuchet MS",sans-serif';
+ g.fillStyle='#f1f5f9';g.font='italic 13px "Trebuchet MS",sans-serif';
  g.fillText('"'+qText+'"',232,152);
 
  const stats=[
-  ['🎯 Score',Math.round(score),'#ffd23f'],
-  ['📚 Level',level,'#6bd16b'],
-  ['💥 Bumps',bumps,'#ff8a7a'],
-  ['🪙 Earned','+'+earned,'#ffe066']
+  ['🎯 Score',Math.round(score),['#ffd23f','#f59e0b'],'rgba(255,210,63,.4)'],
+  ['📚 Level',level,['#00ff88','#10b981'],'rgba(0,255,136,.4)'],
+  ['💥 Bumps',bumps,['#ff7b72','#ff0844'],'rgba(255,123,114,.4)'],
+  ['🪙 Earned','+'+earned,['#fde047','#eab308'],'rgba(253,224,71,.4)']
  ];
- stats.forEach(([lbl,val,col],i)=>{
+ stats.forEach(([lbl,val,col,bCol],i)=>{
   const sx=218+i*133;
-  drawCard(sx,186,126,66,10,'rgba(28,24,38,.85)','rgba(255,255,255,.1)',1.2);
-  g.textAlign='center';g.fillStyle='#9ab0c8';g.font='bold 11px "Trebuchet MS",sans-serif';
+  drawCard(sx,186,126,66,10,['rgba(32,24,48,.85)','rgba(18,14,30,.95)'],bCol,1.5);
+  g.textAlign='center';g.fillStyle='#94a3b8';g.font='bold 11px "Trebuchet MS",sans-serif';
   g.fillText(lbl,sx+63,206);
-  g.fillStyle=col;g.font='bold 20px "Trebuchet MS",sans-serif';
+  g.fillStyle=col[0];g.font='bold 20px "Trebuchet MS",sans-serif';
   g.fillText(val+'',sx+63,236);
  });
 
- drawCard(218,264,524,38,10,'rgba(255,210,63,.08)','rgba(255,210,63,.25)',1);
+ drawCard(218,264,524,38,10,['rgba(255,210,63,.12)','rgba(245,158,11,.06)'],['#ffd23f','#f59e0b'],1.5,'rgba(255,210,63,.2)');
  const isNewRecord=tops.length>0&&score>=tops[0].s&&score>0;
  g.textAlign='center';g.fillStyle='#ffd23f';g.font='bold 13px "Trebuchet MS",sans-serif';
  const topScore=tops.length?tops[0].s:Math.round(score);
  g.fillText((isNewRecord?'⭐ NEW RECORD! ':'🏆 Personal Best: ')+topScore+' pts   •   Bank Total: '+coins+' Coins 🪙',480,288);
 
- g.fillStyle='#a0a0b8';g.font='12px "Trebuchet MS",sans-serif';
+ g.fillStyle='#94a3b8';g.font='12px "Trebuchet MS",sans-serif';
  const tip=isCaught?'💡 Pro-tip: Duck under desks or stay close to Sakura-kun & Hinata-chan to lose Sensei!':'💡 Pro-tip: Grab coffee cups for speed boost and clocks for extra time!';
  g.fillText(tip,480,326);
 
  ui.py=352;
- drawCard(250,ui.py,220,48,12,'#2e7d32','#4caf50',2);
+ drawCard(250,ui.py,220,48,14,['#10b981','#047857'],'#6ee7b7',2,'#10b981');
  g.fillStyle='#fff';g.font='bold 17px "Trebuchet MS",sans-serif';
  g.fillText(NG?'Waiting for host':'🔄 Play Again',360,ui.py+30);
 
- drawCard(490,ui.py,220,48,12,'#3a4858','rgba(255,255,255,.25)',1.5);
+ drawCard(490,ui.py,220,48,14,['#2563eb','#1d4ed8'],'#93c5fd',1.5);
  g.fillStyle='#fff';g.font='bold 17px "Trebuchet MS",sans-serif';
  g.fillText('🏠 Main Menu',600,ui.py+30);
 
- g.fillStyle='rgba(255,255,255,.45)';g.font='11px "Trebuchet MS",sans-serif';
+ g.fillStyle='rgba(255,255,255,.55)';g.font='11px "Trebuchet MS",sans-serif';
  g.fillText('Press Space / Enter to play again • Press Esc for Main Menu',480,426);
 
  g.textAlign='left';g.restore();
@@ -1132,7 +1228,9 @@ function draw2D(){
  if(state!=='shop'&&state!=='settings'&&state!=='voices'&&state!=='textures'&&state!=='intro'&&state!=='title')hud();
  g.textAlign='center';
  popups.forEach(p=>{const w=P(p.x,p.y,30),q=p.s?[p.x,p.y]:[w[0]+camX,w[1]+camY],l=Math.min(1,p.l),yy=q[1]-(1-l)*30;
-  g.globalAlpha=l;g.font='bold '+Math.round(22+Math.max(0,l-.7)*45)+'px "Trebuchet MS",sans-serif';g.lineWidth=4;g.strokeStyle='rgba(0,0,0,.5)';g.strokeText(p.t,q[0],yy);g.fillStyle='#ffd23f';g.fillText(p.t,q[0],yy)});
+  g.save();g.globalAlpha=l;const sz=Math.round(22+Math.max(0,l-.7)*45);g.font='italic 900 '+sz+'px "Trebuchet MS",sans-serif';
+  g.lineWidth=5;g.strokeStyle='#0f0c18';g.strokeText(p.t,q[0],yy);
+  g.shadowColor=p.c||'#ffd23f';g.shadowBlur=12;g.fillStyle=p.c||'#ffd23f';g.fillText(p.t,q[0],yy);g.restore()});
  g.globalAlpha=1;g.textAlign='left';
  if(state!==lastSt){lastSt=state;pa=0}pa=Math.min(1,pa+.07);ea=1-Math.pow(1-pa,3);
  if(state!=='play'&&state!=='shop'&&state!=='intro'&&state!=='title'){g.fillStyle='rgba(0,0,0,'+.4*ea+')';g.fillRect(0,0,960,520)}
@@ -2532,20 +2630,36 @@ function shopClick(x,y){
   else popups.push({t:'Not enough coins',x:480,y:235,l:1.5,s:1})}
  else if(x>540&&x<700&&y>456&&y<498){state='home';applyCar(carSel)}}
 function drawShop(){const c=CARS[shopSel],hex=n=>'#'+n.toString(16).padStart(6,'0'),own=owned.includes(shopSel);
- g.save();g.globalAlpha=ea;drawCard(0,248,960,272,18,'rgba(18,16,26,.95)','rgba(255,255,255,.1)',1.5);
- g.textAlign='left';g.fillStyle='#f3efe0';g.font='bold 28px "Trebuchet MS",sans-serif';g.fillText(c[0],30,48);
- g.font='15px "Trebuchet MS",sans-serif';g.fillStyle='#ffd23f';g.fillText(shopSel===carSel?'Equipped':own?'Owned':c[1]+' coins',30,72);
- drawCard(830,20,110,28,10,'rgba(0,0,0,.5)','#ffd23f',1);
+ g.save();g.globalAlpha=ea;
+ drawCard(0,248,960,272,18,['rgba(24,20,38,.96)','rgba(12,10,22,.99)'],['#ffd23f','#00f0ff'],1.5,'rgba(0,240,255,.15)');
+ g.textAlign='left';g.fillStyle='#ffffff';g.font='bold 28px "Trebuchet MS",sans-serif';g.fillText(c[0],30,48);
+ g.font='bold 15px "Trebuchet MS",sans-serif';g.fillStyle='#ffd23f';g.fillText(shopSel===carSel?'Equipped':own?'Owned':c[1]+' coins',30,72);
+ drawCard(830,20,110,28,10,['rgba(20,16,32,.7)','rgba(10,8,18,.85)'],'#ffd23f',1.5);
  g.textAlign='center';g.font='bold 14px "Trebuchet MS",sans-serif';g.fillStyle='#ffd23f';g.fillText('Coins: '+coins,885,39);g.textAlign='left';
- [['Speed',3],['Accel',4],['Handling',5]].forEach(([n,k],i)=>{const yy=88+i*26;g.fillStyle='#f3efe0';g.font='13px "Trebuchet MS",sans-serif';g.fillText(n,30,yy+11);drawCard(105,yy,150,12,6,'rgba(255,255,255,.18)',null);fillRoundRect(105,yy,150*Math.min(1,(c[k]-.95)/.55),12,6,hex(c[2]))});
- for(let i=0;i<21;i++){const q=CARS[i],cx=14+(i%7)*132,cy=256+Math.floor(i/7)*62,isEquip=i===carSel,isSel=i===shopSel;
-  drawCard(cx,cy,126,56,10,isSel?'#3c3a54':'#252434',isEquip?'#6bd16b':isSel?'#ffd23f':'rgba(255,255,255,.12)',isEquip||isSel?2:1);
+ const statGradients=[['Speed',3,['#00f0ff','#0072ff']],['Accel',4,['#ff9900','#ff3300']],['Handling',5,['#00ff88','#10b981']]];
+ statGradients.forEach(([n,k,sGrad],i)=>{
+  const yy=88+i*26;
+  g.fillStyle='#cbd5e1';g.font='bold 13px "Trebuchet MS",sans-serif';g.fillText(n,30,yy+11);
+  drawCard(105,yy,150,12,6,'rgba(255,255,255,.1)',null);
+  fillRoundRect(105,yy,150*Math.min(1,(c[k]-.95)/.55),12,6,sGrad);
+ });
+ for(let i=0;i<21;i++){
+  const q=CARS[i],cx=14+(i%7)*132,cy=256+Math.floor(i/7)*62,isEquip=i===carSel,isSel=i===shopSel;
+  const cardBg=isEquip?['#065f46','#022c22']:isSel?['#78350f','#451a03']:owned.includes(i)?['#1e293b','#0f172a']:['#181424','#0d0b14'];
+  const cardBord=isEquip?'#10b981':isSel?'#ffd23f':'rgba(255,255,255,.12)';
+  const cardGlow=isEquip?'#10b981':isSel?'#ffd23f':null;
+  drawCard(cx,cy,126,56,10,cardBg,cardBord,isEquip||isSel?2:1,cardGlow);
   fillRoundRect(cx+8,cy+12,42,10,4,hex(q[2]));fillRoundRect(cx+16,cy+6,24,8,3,hex(q[2]));g.fillStyle='#111';g.beginPath();g.arc(cx+18,cy+24,4,0,7);g.arc(cx+42,cy+24,4,0,7);g.fill();
-  g.fillStyle='#f3efe0';g.font='bold 11px "Trebuchet MS",sans-serif';g.fillText(q[0],cx+6,cy+46);
-  g.font='10px "Trebuchet MS",sans-serif';g.fillStyle=isEquip?'#6bd16b':owned.includes(i)?'#9ad0ff':'#ffd23f';g.fillText(isEquip?'EQUIPPED':owned.includes(i)?'OWNED':q[1]+'c',cx+62,cy+22)}
- drawCard(300,456,220,40,12,own?'#3fa66b':coins>=c[1]?'#e8b53a':'#6a6a74','rgba(255,255,255,.2)',1.5);g.fillStyle='#15151a';g.textAlign='center';g.font='bold 17px "Trebuchet MS",sans-serif';
+  g.fillStyle='#f1f5f9';g.font='bold 11px "Trebuchet MS",sans-serif';g.fillText(q[0],cx+6,cy+46);
+  g.font='bold 10px "Trebuchet MS",sans-serif';g.fillStyle=isEquip?'#34d399':owned.includes(i)?'#38bdf8':'#ffd23f';g.fillText(isEquip?'EQUIPPED':owned.includes(i)?'OWNED':q[1]+'c',cx+62,cy+22);
+ }
+ const buyGrad=own?['#10b981','#059669']:coins>=c[1]?['#f59e0b','#d97706']:['#374151','#1f2937'];
+ const buyBord=own?'#34d399':coins>=c[1]?'#fde68a':'#64748b';
+ drawCard(300,456,220,40,12,buyGrad,buyBord,1.5,own?'#10b981':coins>=c[1]?'#f59e0b':null);
+ g.fillStyle='#ffffff';g.textAlign='center';g.font='bold 17px "Trebuchet MS",sans-serif';
  g.fillText(shopSel===carSel?'Equipped':own?'Equip':'Buy for '+c[1],410,482);
- drawCard(540,456,160,40,12,'#4a4858','rgba(255,255,255,.2)',1.5);g.fillStyle='#f3efe0';g.fillText('Back',620,482);g.restore();g.textAlign='left'}
+ drawCard(540,456,160,40,12,['#334155','#1e293b'],'#64748b',1.5);
+ g.fillStyle='#f1f5f9';g.fillText('Back',620,482);g.restore();g.textAlign='left'}
 function loadVoices(){try{VO=speechSynthesis.getVoices()||[]}catch(e){VO=[]}}
 if(window.speechSynthesis){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
 function stepSfx(o,teach){const dx=o.x-car.x,dy=o.y-car.y,d=Math.hypot(dx,dy);if(d>420||muted)return;const vol=(1-d/420)*(teach?.55:.32),pan=Math.max(-1,Math.min(1,(dx*-Math.sin(car.a)+dy*Math.cos(car.a))/260));
@@ -2580,7 +2694,7 @@ function heroEnd(go){const h=hide,st=h.hero,T=teacher;hide=null;st.cd=25;car.x=h
  else T.say=pk_(LN('teacher','nope',['Hmph. You had better not be lying!']));
  T.sayT=2.2;speak(T,T.say);popups.push({t:'Saved by '+st.name+'!',x:480,y:200,l:2,s:1});sfx.power()}
 function drawTags(){g.font='bold 11px "Trebuchet MS",sans-serif';g.textAlign='center';
- const tag=(o,h,txt,col)=>{const p=P(o.x,o.y,h);if(p[0]<0||p[0]>960||p[1]<20||p[1]>520)return;const w=g.measureText(txt).width+10;fillRoundRect(p[0]-w/2,p[1]-12,w,15,5,'rgba(0,0,0,.55)');g.fillStyle=col;g.fillText(txt,p[0],p[1])};
+ const tag=(o,h,txt,col)=>{const p=P(o.x,o.y,h);if(p[0]<0||p[0]>960||p[1]<20||p[1]>520)return;const w=g.measureText(txt).width+12;fillRoundRect(p[0]-w/2,p[1]-13,w,16,5,['rgba(26,20,40,.9)','rgba(12,10,22,.95)']);strokeRoundRect(p[0]-w/2,p[1]-13,w,16,5,o.hero?'#ffd23f':'rgba(0,240,255,.3)',1);g.fillStyle=col;g.fillText(txt,p[0],p[1]-1)};
  students.forEach(o=>{if(o.name&&(o.hero||Math.hypot(o.x-car.x,o.y-car.y)<250))tag(o,82,(o.hero?'★ ':'')+o.name,o.hero?'#ffd23f':'#cfe3ff')});
  if(teacher.x!==undefined){
   const sLabel=senseiMode&&senseiPlayerId?('👑 SENSEI ['+(senseiPlayerId==='host'?'Host':(remote[senseiPlayerId]?.name||'P'))+']'):(senseiModelType==='fiery'?'Fiery Sensei':'Sakamoto Sensei');
@@ -2679,18 +2793,23 @@ function texClick(x,y){
  if(x>400&&x<560&&y>450&&y<490){state='settings';sfx.tick()}
 }
 function drawTex(){
- g.save();g.globalAlpha=ea;drawCard(40,24,880,472,20,'rgba(20,18,30,.96)','rgba(255,255,255,.14)',2);
- g.textAlign='center';g.fillStyle='#f3efe0';g.font='bold 28px "Trebuchet MS",sans-serif';g.fillText('Texture & Visual Themes',480,58);
- g.font='13px "Trebuchet MS",sans-serif';g.fillStyle='#b8b8c8';g.fillText('Select an environment theme to restyle the classroom, desks, blackboard, lighting and your car',480,82);
+ g.save();g.globalAlpha=ea;
+ const pulse=(Math.sin(Date.now()/320)+1)*.5;
+ drawCard(40,24,880,472,20,['rgba(26,20,40,.96)','rgba(12,10,22,.98)'],['#8b5cf6','#00f0ff'],2,'rgba(139,92,246,'+(0.2+pulse*0.25)+')');
+ g.textAlign='center';g.fillStyle='#ffffff';g.font='bold 28px "Trebuchet MS",sans-serif';
+ g.shadowColor='#8b5cf6';g.shadowBlur=10;
+ g.fillText('🎨 Texture & Visual Themes',480,58);
+ g.shadowBlur=0;
+ g.font='13px "Trebuchet MS",sans-serif';g.fillStyle='#cbd5e1';g.fillText('Select an environment theme to restyle the classroom, desks, blackboard, lighting and your car',480,82);
  TEXPACKS.forEach(([id,name,desc,sw],i)=>{
   const x=55+i*292,y=102,w=276,h=336,inst=!!texPacks[id],act=activeTex===id,st=texSt[id];
-  drawCard(x,y,w,h,16,act?'rgba(38,34,56,.95)':'rgba(28,26,40,.9)',act?'#6bd16b':'rgba(255,255,255,.12)',act?2.5:1.5);
+  drawCard(x,y,w,h,16,act?['rgba(36,28,54,.96)','rgba(20,16,36,.96)']:['rgba(26,22,38,.9)','rgba(14,12,24,.95)'],act?['#00ff88','#10b981']:'rgba(255,255,255,.12)',act?2.5:1.5,act?'#00ff88':null);
   sw.forEach((c,k)=>{drawCard(x+54+k*58,y+16,50,24,6,c,'rgba(255,255,255,.25)',1)});
-  g.textAlign='center';g.font='bold 19px "Trebuchet MS",sans-serif';g.fillStyle=act?'#8fd16b':'#f3efe0';g.fillText(name,x+w/2,y+68);
-  g.font='11px "Trebuchet MS",sans-serif';g.fillStyle='#b8b8c8';g.fillText(desc,x+w/2,y+86);
-  drawCard(x+14,y+100,w-28,92,10,'rgba(15,14,22,.65)','rgba(255,255,255,.08)',1);
+  g.textAlign='center';g.font='bold 19px "Trebuchet MS",sans-serif';g.fillStyle=act?'#00ff88':'#ffffff';g.fillText(name,x+w/2,y+68);
+  g.font='11px "Trebuchet MS",sans-serif';g.fillStyle='#94a3b8';g.fillText(desc,x+w/2,y+86);
+  drawCard(x+14,y+100,w-28,92,10,['rgba(16,12,24,.75)','rgba(10,8,18,.9)'],['rgba(255,255,255,.08)','rgba(0,240,255,.15)'],1);
   g.textAlign='left';g.font='11px "Trebuchet MS",sans-serif';g.fillStyle='#ffd23f';g.fillText('Environment Restyle:',x+24,y+118);
-  g.fillStyle='#e0e4ec';
+  g.fillStyle='#cbd5e1';
   if(id==='oldschool'){
    g.fillText('• Walnut wood desks & plank floor',x+24,y+136);g.fillText('• Classic chalkboard & green trim',x+24,y+152);g.fillText('• Warm golden sunlight & gold trim',x+24,y+168);g.fillText('• Vintage classroom atmosphere',x+24,y+184);
   }else if(id==='modern'){
@@ -2698,16 +2817,17 @@ function drawTex(){
   }else{
    g.fillText('• Dark obsidian floor with cyan grid',x+24,y+136);g.fillText('• Cyber holographic HUD blackboard',x+24,y+152);g.fillText('• Neon magenta & cyan wall accents',x+24,y+168);g.fillText('• Glowing neon car underglow',x+24,y+184);
   }
-  g.textAlign='center';g.fillStyle=st==='fail'?'#ff8a7a':act?'#8fd16b':inst?'#ffd23f':'#9a9ab0';g.font='bold 12px "Trebuchet MS",sans-serif';
+  g.textAlign='center';g.fillStyle=st==='fail'?'#ff7b72':act?'#00ff88':inst?'#ffd23f':'#94a3b8';g.font='bold 12px "Trebuchet MS",sans-serif';
   const stMsg=st==='loading'?'Downloading...':st==='fail'?'Download failed':act?'● Active in-game right now':inst?'Downloaded (Tap to Apply)':'Not downloaded';
   g.fillText(stMsg,x+w/2,y+214);
-  const mainCol=!inst?'#2a75d3':act?'#2e7d32':'#e07a22',mainW=inst?(w-88):(w-28);
-  drawCard(x+14,y+234,mainW,42,12,mainCol,'rgba(255,255,255,.25)',1.5);
+  const mainCol=!inst?['#0284c7','#0369a1']:act?['#10b981','#047857']:['#f59e0b','#d97706'],mainW=inst?(w-88):(w-28);
+  const mainBord=!inst?'#38bdf8':act?'#34d399':'#fde68a';
+  drawCard(x+14,y+234,mainW,42,12,mainCol,mainBord,1.5,act?'#10b981':null);
   g.fillStyle='#fff';g.font='bold 14px "Trebuchet MS",sans-serif';
   g.fillText(st==='loading'?'Please wait...':!inst?'⬇ Download':act?'✔ Active (Tap Off)':'★ Apply Theme',x+14+mainW/2,y+260);
-  if(inst){drawCard(x+w-66,y+234,52,42,12,'rgba(120,40,40,.65)','rgba(255,100,100,.3)',1.5);g.fillStyle='#ffb0b0';g.font='bold 11px "Trebuchet MS",sans-serif';g.fillText('Del',x+w-40,y+260)}
+  if(inst){drawCard(x+w-66,y+234,52,42,12,['#b91c1c','#7f1d1d'],'#fca5a5',1.5);g.fillStyle='#ffb0b0';g.font='bold 11px "Trebuchet MS",sans-serif';g.fillText('Del',x+w-40,y+260)}
  });
- drawCard(400,452,160,36,12,'#4a4858','rgba(255,255,255,.2)',1.5);g.fillStyle='#fff';g.font='bold 15px "Trebuchet MS",sans-serif';g.textAlign='center';
+ drawCard(400,452,160,36,12,['#334155','#1e293b'],'#64748b',1.5);g.fillStyle='#f1f5f9';g.font='bold 15px "Trebuchet MS",sans-serif';g.textAlign='center';
  g.fillText('Back to Settings',480,475);g.restore();g.textAlign='left';
 }
 function voicesClick(x,y){
@@ -2736,23 +2856,28 @@ function quitToMenu(){
  car.v=0;nitroOn=false;if(window.speechSynthesis)speechSynthesis.cancel();
 }
 function drawPause(){
- g.save();g.globalAlpha=ea;drawCard(240,32,480,456,20,'rgba(18,16,26,.96)','rgba(255,210,63,.25)',2);
- g.textAlign='center';g.fillStyle='#ffd23f';g.font='bold 28px "Trebuchet MS",sans-serif';g.fillText('GAME PAUSED',480,68);
- drawCard(330,80,300,26,12,'rgba(0,0,0,.45)','rgba(255,255,255,.1)',1);
- g.font='12px "Trebuchet MS",sans-serif';g.fillStyle='#d8d8e8';g.fillText('Level '+level+'  •  Score '+Math.round(score)+'  •  Coins '+coins,480,97);
- const btn=(y,label,bgCol,txtCol)=>{
-  drawCard(270,y,420,36,12,bgCol,'rgba(255,255,255,.18)',1.5);
-  g.fillStyle=txtCol||'#fff';
+ g.save();g.globalAlpha=ea;
+ const pulse=(Math.sin(Date.now()/300)+1)*.5;
+ drawCard(240,32,480,456,20,['rgba(26,20,40,.96)','rgba(12,10,22,.98)'],['#ffd23f','#00f0ff'],2,'rgba(255,210,63,'+(0.2+pulse*0.25)+')');
+ g.textAlign='center';g.fillStyle='#ffd23f';g.font='bold 28px "Trebuchet MS",sans-serif';
+ g.shadowColor='#ffd23f';g.shadowBlur=10;
+ g.fillText('⏸ GAME PAUSED',480,68);
+ g.shadowBlur=0;
+ drawCard(330,80,300,26,12,['rgba(20,16,32,.7)','rgba(10,8,18,.85)'],['rgba(255,255,255,.15)','rgba(0,240,255,.2)'],1);
+ g.font='bold 12px "Trebuchet MS",sans-serif';g.fillStyle='#cbd5e1';g.fillText('Level '+level+'  •  Score '+Math.round(score)+'  •  Coins '+coins,480,97);
+ const btn=(y,label,bgGrad,borderCol,glow)=>{
+  drawCard(270,y,420,36,12,bgGrad,borderCol||'rgba(255,255,255,.2)',1.5,glow);
+  g.fillStyle='#fff';
   g.font='bold 15px "Trebuchet MS",sans-serif';g.fillText(label,480,y+23);
  };
- btn(116,'▶  Resume Game','#2e7d32');
- btn(158,NG?'🔄  Restart (Host Only)':'🔄  Restart Race','#d97724');
- btn(200,'🎮  Steering Sensitivity: '+SENS_NAMES[sensIdx],'#2f6bb2');
- btn(242,'🔊  Sound Effects: '+(muted?'OFF':'ON'),muted?'#5a4a4a':'#4a4858');
- btn(284,'🗣️  Anime Voices: '+(voiceOn?'ON':'OFF'),voiceOn?'#6a4aa5':'#4a4858');
- btn(326,'⚡  Graphics: '+GFX[0].toUpperCase()+GFX.slice(1),'#2a8f6a');
- btn(372,(NH||NG)?'🚪  Leave Multiplayer Room':'🚪  Quit to Main Menu','#b82222');
- g.fillStyle='rgba(255,255,255,.5)';g.font='12px "Trebuchet MS",sans-serif';g.fillText('Press P or Esc to resume',480,442);
+ btn(116,'▶  Resume Game',['#10b981','#047857'],'#6ee7b7','#10b981');
+ btn(158,NG?'🔄  Restart (Host Only)':'🔄  Restart Race',['#f97316','#c2410c'],'#fdba74');
+ btn(200,'🎮  Steering Sensitivity: '+SENS_NAMES[sensIdx],['#0ea5e9','#0369a1'],'#7dd3fc');
+ btn(242,'🔊  Sound Effects: '+(muted?'OFF':'ON'),muted?['#3f3f46','#27272a']:['#10b981','#047857'],muted?'#71717a':'#34d399',muted?null:'#10b981');
+ btn(284,'🗣️  Anime Voices: '+(voiceOn?'ON':'OFF'),voiceOn?['#8b5cf6','#6d28d9']:['#3f3f46','#27272a'],voiceOn?'#c4b5fd':'#71717a',voiceOn?'#8b5cf6':null);
+ btn(326,'⚡  Graphics: '+GFX[0].toUpperCase()+GFX.slice(1),['#14b8a6','#0f766e'],'#5eead4');
+ btn(372,(NH||NG)?'🚪  Leave Multiplayer Room':'🚪  Quit to Main Menu',['#ef4444','#b91c1c'],'#fca5a5');
+ g.fillStyle='rgba(255,255,255,.55)';g.font='12px "Trebuchet MS",sans-serif';g.fillText('Press P or Esc to resume',480,442);
  g.restore();g.textAlign='left';
 }
 function pauseClick(x,y){
@@ -2801,24 +2926,31 @@ function cycleAllCharactersModel(){
  if(window.sfx&&sfx.tick)sfx.tick();
 }
 function drawSettings(){
- g.save();g.globalAlpha=ea;drawCard(270,14,420,492,18,'rgba(20,18,30,.96)','rgba(255,255,255,.15)',2);
- g.textAlign='center';g.fillStyle='#f3efe0';g.font='bold 24px "Trebuchet MS",sans-serif';g.fillText('Settings',480,44);
- const btn=(y,label,c)=>{
-  drawCard(290,y,380,32,9,c||'#4a4858','rgba(255,255,255,.16)',1.5);
+ g.save();g.globalAlpha=ea;
+ const pulse=(Math.sin(Date.now()/320)+1)*.5;
+ drawCard(270,14,420,492,18,['rgba(26,20,40,.96)','rgba(12,10,22,.98)'],['#a855f7','#00f0ff'],2,'rgba(168,85,247,'+(0.2+pulse*0.3)+')');
+ g.textAlign='center';g.fillStyle='#ffd23f';g.font='bold 24px "Trebuchet MS",sans-serif';
+ g.shadowColor='#ffd23f';g.shadowBlur=8;
+ g.fillText('⚙️ SETTINGS',480,44);
+ g.shadowBlur=0;
+ const btn=(y,label,bgGrad,borderCol,glow)=>{
+  drawCard(290,y,380,32,10,bgGrad||['#3f3f46','#27272a'],borderCol||'rgba(255,255,255,.2)',1.5,glow);
   g.fillStyle='#fff';g.font='bold 13px "Trebuchet MS",sans-serif';g.fillText(label,480,y+21);
  };
- btn(60,'🎮  Steering Sensitivity: '+SENS_NAMES[sensIdx],'#e07a22');
- btn(100,'🏎️  Car Model: '+(porscheModelType==='meshy'?'Blue Horizon Porsche (3D)':'Classic 911'),porscheModelType==='meshy'?'#1a66cc':'#4a4858');
- const charCol=areAllCharacters3D()?'#a238b0':(areAllCharactersClassic()?'#4a4858':'#d97724');
- const charLabel=areAllCharacters3D()?'👥  Character Models: 3D Anime (All 5 Active)':(areAllCharactersClassic()?'👥  Character Models: Classic Retro (All 5)':'👥  Character Models: Mixed (Tap for 3D)');
- btn(140,charLabel,charCol);
- btn(180,'🗣️  Voice Packs (EN, JA & Tamil)','#3a6ea5');
- btn(220,'🎨  Texture Themes (Old School, Modern, Cyber)','#6a4aa5');
- btn(260,'⚡  Graphics: '+GFX[0].toUpperCase()+GFX.slice(1),'#2a8f6a');
- btn(300,'🎬  Replay Anime Intro','#a5486a');
- btn(340,'🔊  Voices: '+(voiceOn?'ON':'OFF'),voiceOn?'#2e7d32':'#5a4a4a');
- btn(380,'🎵  Sound Effects: '+(muted?'OFF':'ON'),muted?'#5a4a4a':'#2e7d32');
- btn(432,'Back to Menu','#7a6428');
+ btn(60,'🎮  Steering Sensitivity: '+SENS_NAMES[sensIdx],['#f97316','#c2410c'],'#fdba74');
+ btn(100,'🏎️  Car Model: '+(porscheModelType==='meshy'?'Blue Horizon Porsche (3D)':'Classic 911'),porscheModelType==='meshy'?['#0ea5e9','#0369a1']:['#3f3f46','#27272a'],porscheModelType==='meshy'?'#7dd3fc':'#71717a',porscheModelType==='meshy'?'#0ea5e9':null);
+ const isAll3D=areAllCharacters3D(),isAllClassic=areAllCharactersClassic();
+ const charGrad=isAll3D?['#d946ef','#86198f']:(isAllClassic?['#3f3f46','#27272a']:['#f59e0b','#b45309']);
+ const charBord=isAll3D?'#f0abfc':(isAllClassic?'#71717a':'#fde68a');
+ const charLabel=isAll3D?'👥  Character Models: 3D Anime (All 5 Active)':(isAllClassic?'👥  Character Models: Classic Retro (All 5)':'👥  Character Models: Mixed (Tap for 3D)');
+ btn(140,charLabel,charGrad,charBord,isAll3D?'#d946ef':null);
+ btn(180,'🗣️  Voice Packs (EN, JA & Tamil)',['#06b6d4','#0e7490'],'#67e8f9');
+ btn(220,'🎨  Texture Themes (Old School, Modern, Cyber)',['#8b5cf6','#6d28d9'],'#c4b5fd');
+ btn(260,'⚡  Graphics: '+GFX[0].toUpperCase()+GFX.slice(1),['#10b981','#047857'],'#6ee7b7');
+ btn(300,'🎬  Replay Anime Intro',['#f43f5e','#be123c'],'#fda4af');
+ btn(340,'🔊  Voices: '+(voiceOn?'ON':'OFF'),voiceOn?['#10b981','#047857']:['#3f3f46','#27272a'],voiceOn?'#34d399':'#71717a',voiceOn?'#10b981':null);
+ btn(380,'🎵  Sound Effects: '+(muted?'OFF':'ON'),muted?['#3f3f46','#27272a']:['#10b981','#047857'],muted?'#71717a':'#34d399',muted?null:'#10b981');
+ btn(432,'Back to Menu',['#f59e0b','#b45309'],'#fde68a','#f59e0b');
  g.restore();g.textAlign='left';
 }
 function settingsClick(x,y){
@@ -2835,44 +2967,51 @@ function settingsClick(x,y){
  else if(ib(432)||(x>=290&&x<=670&&y>=428&&y<=470))state='home';
 }
 function drawVoices(){
- g.save();g.globalAlpha=ea;drawCard(40,24,880,472,20,'rgba(20,18,30,.96)','rgba(255,255,255,.14)',2);
- g.textAlign='center';g.fillStyle='#f3efe0';g.font='bold 28px "Trebuchet MS",sans-serif';g.fillText('Character Voice Packs',480,58);
- g.font='13px "Trebuchet MS",sans-serif';g.fillStyle='#b8b8c8';g.fillText('Download & switch real voice lines in English, Japanese anime or Tamil',480,82);
+ g.save();g.globalAlpha=ea;
+ const pulse=(Math.sin(Date.now()/320)+1)*.5;
+ drawCard(40,24,880,472,20,['rgba(26,20,40,.96)','rgba(12,10,22,.98)'],['#06b6d4','#00f0ff'],2,'rgba(6,182,212,'+(0.2+pulse*0.25)+')');
+ g.textAlign='center';g.fillStyle='#ffffff';g.font='bold 28px "Trebuchet MS",sans-serif';
+ g.shadowColor='#06b6d4';g.shadowBlur=10;
+ g.fillText('🗣️ Character Voice Packs',480,58);
+ g.shadowBlur=0;
+ g.font='13px "Trebuchet MS",sans-serif';g.fillStyle='#cbd5e1';g.fillText('Download & switch real voice lines in English, Japanese anime or Tamil',480,82);
  PACKS.forEach(([id,name,desc],i)=>{
   const x=55+i*292,y=102,w=276,h=336,inst=!!packs[id],act=activePack===id,st=packSt[id],isJa=id==='ja',isTa=id==='ta';
-  drawCard(x,y,w,h,16,act?'rgba(38,34,56,.95)':'rgba(28,26,40,.9)',act?'#6bd16b':'rgba(255,255,255,.12)',act?2.5:1.5);
-  g.textAlign='left';g.font='bold 16px "Trebuchet MS",sans-serif';g.fillStyle=act?'#8fd16b':'#f3efe0';
+  drawCard(x,y,w,h,16,act?['rgba(36,28,54,.96)','rgba(20,16,36,.96)']:['rgba(26,22,38,.9)','rgba(14,12,24,.95)'],act?['#00ff88','#10b981']:'rgba(255,255,255,.12)',act?2.5:1.5,act?'#00ff88':null);
+  g.textAlign='left';g.font='bold 16px "Trebuchet MS",sans-serif';g.fillStyle=act?'#00ff88':'#ffffff';
   const flag=isJa?'🇯🇵 ':isTa?'🇮🇳 ':'🇺🇸 ';
   g.fillText(flag+name,x+14,y+34);
   const badgeTxt=act?'✔ ACTIVE':inst?'INSTALLED':st==='loading'?'DOWNLOADING':'READY';
-  const badgeCol=act?'#2e7d32':inst?'#2f6bb2':st==='loading'?'#e07a22':'#4a4858';
-  drawCard(x+w-88,y+16,74,22,6,badgeCol,null);
+  const badgeCol=act?['#10b981','#047857']:inst?['#2563eb','#1d4ed8']:st==='loading'?['#f59e0b','#d97706']:['#374151','#1f2937'];
+  const badgeBord=act?'#34d399':inst?'#60a5fa':st==='loading'?'#fde68a':'#64748b';
+  drawCard(x+w-88,y+16,74,22,6,badgeCol,badgeBord,1);
   g.font='bold 10px "Trebuchet MS",sans-serif';g.fillStyle='#fff';g.textAlign='center';g.fillText(badgeTxt,x+w-51,y+31);
-  g.textAlign='left';g.font='11px "Trebuchet MS",sans-serif';g.fillStyle='#c8c8d8';g.fillText(desc,x+14,y+60);
-  drawCard(x+12,y+74,w-24,62,10,'rgba(15,14,22,.65)','rgba(255,255,255,.08)',1);
+  g.textAlign='left';g.font='11px "Trebuchet MS",sans-serif';g.fillStyle='#cbd5e1';g.fillText(desc,x+14,y+60);
+  drawCard(x+12,y+74,w-24,62,10,['rgba(16,12,24,.75)','rgba(10,8,18,.9)'],['rgba(255,255,255,.08)','rgba(0,240,255,.15)'],1);
   g.fillStyle='#ffd23f';g.font='bold 11px "Trebuchet MS",sans-serif';g.fillText('Sensei Voice Preview:',x+18,y+92);
-  g.fillStyle='#f0ede4';g.font='italic 11px "Trebuchet MS",sans-serif';
+  g.fillStyle='#f1f5f9';g.font='italic 11px "Trebuchet MS",sans-serif';
   const sampleTxt=isJa?'「ちょっと！待ちなさい！」':isTa?'「ஏய்! அங்கேயே நில்லு!」':'"Hey! Stop right there!"';
   g.fillText(sampleTxt,x+18,y+110);
   const sampleTxt2=isJa?'ゴミ箱に捨てるわよ！':isTa?'பொம்மைய தூக்கி போடுவேன்!':'Toy is going in trash!';
-  g.fillStyle='#c0b8b0';g.font='10px "Trebuchet MS",sans-serif';
+  g.fillStyle='#94a3b8';g.font='10px "Trebuchet MS",sans-serif';
   g.fillText(sampleTxt2,x+18,y+126);
-  g.fillStyle='#9ab0c8';g.font='11px "Trebuchet MS",sans-serif';
+  g.fillStyle='#94a3b8';g.font='11px "Trebuchet MS",sans-serif';
   g.fillText('• 12+ Sensei Roasts & Threats',x+18,y+156);
   g.fillText('• Catch, Fall & Patrol Shouts',x+18,y+174);
   g.fillText('• Hero Saves & Class Gasps',x+18,y+192);
-  g.textAlign='center';g.fillStyle=st==='fail'?'#ff8a7a':act?'#8fd16b':inst?'#ffd23f':'#9a9ab0';g.font='bold 11px "Trebuchet MS",sans-serif';
+  g.textAlign='center';g.fillStyle=st==='fail'?'#ff7b72':act?'#00ff88':inst?'#ffd23f':'#94a3b8';g.font='bold 11px "Trebuchet MS",sans-serif';
   const stMsg=st==='loading'?'Downloading...':st==='fail'?'Download failed':act?'● Active in-game':inst?'Downloaded (Tap Equip)':'Not downloaded';
   g.fillText(stMsg,x+w/2,y+216);
-  drawCard(x+14,y+234,116,40,10,'#3a4a68','rgba(255,255,255,.2)',1.5);
+  drawCard(x+14,y+234,116,40,10,['#2563eb','#1d4ed8'],'#60a5fa',1.5);
   g.fillStyle='#fff';g.font='bold 13px "Trebuchet MS",sans-serif';g.fillText('🔊 Test',x+72,y+259);
-  const mainBtnCol=!inst?'#2a75d3':act?'#2e7d32':'#e07a22';
-  drawCard(x+136,y+234,126,40,10,mainBtnCol,'rgba(255,255,255,.25)',1.5);
+  const mainBtnCol=!inst?['#0284c7','#0369a1']:act?['#10b981','#047857']:['#f59e0b','#d97706'];
+  const mainBtnBord=!inst?'#38bdf8':act?'#34d399':'#fde68a';
+  drawCard(x+136,y+234,126,40,10,mainBtnCol,mainBtnBord,1.5,act?'#10b981':null);
   g.fillStyle='#fff';g.font='bold 13px "Trebuchet MS",sans-serif';
   g.fillText(st==='loading'?'Wait...':!inst?'⬇ Get':act?'✔ Active':'★ Equip',x+199,y+259);
-  if(inst){drawCard(x+14,y+284,w-28,32,8,'rgba(120,40,40,.6)','rgba(255,100,100,.3)',1);g.fillStyle='#ffb0b0';g.font='bold 11px "Trebuchet MS",sans-serif';g.fillText('🗑 Remove Pack',x+w/2,y+304)}
+  if(inst){drawCard(x+14,y+284,w-28,32,8,['#b91c1c','#7f1d1d'],'#fca5a5',1);g.fillStyle='#fff';g.font='bold 11px "Trebuchet MS",sans-serif';g.fillText('🗑 Remove Pack',x+w/2,y+304)}
  });
- drawCard(400,452,160,36,12,'#4a4858','rgba(255,255,255,.2)',1.5);g.fillStyle='#fff';g.font='bold 15px "Trebuchet MS",sans-serif';g.textAlign='center';
+ drawCard(400,452,160,36,12,['#334155','#1e293b'],'#64748b',1.5);g.fillStyle='#f1f5f9';g.font='bold 15px "Trebuchet MS",sans-serif';g.textAlign='center';
  g.fillText('Back to Settings',480,475);g.restore();g.textAlign='left';
 }
 let introT=0,introNext=0,introPh=0,introFlags={};
@@ -3127,77 +3266,81 @@ function drawHome(){
  }
 }
 function drawModalPlay(){
- drawCard(220,50,520,420,20,'rgba(24,20,36,.97)','#6bd16b',2);
+ drawCard(220,50,520,420,20,['rgba(26,20,40,.97)','rgba(12,10,22,.99)'],['#10b981','#00f0ff'],2,'rgba(16,185,129,.35)');
  g.textAlign='center';
  g.fillStyle='#ffd23f';g.font='bold 28px "Trebuchet MS",sans-serif';
+ g.shadowColor='#ffd23f';g.shadowBlur=8;
  g.fillText('🏁 READY TO RACE?',480,90);
- g.fillStyle='#d8d8e8';g.font='14px "Trebuchet MS",sans-serif';
+ g.shadowBlur=0;
+ g.fillStyle='#cbd5e1';g.font='14px "Trebuchet MS",sans-serif';
  g.fillText('Collect homework before Sakamoto Sensei catches you!',480,114);
- const diffs=[{n:'Easy',d:'120s • Relaxed'},{n:'Normal',d:'120s • Standard'},{n:'Hard',d:'120s • Fast Sensei'}];
+ const diffs=[{n:'Easy',d:'120s • Relaxed',g:['#065f46','#047857'],b:'#34d399',gl:'#10b981'},{n:'Normal',d:'120s • Standard',g:['#1e3a8a','#1d4ed8'],b:'#60a5fa',gl:'#3b82f6'},{n:'Hard',d:'120s • Fast Sensei',g:['#991b1b','#b91c1c'],b:'#f87171',gl:'#ef4444'}];
  diffs.forEach((df,i)=>{
   const x=250+i*160,isSel=i===diff;
-  drawCard(x,140,140,44,10,isSel?'#2e7d32':'#3a3848',isSel?'#8fd16b':'rgba(255,255,255,.15)',isSel?2:1);
+  drawCard(x,140,140,44,10,isSel?df.g:['#374151','#1f2937'],isSel?df.b:'rgba(255,255,255,.15)',isSel?2:1,isSel?df.gl:null);
   g.fillStyle='#fff';g.font='bold 15px "Trebuchet MS",sans-serif';
   g.fillText(df.n,x+70,160);
-  g.fillStyle=isSel?'#bbf5bb':'#b0b0c0';g.font='11px "Trebuchet MS",sans-serif';
+  g.fillStyle=isSel?'#ffffff':'#94a3b8';g.font='11px "Trebuchet MS",sans-serif';
   g.fillText(df.d,x+70,176);
  });
- drawCard(250,200,460,76,12,'rgba(0,0,0,.4)','rgba(255,255,255,.1)',1);
+ drawCard(250,200,460,76,12,['rgba(18,14,28,.8)','rgba(10,8,18,.9)'],['rgba(255,255,255,.1)','rgba(0,240,255,.15)'],1);
  const c=CARS[carSel];
  g.textAlign='left';
  g.fillStyle='#ffd23f';g.font='bold 12px "Trebuchet MS",sans-serif';
  g.fillText('EQUIPPED CAR:',266,222);
  g.fillStyle='#fff';g.font='bold 18px "Trebuchet MS",sans-serif';
  g.fillText(c[0],266,246);
- g.fillStyle='#a0d0ff';g.font='12px "Trebuchet MS",sans-serif';
+ g.fillStyle='#38bdf8';g.font='12px "Trebuchet MS",sans-serif';
  g.fillText('Top Speed '+Math.round(cf(3)*100)+'%  •  Accel '+Math.round(cf(4)*100)+'%',266,264);
- drawCard(560,218,136,40,10,'#3a6ea5','rgba(255,255,255,.2)',1);
+ drawCard(560,218,136,40,10,['#2563eb','#1d4ed8'],'#60a5fa',1.5);
  g.textAlign='center';g.fillStyle='#fff';g.font='bold 13px "Trebuchet MS",sans-serif';
  g.fillText('🏎️ Switch Car',628,243);
- g.fillStyle='#a0a0b8';g.font='12px "Trebuchet MS",sans-serif';
+ g.fillStyle='#94a3b8';g.font='12px "Trebuchet MS",sans-serif';
  g.fillText('Steering: Left/Right  •  Gas: Forward  •  Nitro: Burst',480,314);
- const pGrad=g.createLinearGradient(290,345,670,405);
- pGrad.addColorStop(0,'#38b000');pGrad.addColorStop(1,'#007200');
- drawCard(290,345,380,60,16,pGrad,'#70e000',2.5);
+ drawCard(290,345,380,60,16,['#10b981','#059669'],'#34d399',2.5,'#10b981');
  g.fillStyle='#fff';g.font='bold 24px "Trebuchet MS",sans-serif';
  g.fillText('🚀 START RACE ▶',480,383);
- drawCard(686,60,34,34,17,'#4a4858','rgba(255,255,255,.2)',1);
+ drawCard(686,60,34,34,17,['#ef4444','#b91c1c'],'#fca5a5',1.5);
  g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';
  g.fillText('✕',703,82);
 }
 function drawModalMultiplayer(){
- drawCard(220,50,520,420,20,'rgba(24,20,36,.97)','#e07a22',2);
+ drawCard(220,50,520,420,20,['rgba(26,20,40,.97)','rgba(12,10,22,.99)'],['#f59e0b','#ef4444'],2,'rgba(245,158,11,.3)');
  g.textAlign='center';
  g.fillStyle='#ffd23f';g.font='bold 28px "Trebuchet MS",sans-serif';
+ g.shadowColor='#ffd23f';g.shadowBlur=8;
  g.fillText('👥 MULTIPLAYER LOBBY',480,90);
- g.fillStyle='#d8d8e8';g.font='14px "Trebuchet MS",sans-serif';
+ g.shadowBlur=0;
+ g.fillStyle='#cbd5e1';g.font='14px "Trebuchet MS",sans-serif';
  g.fillText('Live WebRTC classroom racing & Sensei Tag mode',480,114);
- drawCard(260,140,440,48,12,'#2f6bb2','rgba(255,255,255,.2)',1.5);
+ drawCard(260,140,440,48,12,['#2563eb','#1d4ed8'],'#60a5fa',1.5,'#2563eb');
  g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';
  g.fillText('👑 Host Room (Create)',480,170);
- drawCard(260,202,440,48,12,'#3a6ea5','rgba(255,255,255,.2)',1.5);
+ drawCard(260,202,440,48,12,['#0d9488','#0f766e'],'#2dd4bf',1.5);
  g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';
  g.fillText('🔑 Join Room with Code',480,232);
- drawCard(260,264,440,48,12,senseiMode?'#b82222':'#4a4858','rgba(255,255,255,.2)',1.5);
+ drawCard(260,264,440,48,12,senseiMode?['#dc2626','#991b1b']:['#374151','#1f2937'],senseiMode?'#f87171':'rgba(255,255,255,.2)',1.5,senseiMode?'#dc2626':null);
  g.fillStyle='#fff';g.font='bold 15px "Trebuchet MS",sans-serif';
  g.fillText(senseiMode?'👑 Sensei Tag Mode: ON (Play as Teacher)':'👑 Enable Sensei Tag Mode',480,294);
- g.fillStyle='#a0a0b8';g.font='12px "Trebuchet MS",sans-serif';
+ g.fillStyle='#94a3b8';g.font='12px "Trebuchet MS",sans-serif';
  g.fillText('Works across phones, tablets, and PC browsers!',480,350);
  g.fillText('Host shares room code with friends to race together.',480,370);
- drawCard(686,60,34,34,17,'#4a4858','rgba(255,255,255,.2)',1);
+ drawCard(686,60,34,34,17,['#ef4444','#b91c1c'],'#fca5a5',1.5);
  g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';
  g.fillText('✕',703,82);
 }
 function drawModalLeaderboard(){
- drawCard(220,40,520,440,20,'rgba(24,20,36,.97)','#3a7bd5',2);
+ drawCard(220,40,520,440,20,['rgba(26,20,40,.97)','rgba(12,10,22,.99)'],['#3b82f6','#ffd23f'],2,'rgba(59,130,246,.3)');
  g.textAlign='center';
  g.fillStyle='#ffd23f';g.font='bold 28px "Trebuchet MS",sans-serif';
+ g.shadowColor='#ffd23f';g.shadowBlur=8;
  g.fillText('🏆 CLASSROOM LEADERBOARD',480,78);
- g.fillStyle='#d8d8e8';g.font='14px "Trebuchet MS",sans-serif';
+ g.shadowBlur=0;
+ g.fillStyle='#cbd5e1';g.font='14px "Trebuchet MS",sans-serif';
  g.fillText('Top 5 Desk Runs on this Device',480,102);
- drawCard(250,116,460,190,14,'rgba(0,0,0,.45)','rgba(255,255,255,.1)',1);
+ drawCard(250,116,460,190,14,['rgba(16,12,24,.8)','rgba(10,8,18,.92)'],['rgba(255,255,255,.1)','rgba(0,240,255,.15)'],1);
  if(!tops.length){
-  g.fillStyle='#a0a0b8';g.font='14px "Trebuchet MS",sans-serif';
+  g.fillStyle='#94a3b8';g.font='14px "Trebuchet MS",sans-serif';
   g.fillText('No scores recorded yet! Complete a run to place here.',480,210);
  }else{
   const medals=['🥇','🥈','🥉','4th','5th'];
@@ -3208,28 +3351,30 @@ function drawModalLeaderboard(){
    g.fillText(medals[i],270,yy);
    g.fillStyle='#fff';g.font='bold 15px "Trebuchet MS",sans-serif';
    g.fillText(t.s+' pts',320,yy);
-   g.fillStyle='#8fd16b';g.font='13px "Trebuchet MS",sans-serif';
+   g.fillStyle='#00ff88';g.font='13px "Trebuchet MS",sans-serif';
    g.fillText('Level '+t.l,460,yy);
   });
  }
  g.textAlign='center';
- drawCard(250,320,460,68,12,'rgba(0,0,0,.3)','rgba(255,255,255,.08)',1);
+ drawCard(250,320,460,68,12,['rgba(18,14,28,.8)','rgba(10,8,18,.9)'],['rgba(255,210,63,.2)','rgba(245,158,11,.1)'],1);
  g.fillStyle='#ffd23f';g.font='bold 13px "Trebuchet MS",sans-serif';
  g.fillText('CAREER RECORDS',480,340);
  g.fillStyle='#fff';g.font='13px "Trebuchet MS",sans-serif';
  g.fillText('Best Score: '+best+' pts   •   Coins: '+coins+'   •   Cars: '+owned.length+'/21',480,365);
- drawCard(380,405,200,42,12,'#4a4858','rgba(255,255,255,.2)',1);
+ drawCard(380,405,200,42,12,['#334155','#1e293b'],'#64748b',1.5);
  g.fillStyle='#fff';g.font='bold 15px "Trebuchet MS",sans-serif';
  g.fillText('Back to Menu',480,431);
- drawCard(686,52,34,34,17,'#4a4858','rgba(255,255,255,.2)',1);
+ drawCard(686,52,34,34,17,['#ef4444','#b91c1c'],'#fca5a5',1.5);
  g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';
  g.fillText('✕',703,74);
 }
 function drawModalProfile(){
- drawCard(240,50,480,420,20,'rgba(24,20,36,.97)','#ffd23f',2);
+ drawCard(240,50,480,420,20,['rgba(26,20,40,.97)','rgba(12,10,22,.99)'],['#ffd23f','#f59e0b'],2,'rgba(255,210,63,.3)');
  g.textAlign='center';
  g.fillStyle='#ffd23f';g.font='bold 28px "Trebuchet MS",sans-serif';
+ g.shadowColor='#ffd23f';g.shadowBlur=8;
  g.fillText('👤 DRIVER PROFILE',480,90);
+ g.shadowBlur=0;
  const ax=430,ay=105,aw=100,ah=100;
  g.save();
  g.beginPath();g.arc(480,155,48,0,Math.PI*2);g.clip();
@@ -3239,10 +3384,10 @@ function drawModalProfile(){
  g.strokeStyle='#ffd23f';g.lineWidth=3;g.beginPath();g.arc(480,155,48,0,Math.PI*2);g.stroke();
  g.fillStyle='#fff';g.font='bold 22px "Trebuchet MS",sans-serif';
  g.fillText(playerName,480,230);
- drawCard(370,242,220,34,10,'#4a4858','rgba(255,255,255,.2)',1);
- g.fillStyle='#ffd23f';g.font='bold 13px "Trebuchet MS",sans-serif';
+ drawCard(370,242,220,34,10,['#2563eb','#1d4ed8'],'#60a5fa',1.5);
+ g.fillStyle='#ffffff';g.font='bold 13px "Trebuchet MS",sans-serif';
  g.fillText('✏️ Change Driver Name',480,264);
- drawCard(266,290,428,90,12,'rgba(0,0,0,.4)','rgba(255,255,255,.1)',1);
+ drawCard(266,290,428,90,12,['rgba(18,14,28,.8)','rgba(10,8,18,.9)'],['rgba(255,255,255,.1)','rgba(0,240,255,.15)'],1);
  g.textAlign='left';g.font='13px "Trebuchet MS",sans-serif';
  g.fillStyle='#ffd23f';g.fillText('🪙 Total Coins:',285,316);
  g.fillStyle='#fff';g.fillText(coins.toLocaleString(),400,316);
@@ -3251,52 +3396,58 @@ function drawModalProfile(){
  g.fillStyle='#ffd23f';g.fillText('🏆 Best Record:',285,364);
  g.fillStyle='#fff';g.fillText(best+' pts ('+owned.length+'/21 cars owned)',400,364);
  g.textAlign='center';
- drawCard(380,396,200,42,12,'#e8b53a','#ffd23f',1.5);
- g.fillStyle='#2b2a33';g.font='bold 16px "Trebuchet MS",sans-serif';
+ drawCard(380,396,200,42,12,['#10b981','#059669'],'#34d399',2,'#10b981');
+ g.fillStyle='#ffffff';g.font='bold 16px "Trebuchet MS",sans-serif';
  g.fillText('Done',480,422);
- drawCard(676,60,34,34,17,'#4a4858','rgba(255,255,255,.2)',1);
+ drawCard(676,60,34,34,17,['#ef4444','#b91c1c'],'#fca5a5',1.5);
  g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';
  g.fillText('✕',693,82);
 }
 function drawModalExit(){
- drawCard(260,130,440,260,20,'rgba(24,20,36,.98)','#e52d27',2);
+ drawCard(260,130,440,260,20,['rgba(26,20,40,.98)','rgba(12,10,22,.99)'],['#ef4444','#dc2626'],2,'rgba(239,68,68,.35)');
  g.textAlign='center';
  g.fillStyle='#ffd23f';g.font='bold 26px "Trebuchet MS",sans-serif';
+ g.shadowColor='#ffd23f';g.shadowBlur=8;
  g.fillText('🚪 EXIT RC CLASSROOM RUSH?',480,178);
- g.fillStyle='#d8d8e8';g.font='14px "Trebuchet MS",sans-serif';
+ g.shadowBlur=0;
+ g.fillStyle='#cbd5e1';g.font='14px "Trebuchet MS",sans-serif';
  g.fillText('Are you sure you want to quit the game?',480,210);
- drawCard(290,248,170,48,12,'#b82222','rgba(255,255,255,.2)',1.5);
+ drawCard(290,248,170,48,12,['#ef4444','#b91c1c'],'#fca5a5',1.5,'#ef4444');
  g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';
  g.fillText('Exit Game',375,278);
- drawCard(500,248,170,48,12,'#2e7d32','rgba(255,255,255,.2)',1.5);
+ drawCard(500,248,170,48,12,['#10b981','#059669'],'#34d399',1.5,'#10b981');
  g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';
  g.fillText('Keep Playing',585,278);
- drawCard(656,140,32,32,16,'#4a4858','rgba(255,255,255,.2)',1);
+ drawCard(656,140,32,32,16,['#ef4444','#b91c1c'],'#fca5a5',1.5);
  g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';
  g.fillText('✕',672,161);
 }
 function drawPip(){if(state!=='play'&&state!=='pause')return;
  const x=PX,y=PY,w=PW,h=PH,pt=(px,py,pz)=>{const v=T3.v.set(px*.1,(pz||0)*.1,py*.1).project(T3.top);return[x+(v.x+1)/2*w,y+(1-v.y)/2*h]},
  dot=(p,r,c,st)=>{g.fillStyle=c;g.beginPath();g.arc(p[0],p[1],r,0,7);g.fill();if(st){g.strokeStyle=st;g.lineWidth=1.5;g.stroke()}};
- g.save();g.strokeStyle='#14141c';g.lineWidth=6;g.beginPath();g.rect(x-3,y-3,w+6,h+6);g.stroke();g.strokeStyle='rgba(255,255,255,.4)';g.lineWidth=1.5;g.strokeRect(x,y,w,h);
+ g.save();g.strokeStyle='#14141c';g.lineWidth=6;g.beginPath();g.rect(x-3,y-3,w+6,h+6);g.stroke();
+ const pulse=(Math.sin(Date.now()/300)+1)*.5;
+ g.strokeStyle='rgba(0,240,255,'+(.4+pulse*.35)+')';g.lineWidth=1.5;g.strokeRect(x,y,w,h);
  g.beginPath();g.rect(x,y,w,h);g.clip();
- papers.forEach(p=>dot(pt(p.x,p.y,8),1.6,'#ffd23f'));powers.forEach(p=>dot(pt(p.x,p.y,10),2.2,'#8fd16b','#fff'));
- students.forEach(o=>dot(pt(o.x,o.y,76),1.8,'rgba(120,170,255,.95)'));
+ papers.forEach(p=>dot(pt(p.x,p.y,8),1.6,'#ffd23f'));powers.forEach(p=>dot(pt(p.x,p.y,10),2.2,'#00ff88','#fff'));
+ students.forEach(o=>dot(pt(o.x,o.y,76),1.8,'rgba(0,210,255,.95)'));
  Object.values(remote).forEach(r=>dot(pt(r.rx||r.x,r.ry||r.y,10),2.4,r.col,'#fff'));
  if(teacher.x!==undefined){
   const tcP=pt(teacher.x,teacher.y,86);
-  if(senseiMode&&senseiPlayerId){dot(tcP,4.2,'#ff2222','#ffd23f')}else dot(tcP,3.2,teacher.freeze>0?'#7fd0ff':'#ff3b30','#fff');
+  if(senseiMode&&senseiPlayerId){dot(tcP,4.2,'#ff0844','#ffd23f')}else dot(tcP,3.2,teacher.freeze>0?'#00f0ff':'#ff3b30','#fff');
  }
  if(!isSensei){
   const c0=pt(car.x,car.y,10),c1=pt(car.x+Math.cos(car.a)*40,car.y+Math.sin(car.a)*40,10);
-  g.strokeStyle='#fff';g.lineWidth=2;g.beginPath();g.moveTo(c0[0],c0[1]);g.lineTo(c1[0],c1[1]);g.stroke();dot(c0,2.8,'#1c3a9e','#fff');
+  g.strokeStyle='#00f0ff';g.lineWidth=2;g.beginPath();g.moveTo(c0[0],c0[1]);g.lineTo(c1[0],c1[1]);g.stroke();dot(c0,2.8,'#0072ff','#00f0ff');
  }else{
   const t0=pt(teacher.x,teacher.y,10),t1=pt(teacher.x+(teacher.dir||1)*36,teacher.y,10);
-  g.strokeStyle='#ffd23f';g.lineWidth=2.5;g.beginPath();g.moveTo(t0[0],t0[1]);g.lineTo(t1[0],t1[1]);g.stroke();dot(t0,3.5,'#e0302a','#fff');
+  g.strokeStyle='#ffd23f';g.lineWidth=2.5;g.beginPath();g.moveTo(t0[0],t0[1]);g.lineTo(t1[0],t1[1]);g.stroke();dot(t0,3.5,'#ff0844','#fff');
  }
  g.restore();g.save();
- g.fillStyle='rgba(12,14,20,.85)';g.fillRect(x,y,72,15);g.font='bold 10px "Trebuchet MS",sans-serif';g.fillStyle='#ffd23f';g.fillText('GAME VIEW',x+5,y+11);
- g.fillStyle='rgba(0,0,0,.45)';g.fillRect(434,40,94,18);g.fillStyle='#f3efe0';g.fillText(isSensei?'SENSEI CAM':'CHASE CAM',462,53);g.fillStyle=Math.sin(Date.now()/300)>0?'#ff3b30':'#701510';g.beginPath();g.arc(446,49,4,0,7);g.fill();
+ g.fillStyle='rgba(10,8,18,.88)';g.fillRect(x,y,74,16);
+ g.font='bold 10px "Trebuchet MS",sans-serif';g.fillStyle='#00f0ff';g.fillText('RADAR HUD',x+5,y+12);
+ g.fillStyle='rgba(10,8,18,.8)';g.fillRect(434,40,94,18);g.fillStyle='#f3efe0';g.fillText(isSensei?'SENSEI CAM':'CHASE CAM',462,53);
+ g.fillStyle=Math.sin(Date.now()/300)>0?'#ff0844':'#701510';g.beginPath();g.arc(446,49,4,0,7);g.fill();
  g.restore()}
 function draw(){
  const inGame=(state==='play');
@@ -3325,7 +3476,7 @@ function draw(){
  if(state!=='shop'&&state!=='settings'&&state!=='voices'&&state!=='textures'&&state!=='intro'&&state!=='title')hud();
  g.textAlign='center';
  popups.forEach(p=>{const w=P(p.x,p.y,30),q=p.s?[p.x,p.y]:w,l=Math.min(1,p.l),yy=q[1]-(1-l)*34;
-  g.save();g.globalAlpha=l;const sz=Math.round(22+Math.max(0,l-.7)*42);g.font='italic 900 '+sz+'px "Trebuchet MS",sans-serif';g.lineWidth=6;g.strokeStyle='#14101e';g.strokeText(p.t,q[0],yy);g.fillStyle=p.c||'#ffd23f';g.fillText(p.t,q[0],yy);g.restore()});
+  g.save();g.globalAlpha=l;const sz=Math.round(22+Math.max(0,l-.7)*42);g.font='italic 900 '+sz+'px "Trebuchet MS",sans-serif';g.lineWidth=6;g.strokeStyle='#14101e';g.strokeText(p.t,q[0],yy);g.shadowColor=p.c||'#ffd23f';g.shadowBlur=12;g.fillStyle=p.c||'#ffd23f';g.fillText(p.t,q[0],yy);g.restore()});
  g.globalAlpha=1;g.textAlign='left';
  if(state!==lastSt){lastSt=state;pa=0}pa=Math.min(1,pa+.07);ea=1-Math.pow(1-pa,3);
  if(state!=='play'&&state!=='shop'&&state!=='intro'&&state!=='title'){g.fillStyle='rgba(0,0,0,'+.4*ea+')';g.fillRect(0,0,960,520)}
@@ -3335,14 +3486,14 @@ function draw(){
  else if(state==='pause')drawPause();
  else if(state==='shop')drawShop();else if(state==='settings')drawSettings();else if(state==='voices')drawVoices();else if(state==='textures')drawTex();else if(state==='intro')drawIntro();else if(state==='title')drawTitle();
  if(state==='ready'&&carImgOK){
-  g.save();g.globalAlpha=ea;drawCard(4,96,196,318,16,'#15151a','rgba(255,255,255,.12)',1.5);
+  g.save();g.globalAlpha=ea;drawCard(4,96,196,318,16,['rgba(26,20,40,.92)','rgba(12,10,22,.96)'],['#00f0ff','#7928ca'],1.5,'rgba(0,240,255,.2)');
   g.save();rr(8,100,188,280,12);g.clip();g.drawImage(carImg,8,100,188,280);g.restore();
-  g.fillStyle='#f3efe0';g.font='bold 13px "Trebuchet MS",sans-serif';g.textAlign='center';g.fillText('Your car: 911 GTS',102,402);g.restore();
+  g.fillStyle='#00f0ff';g.font='bold 13px "Trebuchet MS",sans-serif';g.textAlign='center';g.fillText('Your car: 911 GTS',102,402);g.restore();
  }
  if(state==='ready'&&charImgOK){
-  g.save();g.globalAlpha=ea;drawCard(764,96,196,150,16,'#15151a','rgba(255,255,255,.12)',1.5);
+  g.save();g.globalAlpha=ea;drawCard(764,96,196,150,16,['rgba(26,20,40,.92)','rgba(12,10,22,.96)'],['#ffd23f','#f59e0b'],1.5,'rgba(255,210,63,.2)');
   g.save();rr(768,100,188,122,12);g.clip();g.drawImage(charImg,768,100,188,122);g.restore();
-  g.fillStyle='#f3efe0';g.font='bold 13px "Trebuchet MS",sans-serif';g.textAlign='center';g.fillText('Meet the class',862,238);g.restore();
+  g.fillStyle='#ffd23f';g.font='bold 13px "Trebuchet MS",sans-serif';g.textAlign='center';g.fillText('Meet the class',862,238);g.restore();
  }
 }
 const carImg=new Image();let carImgOK=false;carImg.onload=()=>carImgOK=true;carImg.src='car.jpg';
