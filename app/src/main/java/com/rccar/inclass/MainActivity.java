@@ -131,11 +131,20 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onPause() {
-        super.onPause();
         if (webView != null) {
+            webView.evaluateJavascript("if(window.onAppPause)window.onAppPause();", null);
             webView.onPause();
             webView.pauseTimers();
         }
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        if (webView != null) {
+            webView.evaluateJavascript("if(window.onAppPause)window.onAppPause();", null);
+        }
+        super.onStop();
     }
 
     @Override
@@ -144,6 +153,7 @@ public class MainActivity extends Activity {
         if (webView != null) {
             webView.onResume();
             webView.resumeTimers();
+            webView.evaluateJavascript("if(window.onAppResume)window.onAppResume();", null);
         }
     }
 

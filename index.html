@@ -613,6 +613,29 @@ function engine(){
  if(on&&time<=10&&Math.ceil(time)!==lastTick){lastTick=Math.ceil(time);sfx.tick()}}
 function toggleMute(){muted=!muted;if(muted&&window.speechSynthesis)speechSynthesis.cancel();updateVolumeGains();updateMusicVolume();document.getElementById('bm').textContent=muted?'\ud83d\udd07':'\ud83d\udd0a'}
 function togglePause(){if(state==='play'){state='pause';pauseMusic()}else if(state==='pause'){state='play';playMusic()}}
+function onAppPause(){
+ if(state==='play'){
+  state='pause';
+  if(typeof pauseMusic==='function')pauseMusic();
+  if(window.speechSynthesis){try{speechSynthesis.cancel()}catch(e){}}
+  if(typeof updateMusicVolume==='function')updateMusicVolume();
+ }
+ if(typeof audioCtx!=='undefined'&&audioCtx&&audioCtx.state==='running'){
+  try{audioCtx.suspend()}catch(e){}
+ }
+}
+window.onAppPause=onAppPause;
+function onAppResume(){
+ if(typeof audioCtx!=='undefined'&&audioCtx&&audioCtx.state==='suspended'){
+  try{audioCtx.resume()}catch(e){}
+ }
+ last=performance.now();acc=0;
+}
+window.onAppResume=onAppResume;
+document.addEventListener('visibilitychange',()=>{if(document.hidden)onAppPause();else onAppResume()});
+window.addEventListener('blur',()=>onAppPause());
+window.addEventListener('focus',()=>onAppResume());
+window.addEventListener('pagehide',()=>onAppPause());
 const steerVal=()=>Math.max(-1,Math.min(1,keys.right-keys.left+steerA));
 const LAYOUTS=['Classic rows','Two long rows','Zig-zag','Horseshoe','Group tables','Two blocks'];
 function buildDesks(l){desks=[];const v=l%6,D=(x,y)=>desks.push({x,y,w:120,h:60});
@@ -3861,10 +3884,9 @@ function drawTitle(){const W=960,H=520;g.fillStyle='#0c0a14';g.fillRect(0,0,W,H)
 const HOME_BTNS={
  coins:      {x:720,y:3,  w:125,h:54, r:10,n:'Coins'},
  sound:      {x:845,y:3,  w:53, h:54, r:10,n:'Sound'},
- gear:       {x:898,y:3,  w:48, h:54, r:10,n:'Settings'},
+ gear:       {x:895,y:2,  w:58, h:56, r:10,n:'Settings'},
  garage:     {x:19, y:324,w:144,h:64, r:12,n:'Garage'},
  play:       {x:634,y:196,w:268,h:128,r:16,n:'Play'},
- settings:   {x:730,y:335,w:202,h:96, r:14,n:'Settings'},
  multiplayer:{x:307,y:447,w:163,h:54, r:12,n:'Multiplayer'},
  leaderboard:{x:489,y:447,w:163,h:54, r:12,n:'Leaderboard'},
  exit:       {x:816,y:447,w:125,h:59, r:12,n:'Exit'},

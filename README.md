@@ -5,8 +5,8 @@
 Play online or download the native Android app:
 
 - **🌐 Play in Browser**: [https://jaihari2006.github.io/rc-car-in-class-/](https://jaihari2006.github.io/rc-car-in-class-/)
-- **📱 Download Android APK**: [Download Rc.Car.in.Class.apk (v1.2.0)](https://github.com/jaihari2006/rc-car-in-class-/releases/download/v1.0.0/Rc.Car.in.Class.apk) | [Download app-debug.apk](https://github.com/jaihari2006/rc-car-in-class-/releases/download/v1.0.0/app-debug.apk) | [Direct File (Rc Car in Class?. apk)](Rc%20Car%20in%20Class%3F.%20apk)
-- **🏷️ GitHub Release**: [v1.2.0 Release Page](https://github.com/jaihari2006/rc-car-in-class-/releases/tag/v1.0.0)
+- **📱 Download Android APK**: [Download Rc.Car.in.Class.apk (v1.2.1)](https://github.com/jaihari2006/rc-car-in-class-/releases/download/v1.0.0/Rc.Car.in.Class.apk) | [Download app-debug.apk](https://github.com/jaihari2006/rc-car-in-class-/releases/download/v1.0.0/app-debug.apk) | [Direct File (Rc Car in Class?. apk)](Rc%20Car%20in%20Class%3F.%20apk)
+- **🏷️ GitHub Release**: [v1.2.1 Release Page](https://github.com/jaihari2006/rc-car-in-class-/releases/tag/v1.0.0)
 
 ---
 
@@ -19,6 +19,8 @@ Play online or download the native Android app:
 ---
 
 ### Features
+- **⏸️ Auto-Pause on App Switch**: The game automatically freezes race action, timer, physics, and audio when switching to other apps, opening recent tasks, or minimizing the window, letting you resume seamlessly when returning.
+- **🖼️ Custom Homepage Backdrop & Streamlined Settings**: High-detail customized main menu backdrop with single-gear Settings access for quick tuning.
 - **👤 First-Time Racer Profile Setup & Customization**: First launch interactive profile creator allowing racers to set their handle (with stylish randomizer), pick racing interests (Drift Specialist, Speed Demon, Sensei Evader, etc.), and view career stats anytime via the Home profile badge.
 - **🖼️ 10 Avatar Presets & Device Photo Upload**: 10 hand-drawn themed avatars (Female Speed Queen, Male Turbo Drift, Teen Cyber Street, Middle Age Pro, Grandpa Nitro, Baby Racer, Pet Cat, Pet Dog, Pet Bunny, Robot Pet) plus device camera / physical photo upload with native Android WebView file picker support.
 - **✨ Glowing Animated Logo & Splash Screen**: Glowing title branding, animated neon splash sequence on boot, and Android launcher app icons.
