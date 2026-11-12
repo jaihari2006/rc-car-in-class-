@@ -1126,7 +1126,108 @@ function mkTex(w,h,fn){const c=document.createElement('canvas');c.width=w;c.heig
 function bx(w,h,d,col,o){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshStandardMaterial(Object.assign({color:col,roughness:.7},o||{})));m.castShadow=m.receiveShadow=true;return m}
 function cyl(r1,r2,h,col,o){const m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,GFX==='ultra'?24:GFX==='low'?10:16),new THREE.MeshStandardMaterial(Object.assign({color:col,roughness:.6},o||{})));m.castShadow=true;return m}
 function ball(r,col,o){const m=new THREE.Mesh(new THREE.SphereGeometry(r,GFX==='ultra'?24:GFX==='low'?10:16,GFX==='ultra'?18:GFX==='low'?7:12),new THREE.MeshStandardMaterial(Object.assign({color:col,roughness:.6},o||{})));m.castShadow=true;return m}
-function mkCar(col){const g3=new THREE.Group();g3.rotation.order='YXZ';g3.scale.setScalar(.945);
+
+let porscheModel=null;
+let porscheModelType=localStorage.getItem('rc_porsche_model')||'meshy';
+function loadPorscheModel(cb){
+ if(porscheModel){if(cb)cb(porscheModel);return}
+ if(!window.THREE||!THREE.GLTFLoader)return;
+ const loader=new THREE.GLTFLoader();
+ const onLoad=gltf=>{
+  const root=new THREE.Group();
+  const model=gltf.scene;
+  const box=new THREE.Box3().setFromObject(model);
+  const size=box.getSize(new THREE.Vector3());
+  const center=box.getCenter(new THREE.Vector3());
+  model.position.set(-center.x,-box.min.y,-center.z);
+  model.rotation.y=Math.PI;
+  const wrapper=new THREE.Group();
+  wrapper.add(model);
+  const targetLength=3.4;
+  const s=targetLength/(size.x||1.903);
+  wrapper.scale.setScalar(s);
+  const mats=[];
+  wrapper.traverse(c=>{
+   if(c.isMesh){
+    c.castShadow=true;
+    c.receiveShadow=true;
+    if(c.material){
+     c.material.roughness=Math.max(0.18,c.material.roughness||0.3);
+     c.material.metalness=Math.max(0.45,c.material.metalness||0.6);
+     mats.push(c.material);
+    }
+   }
+  });
+  root.userData={wrapper:wrapper,mats:mats};
+  porscheModel=root;
+  applyCar();
+  if(cb)cb(root);
+ };
+ loader.load('porsche_911.glb',onLoad,undefined,()=>{
+  loader.load('Blue Horizon Porsche_Meshy_AI_2026-11-12_6055a6.glb',onLoad,undefined,err=>{
+   console.warn('Could not load Porsche 911 GLB model:',err);
+  });
+ });
+}
+function cyclePorscheModel(){
+ porscheModelType=(porscheModelType==='meshy')?'classic':'meshy';
+ try{localStorage.setItem('rc_porsche_model',porscheModelType)}catch(_){}
+ applyCar();
+}
+function mkPorscheModel(col){
+ if(!porscheModel)return null;
+ const g3=new THREE.Group();g3.rotation.order='YXZ';g3.scale.setScalar(.945);
+ const wrapper=porscheModel.userData.wrapper.clone(true);
+ const mats=[];
+ wrapper.traverse(c=>{
+  if(c.isMesh&&c.material){
+   const mat=c.material.clone();
+   c.material=mat;
+   mats.push(mat);
+   if(col!==undefined){
+    const colVal=(typeof col==='number')?col:(col&&col.getHex?col.getHex():0x1c3a9e);
+    if(colVal!==0x1c3a9e&&colVal!==0xffffff){
+     mat.color.set(colVal);
+    }
+   }
+  }
+ });
+ g3.add(wrapper);
+ const plt=(x,ry)=>{
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(.75,.25),new THREE.MeshBasicMaterial({map:plateTex()}));
+  m.position.set(x,.35,0);m.rotation.y=ry;g3.add(m);
+ };
+ plt(1.72,Math.PI/2);plt(-1.72,-Math.PI/2);
+ const gl0=tv('car.glow',GFX==='ultra'?col:null);
+ if(gl0){
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(3.6,2.3),new THREE.MeshBasicMaterial({color:gl0,transparent:true,opacity:.38,blending:THREE.AdditiveBlending,depthWrite:false}));
+  m.rotation.x=-Math.PI/2;m.position.y=.03;g3.add(m);
+ }
+ g3.userData.fl=[.32,-.32].map(z=>{
+  const gr=new THREE.Group();
+  const core=new THREE.Mesh(new THREE.ConeGeometry(.13,3.2,12),new THREE.MeshBasicMaterial({color:0xe8faff,transparent:true,opacity:.95}));
+  core.rotation.z=Math.PI/2;core.position.set(-2.2,.35,z);
+  const plume=new THREE.Mesh(new THREE.ConeGeometry(.26,5.4,12),new THREE.MeshBasicMaterial({color:0x0099ff,transparent:true,opacity:.7,blending:THREE.AdditiveBlending,depthWrite:false}));
+  plume.rotation.z=Math.PI/2;plume.position.set(-3.2,.35,z);
+  const corona=new THREE.Mesh(new THREE.ConeGeometry(.36,7.2,12),new THREE.MeshBasicMaterial({color:0x9922ff,transparent:true,opacity:.45,blending:THREE.AdditiveBlending,depthWrite:false}));
+  corona.rotation.z=Math.PI/2;corona.position.set(-4.2,.35,z);
+  gr.add(core,plume,corona);gr.visible=false;g3.add(gr);return gr;
+ });
+ g3.userData.flL=[.32,-.32].map(z=>{const pl=new THREE.PointLight(0x6fd0ff,0,3.2);pl.position.set(-2.1,.38,z);g3.add(pl);return pl});
+ const headL=new THREE.PointLight(0xfff8e8,0.7,12);headL.position.set(1.7,.45,0);g3.add(headL);
+ const tailL=new THREE.PointLight(0xff2222,0.4,6);tailL.position.set(-1.7,.48,0);g3.add(tailL);
+ g3.userData.wh=[];
+ g3.userData.isGlb=true;
+ g3.userData.isPorsche=true;
+ g3.userData.mats=mats;
+ return g3;
+}
+function mkCar(col){
+ if(porscheModelType==='meshy'&&porscheModel){
+  const pm=mkPorscheModel(col);
+  if(pm)return pm;
+ }
+ const g3=new THREE.Group();g3.rotation.order='YXZ';g3.scale.setScalar(.945);
  const paint=new THREE.MeshPhysicalMaterial({color:col,metalness:tv('car.metal',.55),roughness:tv('car.rough',.28),clearcoat:tv('car.clear',1),clearcoatRoughness:.04}),
  blk=new THREE.MeshStandardMaterial({color:0x0c0c0e,roughness:.45,metalness:.3}),
  glass=new THREE.MeshPhysicalMaterial({color:0x10151c,metalness:.6,roughness:.04,clearcoat:1}),
@@ -2017,6 +2118,7 @@ function init3D(){
  if(!hinataChanModel)loadHinataChan();
  if(!renSakuragiModel)loadRenSakuragi();
  if(!sakuraClassmateModel)loadSakuraClassmate();
+ if(!porscheModel)loadPorscheModel();
  return T3}
 function render3D(){
  const t=T3,sc=t.sc;t.t+=fdt;
@@ -2330,42 +2432,44 @@ function pauseClick(x,y){
  else if(ib(372)){quitToMenu()}
 }
 function drawSettings(){
- g.save();g.globalAlpha=ea;drawCard(260,6,440,516,20,'rgba(20,18,30,.96)','rgba(255,255,255,.15)',2);
- g.textAlign='center';g.fillStyle='#f3efe0';g.font='bold 22px "Trebuchet MS",sans-serif';g.fillText('Settings',480,28);
+ g.save();g.globalAlpha=ea;drawCard(260,4,440,524,20,'rgba(20,18,30,.96)','rgba(255,255,255,.15)',2);
+ g.textAlign='center';g.fillStyle='#f3efe0';g.font='bold 22px "Trebuchet MS",sans-serif';g.fillText('Settings',480,24);
  const btn=(y,label,c)=>{
-  drawCard(295,y,370,24,9,c||'#4a4858','rgba(255,255,255,.15)',1.5);
+  drawCard(295,y,370,23,8,c||'#4a4858','rgba(255,255,255,.15)',1.5);
   g.fillStyle='#fff';g.font='bold 12px "Trebuchet MS",sans-serif';g.fillText(label,480,y+16);
  };
- btn(38,'🎮  Steering Sensitivity: '+SENS_NAMES[sensIdx],'#e07a22');
- btn(67,'🔥  Sensi Model: '+(sensiModelType==='fiery'?'Fiery Sensi (3D Mesh)':'Classic Sensi'),sensiModelType==='fiery'?'#d9461e':'#4a4858');
- btn(96,'🌸  Sakura Model: '+(sakuraModelType==='meshy'?'Sakura-kun (3D Mesh)':'Classic Sakura'),sakuraModelType==='meshy'?'#e05070':'#4a4858');
- btn(125,'💙  Hinata Model: '+(hinataModelType==='meshy'?'Hinata-chan (3D Mesh)':'Classic Hinata'),hinataModelType==='meshy'?'#3a6fd8':'#4a4858');
- btn(154,'🎓  Student Male NPC: '+(renModelType==='meshy'?'Ren Sakuragi (3D Mesh)':'Classic NPC'),renModelType==='meshy'?'#2f6bb2':'#4a4858');
- btn(183,'🎀  Student Female NPC: '+(sakuraClassmateModelType==='meshy'?'Sakura Classmate (3D)':'Classic NPC'),sakuraClassmateModelType==='meshy'?'#d84a7e':'#4a4858');
- btn(212,'🗣️  Voice Packs (EN & JA Anime)','#3a6ea5');
- btn(241,'🎨  Texture Themes (Old School, Modern, Cyber)','#6a4aa5');
- btn(270,'⚡  Graphics: '+GFX[0].toUpperCase()+GFX.slice(1),'#2a8f6a');
- btn(299,'🎬  Replay Anime Intro','#a5486a');
- btn(328,'🔊  Voices: '+(voiceOn?'ON':'OFF'),voiceOn?'#3fa66b':'#5a4a4a');
+ btn(33,'🎮  Steering Sensitivity: '+SENS_NAMES[sensIdx],'#e07a22');
+ btn(60,'🏎️  Car Model: '+(porscheModelType==='meshy'?'Blue Horizon Porsche (3D)':'Classic 911'),porscheModelType==='meshy'?'#1a66cc':'#4a4858');
+ btn(87,'🔥  Sensi Model: '+(sensiModelType==='fiery'?'Fiery Sensi (3D Mesh)':'Classic Sensi'),sensiModelType==='fiery'?'#d9461e':'#4a4858');
+ btn(114,'🌸  Sakura Model: '+(sakuraModelType==='meshy'?'Sakura-kun (3D Mesh)':'Classic Sakura'),sakuraModelType==='meshy'?'#e05070':'#4a4858');
+ btn(141,'💙  Hinata Model: '+(hinataModelType==='meshy'?'Hinata-chan (3D Mesh)':'Classic Hinata'),hinataModelType==='meshy'?'#3a6fd8':'#4a4858');
+ btn(168,'🎓  Student Male NPC: '+(renModelType==='meshy'?'Ren Sakuragi (3D Mesh)':'Classic NPC'),renModelType==='meshy'?'#2f6bb2':'#4a4858');
+ btn(195,'🎀  Student Female NPC: '+(sakuraClassmateModelType==='meshy'?'Sakura Classmate (3D)':'Classic NPC'),sakuraClassmateModelType==='meshy'?'#d84a7e':'#4a4858');
+ btn(222,'🗣️  Voice Packs (EN & JA Anime)','#3a6ea5');
+ btn(249,'🎨  Texture Themes (Old School, Modern, Cyber)','#6a4aa5');
+ btn(276,'⚡  Graphics: '+GFX[0].toUpperCase()+GFX.slice(1),'#2a8f6a');
+ btn(303,'🎬  Replay Anime Intro','#a5486a');
+ btn(330,'🔊  Voices: '+(voiceOn?'ON':'OFF'),voiceOn?'#3fa66b':'#5a4a4a');
  btn(357,'🎵  Sound Effects: '+(muted?'OFF':'ON'),muted?'#5a4a4a':'#3fa66b');
- btn(390,'Back to Menu','#7a6428');
+ btn(387,'Back to Menu','#7a6428');
  g.restore();g.textAlign='left';
 }
 function settingsClick(x,y){
- const ib=by=>x>295&&x<665&&y>by&&y<by+24;
- if(ib(38))cycleSens();
- else if(ib(67))cycleSensiModel();
- else if(ib(96))cycleSakuraModel();
- else if(ib(125))cycleHinataModel();
- else if(ib(154))cycleRenModel();
- else if(ib(183))cycleSakuraClassmateModel();
- else if(ib(212))state='voices';
- else if(ib(241))state='textures';
- else if(ib(270))cycleGfx();
- else if(ib(299))startIntro();
- else if(ib(328))toggleVoice();
+ const ib=by=>x>295&&x<665&&y>by&&y<by+23;
+ if(ib(33))cycleSens();
+ else if(ib(60))cyclePorscheModel();
+ else if(ib(87))cycleSensiModel();
+ else if(ib(114))cycleSakuraModel();
+ else if(ib(141))cycleHinataModel();
+ else if(ib(168))cycleRenModel();
+ else if(ib(195))cycleSakuraClassmateModel();
+ else if(ib(222))state='voices';
+ else if(ib(249))state='textures';
+ else if(ib(276))cycleGfx();
+ else if(ib(303))startIntro();
+ else if(ib(330))toggleVoice();
  else if(ib(357))toggleMute();
- else if(x>295&&x<665&&y>390&&y<420)state='home';
+ else if(x>295&&x<665&&y>387&&y<415)state='home';
 }
 function drawVoices(){
  g.save();g.globalAlpha=ea;drawCard(40,24,880,472,20,'rgba(20,18,30,.96)','rgba(255,255,255,.14)',2);
@@ -2871,6 +2975,7 @@ try{loadSakuraKun()}catch(_){}
 try{loadHinataChan()}catch(_){}
 try{loadRenSakuragi()}catch(_){}
 try{loadSakuraClassmate()}catch(_){}
+try{loadPorscheModel()}catch(_){}
 if(T3){applyCar();if(TP)applyTex()}
 // Dedicated Home Screen opens by default
 state='home';
