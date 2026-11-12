@@ -339,7 +339,7 @@ function reset(){audioInit();goLand();nitro=100;nitroOK=true;nitroT=0;hide=null;
 function nextLevel(first){hide=null;buildDesks(level-1);car.x=450;car.y=560;car.a=-Math.PI/2;car.v=0;initChars();setupClutter();papers=[];for(let i=0;i<5;i++)spawn();
  if(!first){time+=10;sfx.power();popups.push({t:'Level '+level+': '+LAYOUTS[(level-1)%6],x:480,y:230,l:2.5,s:1})}}
 addEventListener('keydown',e=>{const k=map[e.key];if(k){keys[k]=1;e.preventDefault()}
- if(e.key==='p'||e.key==='Escape')togglePause();if(e.key==='m')toggleMute();
+ if(e.key==='p'||e.key==='Escape'){if(state==='over'){state='home';return}togglePause()}if(e.key==='m')toggleMute();
  const go=e.key===' '||e.key==='Enter';
  if(state==='title'&&go)startIntro();else if(state==='intro'&&(go||e.key==='Escape'))endIntro();else if(state==='pause'&&go)state='play';else if(state!=='play'&&state!=='pause'&&state!=='shop'&&state!=='settings'&&state!=='voices'&&state!=='textures'&&go&&!NG)reset();
  if(isSensei&&state==='play'&&(e.code==='Space'||e.key==='c'||e.key==='C')){e.preventDefault();attemptCatch()}
@@ -390,8 +390,8 @@ cv.addEventListener('pointerdown',e=>{audioInit();if(state==='play'||NG)return;
  if(state==='voices'){voicesClick(x,y);return}
  if(state==='textures'){texClick(x,y);return}
  if(state==='over'){
-  if(x>260&&x<460&&y>ui.py&&y<ui.py+40){reset();return}
-  if(x>480&&x<680&&y>ui.py&&y<ui.py+40){state='home';return}
+  if(x>240&&x<480&&y>340&&y<415){reset();return}
+  if(x>480&&x<720&&y>340&&y<415){state='home';return}
   return;
  }
  if(ui.diff&&y>ui.dy&&y<ui.dy+34&&x>290&&x<680){diff=Math.max(0,Math.min(2,Math.floor((x-290)/130)));return}
@@ -746,18 +746,9 @@ function panel(title,lines,showDiff){
   y+=48;
  }
  ui.py=y;
- if(state==='over'){
-  drawCard(260,y,200,40,12,'#e8b53a','#ffd23f',1.5);
-  g.fillStyle='#2b2a33';g.font='bold 17px "Trebuchet MS",sans-serif';
-  g.fillText(NG?'Waiting for host':'Play again',360,y+26);
-  drawCard(480,y,200,40,12,'#4a4858','rgba(255,255,255,.2)',1.5);
-  g.fillStyle='#fff';g.font='bold 17px "Trebuchet MS",sans-serif';
-  g.fillText('🏠 Main Menu',580,y+26);
- }else{
-  drawCard(380,y,200,40,12,'#e8b53a','#ffd23f',1.5);
-  g.fillStyle='#2b2a33';g.font='bold 18px "Trebuchet MS",sans-serif';
-  g.fillText(state==='pause'?'Resume':'Play',480,y+26);
- }
+ drawCard(380,y,200,40,12,'#e8b53a','#ffd23f',1.5);
+ g.fillStyle='#2b2a33';g.font='bold 18px "Trebuchet MS",sans-serif';
+ g.fillText(state==='pause'?'Resume':'Play',480,y+26);
  if(showDiff&&!NG){
   drawCard(596,y,150,40,12,'#3a6ea5','rgba(255,255,255,.2)',1.5);
   g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';g.fillText('Garage',671,y+26);
@@ -787,6 +778,70 @@ function panel(title,lines,showDiff){
  g.font='13px "Trebuchet MS",sans-serif';g.fillStyle='#e0e0ea';
  if(!tops.length)g.fillText('No scores yet',480,y+20);
  tops.forEach((t,i)=>{if(i<3)g.fillText((i+1)+'.  '+t.s+' pts  (Level '+t.l+')',480,y+18+i*18)});
+ g.textAlign='left';g.restore();
+}
+function drawGameOver(){
+ if(!NH&&!NG&&isSensei){isSensei=false;senseiMode=false;senseiPlayerId='';senseiCaught=0;updatePedUI()}
+ ui.diff=false;ui.my=-99;ui.sy=-99;
+ g.save();g.globalAlpha=ea;g.translate(0,(1-ea)*30);
+ const isCaught=msg==='caught';
+ const sName=sensiModelType==='fiery'?'Fiery Sensi':'Sakamoto Sensi';
+ const cardBorder=isCaught?'rgba(255,70,70,.55)':'rgba(255,210,63,.45)';
+ drawCard(195,30,570,460,22,'rgba(18,14,26,.97)',cardBorder,2.5);
+ 
+ const badgeW=180,badgeH=24,badgeX=480-badgeW/2,badgeY=44;
+ drawCard(badgeX,badgeY,badgeW,badgeH,8,isCaught?'#b82222':'#d97724',null);
+ g.textAlign='center';g.fillStyle='#fff';g.font='bold 11px "Trebuchet MS",sans-serif';
+ g.fillText(isCaught?'🚨 CONFISCATED! 🚨':'🔔 TIME EXPIRED! 🔔',480,badgeY+16);
+
+ g.fillStyle='#f3efe0';g.font='bold 28px "Trebuchet MS",sans-serif';
+ g.fillText(isCaught?('Caught by '+sName+'!'):'The Bell Rang!',480,96);
+
+ drawCard(218,110,524,64,12,'rgba(12,10,18,.85)','rgba(255,255,255,.09)',1);
+ g.textAlign='left';g.fillStyle='#ffd23f';g.font='bold 11px "Trebuchet MS",sans-serif';
+ g.fillText(isCaught?(sName+' confiscated your RC car:'):'School Bell announcement:',232,128);
+ const defCatch=VP&&/^ja/.test(VP.lang)?'捕まえたわよ！没収です！':VP&&/^ta/.test(VP.lang)?'பிடிச்சிட்டேன்! இனிமேல் இந்த பொம்மை கிடைக்காது!':'Gotcha! That toy is confiscated!';
+ const qText=isCaught?(teacher.say||defCatch):'The period bell rang! Detention if you keep playing in class!';
+ g.fillStyle='#f5ede0';g.font='italic 13px "Trebuchet MS",sans-serif';
+ g.fillText('"'+qText+'"',232,152);
+
+ const stats=[
+  ['🎯 Score',Math.round(score),'#ffd23f'],
+  ['📚 Level',level,'#6bd16b'],
+  ['💥 Bumps',bumps,'#ff8a7a'],
+  ['🪙 Earned','+'+earned,'#ffe066']
+ ];
+ stats.forEach(([lbl,val,col],i)=>{
+  const sx=218+i*133;
+  drawCard(sx,186,126,66,10,'rgba(28,24,38,.85)','rgba(255,255,255,.1)',1.2);
+  g.textAlign='center';g.fillStyle='#9ab0c8';g.font='bold 11px "Trebuchet MS",sans-serif';
+  g.fillText(lbl,sx+63,206);
+  g.fillStyle=col;g.font='bold 20px "Trebuchet MS",sans-serif';
+  g.fillText(val+'',sx+63,236);
+ });
+
+ drawCard(218,264,524,38,10,'rgba(255,210,63,.08)','rgba(255,210,63,.25)',1);
+ const isNewRecord=tops.length>0&&score>=tops[0].s&&score>0;
+ g.textAlign='center';g.fillStyle='#ffd23f';g.font='bold 13px "Trebuchet MS",sans-serif';
+ const topScore=tops.length?tops[0].s:Math.round(score);
+ g.fillText((isNewRecord?'⭐ NEW RECORD! ':'🏆 Personal Best: ')+topScore+' pts   •   Bank Total: '+coins+' Coins 🪙',480,288);
+
+ g.fillStyle='#a0a0b8';g.font='12px "Trebuchet MS",sans-serif';
+ const tip=isCaught?'💡 Pro-tip: Duck under desks or stay close to Sakura-kun & Hinata-chan to lose Sensi!':'💡 Pro-tip: Grab coffee cups for speed boost and clocks for extra time!';
+ g.fillText(tip,480,326);
+
+ ui.py=352;
+ drawCard(250,ui.py,220,48,12,'#2e7d32','#4caf50',2);
+ g.fillStyle='#fff';g.font='bold 17px "Trebuchet MS",sans-serif';
+ g.fillText(NG?'Waiting for host':'🔄 Play Again',360,ui.py+30);
+
+ drawCard(490,ui.py,220,48,12,'#3a4858','rgba(255,255,255,.25)',1.5);
+ g.fillStyle='#fff';g.font='bold 17px "Trebuchet MS",sans-serif';
+ g.fillText('🏠 Main Menu',600,ui.py+30);
+
+ g.fillStyle='rgba(255,255,255,.45)';g.font='11px "Trebuchet MS",sans-serif';
+ g.fillText('Press Space / Enter to play again • Press Esc for Main Menu',480,426);
+
  g.textAlign='left';g.restore();
 }
 function drawPower(p){const z=12+Math.sin(p.t)*4,[sx,sy]=P(p.x,p.y,z),[fx,fy]=P(p.x,p.y);
@@ -955,7 +1010,7 @@ function draw2D(){
  if(state!=='play'&&state!=='shop'&&state!=='intro'&&state!=='title'){g.fillStyle='rgba(0,0,0,'+.4*ea+')';g.fillRect(0,0,960,520)}
  ui.diff=false;
  if(state==='ready')panel('RC Car in Class?',['Grab homework before the bell.','Dodge students, desks and the teacher.','Steer buttons on the left, gas and reverse on the right.','Keys: arrows or WASD, P pauses, M mutes.'],true);
- else if(state==='over')panel(msg==='caught'?'Caught by the teacher!':'Bell rang!',['Score '+score+', level '+level+', bumps '+bumps,'+'+earned+' coins earned (total '+coins+')'],true);
+ else if(state==='over')drawGameOver();
  else if(state==='pause')drawPause();
  else if(state==='shop')drawShop();else if(state==='settings')drawSettings();else if(state==='voices')drawVoices();else if(state==='textures')drawTex();else if(state==='intro')drawIntro();else if(state==='title')drawTitle();
  g.restore();
@@ -2983,15 +3038,15 @@ function draw(){
  if(state!=='play'&&state!=='shop'&&state!=='intro'&&state!=='title'){g.fillStyle='rgba(0,0,0,'+.4*ea+')';g.fillRect(0,0,960,520)}
  ui.diff=false;
  if(state==='ready')panel('RC Car in Class?',['Grab homework before the bell.','Dodge students, desks and the teacher.','Steer buttons on the left, gas and reverse on the right.','Keys: arrows or WASD, P pauses, M mutes.'],true);
- else if(state==='over')panel(msg==='caught'?'Caught by the teacher!':'Bell rang!',['Score '+score+', level '+level+', bumps '+bumps,'+'+earned+' coins earned (total '+coins+')'],true);
+ else if(state==='over')drawGameOver();
  else if(state==='pause')drawPause();
  else if(state==='shop')drawShop();else if(state==='settings')drawSettings();else if(state==='voices')drawVoices();else if(state==='textures')drawTex();else if(state==='intro')drawIntro();else if(state==='title')drawTitle();
- if((state==='ready'||state==='over')&&carImgOK){
+ if(state==='ready'&&carImgOK){
   g.save();g.globalAlpha=ea;drawCard(4,96,196,318,16,'#15151a','rgba(255,255,255,.12)',1.5);
   g.save();rr(8,100,188,280,12);g.clip();g.drawImage(carImg,8,100,188,280);g.restore();
   g.fillStyle='#f3efe0';g.font='bold 13px "Trebuchet MS",sans-serif';g.textAlign='center';g.fillText('Your car: 911 GTS',102,402);g.restore();
  }
- if((state==='ready'||state==='over')&&charImgOK){
+ if(state==='ready'&&charImgOK){
   g.save();g.globalAlpha=ea;drawCard(764,96,196,150,16,'#15151a','rgba(255,255,255,.12)',1.5);
   g.save();rr(768,100,188,122,12);g.clip();g.drawImage(charImg,768,100,188,122);g.restore();
   g.fillStyle='#f3efe0';g.font='bold 13px "Trebuchet MS",sans-serif';g.textAlign='center';g.fillText('Meet the class',862,238);g.restore();
