@@ -90,7 +90,7 @@ body.cine #pad,body.cine #bar,body.home #pad,body.home #bar{visibility:hidden;di
 <script>if(!window.THREE||!THREE.GLTFLoader){document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"><\\/script>')}</script>
 </head>
 <body>
-<div id="bar"><button id="b-sensei" hidden style="background:#b82b2b;color:#fff;font-weight:bold" title="Toggle Sensei Mode">👑 Sensi Tag</button><button id="bs" hidden>Invite</button><button id="bl" hidden>Leave</button><button id="bp">⏸</button><button id="bv">🗣</button><button id="bm">🔊</button></div>
+<div id="bar"><button id="b-sensei" hidden style="background:#b82b2b;color:#fff;font-weight:bold" title="Toggle Sensei Mode">👑 Sensei Tag</button><button id="bs" hidden>Invite</button><button id="bl" hidden>Leave</button><button id="bp">⏸</button><button id="bv">🗣</button><button id="bm">🔊</button></div>
 <div id="rot"><b>📱</b>Rotate your phone to landscape to play</div>
 <div id="stage"><canvas id="gl"></canvas><canvas id="c" width="960" height="520"></canvas></div>
 <div id="pad" style="display:none">
@@ -249,12 +249,12 @@ const BUILTIN_VOICE_PACKS={
    fall:["Gyaaaah! Missed!!","OOF! My face!!","I slipped!! Dammit!!","Ouch! Whose homework was that?!","Wait till I get back up!!","Uwaaa! Currrrse you RC car!!"]},
   hero:{pitch:1.7,rate:1.1,
    hide:["Quick, behind me!","Hide under my desk!","I'll cover you, stay low!"],
-   way:["It went that way, Sensi!","I saw it zoom toward the windows!","It's over by the front door!"],
-   nope:["I didn't see anything, Sensi...","What toy? We're just studying physics!","Didn't hear a thing over here!"]},
+   way:["It went that way, Sensei!","I saw it zoom toward the windows!","It's over by the front door!"],
+   nope:["I didn't see anything, Sensei...","What toy? We're just studying physics!","Didn't hear a thing over here!"]},
   student:{pitch:1.4,rate:1.12,
-   cool:["Cool!","So cool!","Whoa, look at that drift!","Sick car!","Run! Sensi is mad!"]}
+   cool:["Cool!","So cool!","Whoa, look at that drift!","Sick car!","Run! Sensei is mad!"]}
  },
- ja:{id:"ja",name:"Japanese Voice Pack",lang:"ja-JP",desc:"Anime-style Japanese lines for Sakamoto Sensi and students",
+ ja:{id:"ja",name:"Japanese Voice Pack",lang:"ja-JP",desc:"Anime-style Japanese lines for Sakamoto Sensei and students",
   teacher:{pitch:1.15,rate:1.05,
    roast:["ちょっと！待ちなさい！","そのおもちゃをゴミ箱に捨てるわよ！","放課後職員室に来なさい！","私の授業で何をやってるの？！","捕まえたら承知しないからね！","その車、ボロボロじゃない！","親御さんに連絡しますからね！","授業妨害もいい加減にしなさい！","没収！絶対に返しません！","教室でラジコンなんて前代未聞よ！","どこまで逃げる気？！止まりなさい！","そんなポンコツ車、すぐに捕まえてやるわ！"],
    car:"その{car}、ボロボロじゃない！",
@@ -396,7 +396,7 @@ cv.addEventListener('pointerdown',e=>{audioInit();if(state==='play'||NG)return;
  }
  if(ui.diff&&y>ui.dy&&y<ui.dy+34&&x>290&&x<680){diff=Math.max(0,Math.min(2,Math.floor((x-290)/130)));return}
  if(ui.my>0&&y>ui.my&&y<ui.my+32){if(x>290&&x<470)hostRoom();else if(x>490&&x<670)joinRoom();return}
- if(ui.sy>0&&y>ui.sy&&y<ui.sy+32&&x>290&&x<670){if(conns.length===0){popups.push({t:'Waiting for guests to join room first!',x:480,y:200,l:2,s:1});return}senseiMode=!senseiMode;if(senseiMode)randomSensei();else{senseiPlayerId='';isSensei=false;senseiCaught=0;updatePedUI();popups.push({t:'Sensi Mode OFF',x:480,y:200,l:1.5,s:1})};return}
+ if(ui.sy>0&&y>ui.sy&&y<ui.sy+32&&x>290&&x<670){if(conns.length===0){popups.push({t:'Waiting for guests to join room first!',x:480,y:200,l:2,s:1});return}senseiMode=!senseiMode;if(senseiMode)randomSensei();else{senseiPlayerId='';isSensei=false;senseiCaught=0;updatePedUI();popups.push({t:'Sensei Mode OFF',x:480,y:200,l:1.5,s:1})};return}
  if(ui.diff&&x>214&&x<364&&y>ui.py&&y<ui.py+40){state='settings';return}
  if(ui.diff&&x>596&&x<746&&y>ui.py&&y<ui.py+40){shopSel=carSel;applyCar(carSel);state='shop';return}
  if(x>380&&x<580&&y>ui.py&&y<ui.py+40){if(state==='pause')state='play';else reset()}});
@@ -474,7 +474,7 @@ function update(dt){
    teacher.downT-=dt;
    if(teacher.downT<=0){
     teacher.downT=0;
-    popups.push({t:'⚡ SAKAMOTO SENSI IS BACK UP!',x:480,y:200,l:2.0,s:1,c:'#ffd23f'});
+    popups.push({t:'⚡ SAKAMOTO SENSEI IS BACK UP!',x:480,y:200,l:2.0,s:1,c:'#ffd23f'});
     tone(520,.18,'sine',.2,880);
    }
   } else {
@@ -690,7 +690,7 @@ function hud(){
  const cardH=isSensei?(teacher.downT>0?74:56):56;
  drawCard(8,OY+4,isSensei?156:140,cardH,12,'rgba(16,14,24,.75)','rgba(255,255,255,.12)',1.5);
  if(isSensei){
-  g.fillStyle='#e0302a';g.font='bold 13px "Trebuchet MS",sans-serif';g.fillText('👑 ROLE: SAKAMOTO SENSI',16,OY+18);
+  g.fillStyle='#e0302a';g.font='bold 13px "Trebuchet MS",sans-serif';g.fillText('👑 ROLE: SAKAMOTO SENSEI',16,OY+18);
   g.fillStyle='#ffd23f';g.font='bold 22px "Trebuchet MS",sans-serif';g.fillText('Cars Caught: '+senseiCaught,16,OY+42);
   if(teacher.downT>0){
    g.fillStyle='#ff5a4a';g.font='bold 13px "Trebuchet MS",sans-serif';
@@ -699,12 +699,12 @@ function hud(){
  }else{
   g.fillStyle='#f3efe0';g.font='12px "Trebuchet MS",sans-serif';g.fillText('Score',16,OY+20);g.fillText('Level '+level,84,OY+20);
   g.font='bold '+Math.round(26+Math.min(1,Math.abs(score-dispScore)*.3)*8)+'px "Trebuchet MS",sans-serif';g.fillText(Math.round(dispScore),16,OY+48);
-  if(senseiMode&&senseiPlayerId){g.fillStyle='#ff9a9a';g.font='bold 12px "Trebuchet MS",sans-serif';const sn=senseiPlayerId==='host'?'Host':(remote[senseiPlayerId]?.name||'Player');g.fillText('⚠ AVOID SENSI ('+sn+')',16,OY-6)}
+  if(senseiMode&&senseiPlayerId){g.fillStyle='#ff9a9a';g.font='bold 12px "Trebuchet MS",sans-serif';const sn=senseiPlayerId==='host'?'Host':(remote[senseiPlayerId]?.name||'Player');g.fillText('⚠ AVOID SENSEI ('+sn+')',16,OY-6)}
  }
- if(netStatus){g.fillStyle='#f3efe0';g.font='bold 14px "Trebuchet MS",sans-serif';g.fillText(netStatus+' ('+(Object.keys(remote).length+1)+' players)'+(senseiMode?' [SENSI MODE]':''),16,38)}
+ if(netStatus){g.fillStyle='#f3efe0';g.font='bold 14px "Trebuchet MS",sans-serif';g.fillText(netStatus+' ('+(Object.keys(remote).length+1)+' players)'+(senseiMode?' [SENSEI MODE]':''),16,38)}
  let y=OY+cardH+12;
  const bar=(w,c,l)=>{fillRoundRect(8,y,100,8,4,'rgba(0,0,0,.45)');fillRoundRect(8,y,100*Math.max(0,Math.min(1,w)),8,4,c);g.fillStyle='#f3efe0';g.font='11px "Trebuchet MS",sans-serif';g.fillText(l,114,y+8);y+=14};
- if(isSensei){bar(senseiStamina/100,senseiStamina>20?'#3fa66b':'#e0302a','Sensi Stamina');}
+ if(isSensei){bar(senseiStamina/100,senseiStamina>20?'#3fa66b':'#e0302a','Sensei Stamina');}
  else{bar(nitro/100,nitroOK?'#4fc3ff':'#8a6a6a',nitroOK?'Nitro':'Recharging');}
  const nb=document.querySelector('[data-k=nitro]');if(nb){const bgs='linear-gradient(to top,'+(nitroOK?'#2a8fd6':'#6a7a88')+' '+nitro+'%,#22394d '+nitro+'%)';if(nb._b!==bgs){nb._b=bgs;nb.style.background=bgs}}
  if(combo>1)bar(comboT/3,'#ffd23f','Combo x'+combo);
@@ -768,7 +768,7 @@ function panel(title,lines,showDiff){
   drawCard(290,ui.sy,380,32,10,senseiMode?'#b82222':'#4a4858','rgba(255,255,255,.18)',1.5);
   g.fillStyle='#fff';g.font='bold 14px "Trebuchet MS",sans-serif';
   const sn=senseiPlayerId?(senseiPlayerId==='host'?'Host':(remote[senseiPlayerId]?.name||'Player')):'Unassigned';
-  g.fillText(senseiMode?('👑 Sensi Mode: ON ('+sn+' is Sensi)'):'👑 Enable Sensi Mode (Play as Teacher)',480,ui.sy+21);
+  g.fillText(senseiMode?('👑 Sensei Mode: ON ('+sn+' is Sensei)'):'👑 Enable Sensei Mode (Play as Teacher)',480,ui.sy+21);
   y+=42;
  }else ui.sy=-99;
  y+=54;
@@ -785,7 +785,7 @@ function drawGameOver(){
  ui.diff=false;ui.my=-99;ui.sy=-99;
  g.save();g.globalAlpha=ea;g.translate(0,(1-ea)*30);
  const isCaught=msg==='caught';
- const sName=sensiModelType==='fiery'?'Fiery Sensi':'Sakamoto Sensi';
+ const sName=senseiModelType==='fiery'?'Fiery Sensei':'Sakamoto Sensei';
  const cardBorder=isCaught?'rgba(255,70,70,.55)':'rgba(255,210,63,.45)';
  drawCard(195,30,570,460,22,'rgba(18,14,26,.97)',cardBorder,2.5);
  
@@ -827,7 +827,7 @@ function drawGameOver(){
  g.fillText((isNewRecord?'⭐ NEW RECORD! ':'🏆 Personal Best: ')+topScore+' pts   •   Bank Total: '+coins+' Coins 🪙',480,288);
 
  g.fillStyle='#a0a0b8';g.font='12px "Trebuchet MS",sans-serif';
- const tip=isCaught?'💡 Pro-tip: Duck under desks or stay close to Sakura-kun & Hinata-chan to lose Sensi!':'💡 Pro-tip: Grab coffee cups for speed boost and clocks for extra time!';
+ const tip=isCaught?'💡 Pro-tip: Duck under desks or stay close to Sakura-kun & Hinata-chan to lose Sensei!':'💡 Pro-tip: Grab coffee cups for speed boost and clocks for extra time!';
  g.fillText(tip,480,326);
 
  ui.py=352;
@@ -1042,13 +1042,13 @@ function hostRoom(){if(peer)return;loadPeer(()=>{const code=Math.random().toStri
      senseiCaught++;
      if(d.cId==='host'){
       car.x=450+(Math.random()-.5)*80;car.y=560;car.v=0;time=Math.max(0,time-10);
-      popups.push({t:'👑 SENSI CAUGHT YOU! -10s',x:480,y:200,l:2.5,s:1,c:'#ff3b30'});
+      popups.push({t:'👑 SENSEI CAUGHT YOU! -10s',x:480,y:200,l:2.5,s:1,c:'#ff3b30'});
      }
     }else{
      teacher.downT=3.0;teacher.fallDir=d.dir||teacher.dir||1;
      if(d.tx!==undefined){teacher.x=d.tx;teacher.y=d.ty}
      burst(teacher.x,teacher.y,14,12,'rgba(255,255,255,.9)',2.0,true);
-     popups.push({t:'💥 SENSI MISSED AND FELL! (3s)',x:480,y:200,l:2.5,s:1,c:'#ff7766'});
+     popups.push({t:'💥 SENSEI MISSED AND FELL! (3s)',x:480,y:200,l:2.5,s:1,c:'#ff7766'});
      const cries=['Gyaaaah! Missed!!','OOF! My face!!','I slipped!! Dammit!!','Ouch! Whose homework was that?!','Wait till I get back up!!','Uwaaa! Currrrse you RC car!!'];
      teacher.say=pk_(LN('teacher','fall',cries));teacher.sayT=2.8;speak(teacher,teacher.say);
     }
@@ -1062,8 +1062,8 @@ function randomSensei(){
  isSensei=(senseiPlayerId==='host'||senseiPlayerId===myId);
  senseiMode=true;
  const sName=senseiPlayerId==='host'?'Host':(remote[senseiPlayerId]?.name||'Player');
- popups.push({t:'\ud83c\udfb2 ROLE: '+sName+' is Sakamoto Sensi!',x:480,y:210,l:3.5,s:1});
- if(isSensei)popups.push({t:'\ud83d\udc51 YOU ARE SENSI! Catch the RC cars!',x:480,y:245,l:4,s:1});
+ popups.push({t:'\ud83c\udfb2 ROLE: '+sName+' is Sakamoto Sensei!',x:480,y:210,l:3.5,s:1});
+ if(isSensei)popups.push({t:'\ud83d\udc51 YOU ARE SENSEI! Catch the RC cars!',x:480,y:245,l:4,s:1});
  updatePedUI();
 }
 function attemptCatch(){
@@ -1084,11 +1084,11 @@ function attemptCatch(){
   flash=0.45;
   teacher.say=pk_(LN('teacher','catch',[ROAST()]));teacher.sayT=2.4;speak(teacher,teacher.say);
   if(caughtCar===car){
-   popups.push({t:'👑 SENSI CAUGHT YOU! -10s',x:480,y:200,l:2.5,s:1,c:'#ff3b30'});
+   popups.push({t:'👑 SENSEI CAUGHT YOU! -10s',x:480,y:200,l:2.5,s:1,c:'#ff3b30'});
    car.x=450+(Math.random()-.5)*80;car.y=560;car.v=0;time=Math.max(0,time-10);
   }else{
-   toPeer(caughtCar.id,{t:'b',msg:'Caught by Sakamoto Sensi!'});
-   popups.push({t:'👑 SENSI CAUGHT '+(caughtCar.name||'Student')+'!',x:480,y:200,l:2.5,s:1,c:'#ffd23f'});
+   toPeer(caughtCar.id,{t:'b',msg:'Caught by Sakamoto Sensei!'});
+   popups.push({t:'👑 SENSEI CAUGHT '+(caughtCar.name||'Student')+'!',x:480,y:200,l:2.5,s:1,c:'#ffd23f'});
   }
   if(NG&&hostConn&&hostConn.open)hostConn.send({t:'scat',hit:1,cId:caughtCar.id});
  }else{
@@ -1104,7 +1104,7 @@ function attemptCatch(){
   const cries=['Gyaaaah! Missed!!','OOF! My face!!','I slipped!! Dammit!!','Ouch! Whose homework was that?!','Wait till I get back up!!','Uwaaa! Currrrse you RC car!!'];
   teacher.say=pk_(LN('teacher','fall',cries));
   teacher.sayT=2.8;speak(teacher,teacher.say);
-  popups.push({t:'💥 MISSED! SENSI FELL! (3s stun)',x:480,y:200,l:2.5,s:1,c:'#ff7766'});
+  popups.push({t:'💥 MISSED! SENSEI FELL! (3s stun)',x:480,y:200,l:2.5,s:1,c:'#ff7766'});
   if(NG&&hostConn&&hostConn.open)hostConn.send({t:'scat',hit:0,downT:3.0,tx:teacher.x,ty:teacher.y,dir:teacher.dir});
  }
  updatePedUI();
@@ -1151,7 +1151,7 @@ function onSnap(d){if(d.t!=='s')return;
  if(d.sm!==undefined){
   senseiMode=!!d.sm;senseiPlayerId=d.sId||'';senseiCaught=d.sCnt||0;
   const prevSensei=isSensei;isSensei=(myId!==''&&myId===senseiPlayerId);
-  if(isSensei&&!prevSensei)popups.push({t:'\ud83d\udc51 YOU ARE SAKAMOTO SENSI!',x:480,y:230,l:3.5,s:1});
+  if(isSensei&&!prevSensei)popups.push({t:'\ud83d\udc51 YOU ARE SAKAMOTO SENSEI!',x:480,y:230,l:3.5,s:1});
   updatePedUI();
  }
  const ns=d.T.sayT>0&&d.T.say&&d.T.say!==teacher.say;Object.assign(teacher,d.T);if(ns)speak(teacher,teacher.say);if(teacher.x===undefined){teacher.x=d.T.tx;teacher.y=d.T.ty}
@@ -1179,10 +1179,10 @@ document.getElementById('bl').onclick=function(){leave('Left room')};
 const bsModeBtn=document.getElementById('b-sensei');
 if(bsModeBtn)bsModeBtn.onclick=function(){
  if(NH){
-  if(conns.length===0){popups.push({t:'Need at least 1 guest for Sensi Tag',x:480,y:200,l:2,s:1});this.blur();return}
+  if(conns.length===0){popups.push({t:'Need at least 1 guest for Sensei Tag',x:480,y:200,l:2,s:1});this.blur();return}
   if(!senseiMode){senseiMode=true;randomSensei()}else randomSensei();
  }
- else popups.push({t:'Only host can re-roll Sensi',x:480,y:200,l:2,s:1});
+ else popups.push({t:'Only host can re-roll Sensei',x:480,y:200,l:2,s:1});
  this.blur();
 };
 document.getElementById('bs').onclick=function(){const u=location.href.split('?')[0]+'?room='+room;
@@ -1466,13 +1466,13 @@ function mkPerson(teach,i,look){look=teach?'teacher':(look||'npcM');
   [-.35,-.15,.15,.35].forEach((z,k)=>{const c=mk(new THREE.ConeGeometry(.17,.55,6),hm,0,LG+3.92+Math.abs(z)*.1,z);c.rotation.set(z*.5,0,.15-k*.1)});
  }
  g3.userData={l,a,tc,hair:cap,head:hd,look};g3.scale.setScalar(teach?1.08:1);return g3}
-let defaultTeacher=null,fierySensiModel=null;
-let sensiModelType=localStorage.getItem('rc_sensi_model')||'fiery';
-function loadFierySensi(cb){
- if(fierySensiModel){if(cb)cb(fierySensiModel);return}
+let defaultTeacher=null,fierySenseiModel=null;
+let senseiModelType=localStorage.getItem('rc_sensei_model')||'fiery';
+function loadFierySensei(cb){
+ if(fierySenseiModel){if(cb)cb(fierySenseiModel);return}
  if(!window.THREE||!THREE.GLTFLoader)return;
  const loader=new THREE.GLTFLoader();
- loader.load('fiery_sensi.glb',gltf=>{
+ loader.load('fiery_sensei.glb',gltf=>{
   const root=new THREE.Group();
   const model=gltf.scene;
   const box=new THREE.Box3().setFromObject(model);
@@ -1515,25 +1515,25 @@ function loadFierySensi(cb){
    tc:{material:{emissive:{setHex:h=>mats.forEach(m=>m.emissive&&m.emissive.setHex(h))}}},
    head:{material:{emissive:{setHex:()=>{}}}}
   };
-  fierySensiModel=root;
-  applySensiModel();
+  fierySenseiModel=root;
+  applySenseiModel();
   if(cb)cb(root);
  },undefined,err=>{
-  console.warn('Could not load fiery_sensi.glb, using procedural teacher:',err);
+  console.warn('Could not load fiery_sensei.glb, using procedural teacher:',err);
  });
 }
-function cycleSensiModel(){
- sensiModelType=(sensiModelType==='fiery')?'classic':'fiery';
- try{localStorage.setItem('rc_sensi_model',sensiModelType)}catch(_){}
- applySensiModel();
+function cycleSenseiModel(){
+ senseiModelType=(senseiModelType==='fiery')?'classic':'fiery';
+ try{localStorage.setItem('rc_sensei_model',senseiModelType)}catch(_){}
+ applySenseiModel();
 }
-function applySensiModel(){
+function applySenseiModel(){
  if(!T3||!T3.sc)return;
- const wantFiery=(sensiModelType==='fiery');
- if(wantFiery&&fierySensiModel){
-  if(T3.tea!==fierySensiModel){
+ const wantFiery=(senseiModelType==='fiery');
+ if(wantFiery&&fierySenseiModel){
+  if(T3.tea!==fierySenseiModel){
    T3.sc.remove(T3.tea);
-   T3.tea=fierySensiModel;
+   T3.tea=fierySenseiModel;
    T3.sc.add(T3.tea);
   }
  }else if(!wantFiery&&defaultTeacher){
@@ -2063,18 +2063,18 @@ function boardTex(){return mkTex(1536,307,(c,w,h)=>{const g2=c.createLinearGradi
  c.fillStyle='rgba(255,255,255,.05)';for(let i=0;i<8;i++){c.fillRect(40+Math.random()*60,30+i*32,w-180+Math.random()*60,18+Math.random()*10)}
  for(let i=0;i<12;i++){c.fillStyle='rgba(235,245,230,.03)';c.beginPath();c.arc(80+Math.random()*(w-160),40+Math.random()*(h-80),30+Math.random()*40,0,7);c.fill()}
  const ch=tv('board.chalk','#f4f7f0');c.fillStyle=ch;c.globalAlpha=.92;if(tv('board.glow',false)){c.shadowColor=ch;c.shadowBlur=12}
- c.font='bold 44px "Comic Sans MS",cursive';c.fillText('\u270e CLASS 2-B: PHYSICS & RC DRIFT',60,58);c.font='italic 24px "Comic Sans MS",cursive';c.fillStyle='#85e3a8';c.fillText('Teacher: '+(sensiModelType==='fiery'?'Fiery Sakamoto Sensi':'Sakamoto Sensi')+'  |  Period 1: Mechanics',60,94);
+ c.font='bold 44px "Comic Sans MS",cursive';c.fillText('\u270e CLASS 2-B: PHYSICS & RC DRIFT',60,58);c.font='italic 24px "Comic Sans MS",cursive';c.fillStyle='#85e3a8';c.fillText('Teacher: '+(senseiModelType==='fiery'?'Fiery Sakamoto Sensei':'Sakamoto Sensei')+'  |  Period 1: Mechanics',60,94);
  c.fillStyle=ch;c.font='26px "Comic Sans MS",cursive';
  ['\u2022 Objective: Grab the homework papers before the final bell!',
   '\u2022 Cornering fast initiates a drift \u2014 countersteer to control your line!',
-  '\u2022 Power-ups: Coffee = Speed Boost, Eraser = Freeze Sensi, Clock = +Time',
-  '\u2022 Multiplayer: One random player is chosen as Sakamoto Sensi to catch RC cars!',
-  '\u2022 Desks provide cover: Sensi cannot see you through classroom furniture.'].forEach((l,i)=>c.fillText(l,60,132+i*32));
+  '\u2022 Power-ups: Coffee = Speed Boost, Eraser = Freeze Sensei, Clock = +Time',
+  '\u2022 Multiplayer: One random player is chosen as Sakamoto Sensei to catch RC cars!',
+  '\u2022 Desks provide cover: Sensei cannot see you through classroom furniture.'].forEach((l,i)=>c.fillText(l,60,132+i*32));
  c.fillStyle='#ffd23f';c.font='bold 28px "Comic Sans MS",cursive';c.fillText('v = \u0394x / \u0394t    F = m\u22c5a',1040,64);
  c.fillStyle='#8fd1ff';c.font='22px "Comic Sans MS",cursive';c.fillText('Drift: \u03b2 = arctan(v_lat / v_long)',1040,98);
  c.strokeStyle='#ffd23f';c.lineWidth=3;c.globalAlpha=.85;c.strokeRect(1060,122,140,54);c.fillStyle='#ffd23f';c.fillRect(1090,112,80,24);
  c.fillStyle='#f4f7f0';c.fillRect(1048,158,24,18);c.fillRect(1188,158,24,18);c.beginPath();c.moveTo(1045,120);c.lineTo(1045,104);c.lineTo(1062,104);c.stroke();
- c.font='bold 18px "Comic Sans MS",cursive';c.fillText('PORSCHE 911 GTS',1050,206);c.fillStyle='#ff8080';c.fillText('\u26a0 WATCH OUT FOR SENSI!',1040,240);c.globalAlpha=1})}
+ c.font='bold 18px "Comic Sans MS",cursive';c.fillText('PORSCHE 911 GTS',1050,206);c.fillStyle='#ff8080';c.fillText('\u26a0 WATCH OUT FOR SENSEI!',1040,240);c.globalAlpha=1})}
 function dressTex(){if(!dressTex.t)dressTex.t=mkTex(256,256,(c,w,h)=>{
  c.fillStyle='#e85a20';c.fillRect(0,0,w,h);
  const gr=c.createLinearGradient(0,0,w,0);
@@ -2181,11 +2181,11 @@ function init3D(){
  const spot=new THREE.SpotLight(0xfff0c0,1,34,.55,.6,1);sc.add(spot,spot.target);
  const envMap=mkEnv();sc.environment=GFX==='low'?null:envMap;const dust=mkDust();dust.visible=GFX!=='low';sc.add(dust);
  defaultTeacher=mkPerson(true);
- const curTea=(sensiModelType==='fiery'&&fierySensiModel)?fierySensiModel:defaultTeacher;
+ const curTea=(senseiModelType==='fiery'&&fierySenseiModel)?fierySenseiModel:defaultTeacher;
  T3={r,sc,cam,top,v:new THREE.Vector3(),look:new THREE.Vector3(45,0,50),t:0,dk:'',ck:'',dg:[],cg:[],stu:[],pap:[],pow:[],rem:{},spot,envMap,dust,
   car:mkCar(0x1c3a9e),pv:0,pz:0,cp:new THREE.Vector3(45,6,60),lk:new THREE.Vector3(45,1,30),tea:curTea,tx:0,tz:0,face:0};
  sc.add(T3.car,T3.tea);cam.position.set(45,3,40);cam.lookAt(45,3,0);cam.updateMatrixWorld();applyGfx();
- if(!fierySensiModel)loadFierySensi();
+ if(!fierySenseiModel)loadFierySensei();
  if(!sakuraKunModel)loadSakuraKun();
  if(!hinataChanModel)loadHinataChan();
  if(!renSakuragiModel)loadRenSakuragi();
@@ -2328,7 +2328,7 @@ function drawTags(){g.font='bold 11px "Trebuchet MS",sans-serif';g.textAlign='ce
  const tag=(o,h,txt,col)=>{const p=P(o.x,o.y,h);if(p[0]<0||p[0]>960||p[1]<20||p[1]>520)return;const w=g.measureText(txt).width+10;fillRoundRect(p[0]-w/2,p[1]-12,w,15,5,'rgba(0,0,0,.55)');g.fillStyle=col;g.fillText(txt,p[0],p[1])};
  students.forEach(o=>{if(o.name&&(o.hero||Math.hypot(o.x-car.x,o.y-car.y)<250))tag(o,82,(o.hero?'★ ':'')+o.name,o.hero?'#ffd23f':'#cfe3ff')});
  if(teacher.x!==undefined){
-  const sLabel=senseiMode&&senseiPlayerId?('👑 SENSI ['+(senseiPlayerId==='host'?'Host':(remote[senseiPlayerId]?.name||'P'))+']'):(sensiModelType==='fiery'?'Fiery Sensi':'Sakamoto Sensi');
+  const sLabel=senseiMode&&senseiPlayerId?('👑 SENSEI ['+(senseiPlayerId==='host'?'Host':(remote[senseiPlayerId]?.name||'P'))+']'):(senseiModelType==='fiery'?'Fiery Sensei':'Sakamoto Sensei');
   tag(teacher,96,sLabel,senseiMode&&senseiPlayerId?'#ffd23f':'#ff9a9a');
   if(teacher.downT>0){
    const tp=P(teacher.x,teacher.y,55);
@@ -2347,14 +2347,14 @@ function drawTags(){g.font='bold 11px "Trebuchet MS",sans-serif';g.textAlign='ce
 const charImg=new Image();let charImgOK=false;charImg.onload=()=>charImgOK=true;charImg.onerror=()=>{if(charImg.src.indexOf('.jpg')!==-1)charImg.src='characters.png'};charImg.src='characters.jpg';
 const PACKS=[
  ['en','English Voice Pack','Sensei, heroes & students speak crisp English'],
- ['ja','Japanese Anime Pack','Authentic anime Japanese for Sakamoto Sensi & class'],
+ ['ja','Japanese Anime Pack','Authentic anime Japanese for Sakamoto Sensei & class'],
  ['ta','Tamil Voice Pack','Teacher, heroes & students speak vibrant Tamil']
 ];
 function previewVoice(id){
  const pack=packs[id]||BUILTIN_VOICE_PACKS[id];
  if(!pack)return;
  const phrase=id==='ja'?'ちょっと！待ちなさい！そのおもちゃをゴミ箱に捨てるわよ！':id==='ta'?'ஏய்! அங்கேயே நில்லு! அந்த பொம்மையை குப்பைத்தொட்டியில போடப்போறேன்!':'Hey! Stop right there! That toy is going in the trash!';
- const tag=id==='ja'?'Sensi [JA]: ':id==='ta'?'Sensi [TA]: ':'Sensi [EN]: ';
+ const tag=id==='ja'?'Sensei [JA]: ':id==='ta'?'Sensei [TA]: ':'Sensei [EN]: ';
  popups.push({t:'🔊 '+tag+phrase,x:480,y:230,l:2.8,s:1,c:'#ffd23f'});
  const ss=window.speechSynthesis;
  if(!ss){blip(phrase,120);return}
@@ -2520,7 +2520,7 @@ function drawSettings(){
  };
  btn(33,'🎮  Steering Sensitivity: '+SENS_NAMES[sensIdx],'#e07a22');
  btn(60,'🏎️  Car Model: '+(porscheModelType==='meshy'?'Blue Horizon Porsche (3D)':'Classic 911'),porscheModelType==='meshy'?'#1a66cc':'#4a4858');
- btn(87,'🔥  Sensi Model: '+(sensiModelType==='fiery'?'Fiery Sensi (3D Mesh)':'Classic Sensi'),sensiModelType==='fiery'?'#d9461e':'#4a4858');
+ btn(87,'🔥  Sensei Model: '+(senseiModelType==='fiery'?'Fiery Sensei (3D Mesh)':'Classic Sensei'),senseiModelType==='fiery'?'#d9461e':'#4a4858');
  btn(114,'🌸  Sakura Model: '+(sakuraModelType==='meshy'?'Sakura-kun (3D Mesh)':'Classic Sakura'),sakuraModelType==='meshy'?'#e05070':'#4a4858');
  btn(141,'💙  Hinata Model: '+(hinataModelType==='meshy'?'Hinata-chan (3D Mesh)':'Classic Hinata'),hinataModelType==='meshy'?'#3a6fd8':'#4a4858');
  btn(168,'🎓  Student Male NPC: '+(renModelType==='meshy'?'Ren Sakuragi (3D Mesh)':'Classic NPC'),renModelType==='meshy'?'#2f6bb2':'#4a4858');
@@ -2538,7 +2538,7 @@ function settingsClick(x,y){
  const ib=by=>x>295&&x<665&&y>by&&y<by+23;
  if(ib(33))cycleSens();
  else if(ib(60))cyclePorscheModel();
- else if(ib(87))cycleSensiModel();
+ else if(ib(87))cycleSenseiModel();
  else if(ib(114))cycleSakuraModel();
  else if(ib(141))cycleHinataModel();
  else if(ib(168))cycleRenModel();
@@ -2567,7 +2567,7 @@ function drawVoices(){
   g.font='bold 10px "Trebuchet MS",sans-serif';g.fillStyle='#fff';g.textAlign='center';g.fillText(badgeTxt,x+w-51,y+31);
   g.textAlign='left';g.font='11px "Trebuchet MS",sans-serif';g.fillStyle='#c8c8d8';g.fillText(desc,x+14,y+60);
   drawCard(x+12,y+74,w-24,62,10,'rgba(15,14,22,.65)','rgba(255,255,255,.08)',1);
-  g.fillStyle='#ffd23f';g.font='bold 11px "Trebuchet MS",sans-serif';g.fillText('Sensi Voice Preview:',x+18,y+92);
+  g.fillStyle='#ffd23f';g.font='bold 11px "Trebuchet MS",sans-serif';g.fillText('Sensei Voice Preview:',x+18,y+92);
   g.fillStyle='#f0ede4';g.font='italic 11px "Trebuchet MS",sans-serif';
   const sampleTxt=isJa?'「ちょっと！待ちなさい！」':isTa?'「ஏய்! அங்கேயே நில்லு!」':'"Hey! Stop right there!"';
   g.fillText(sampleTxt,x+18,y+110);
@@ -2575,7 +2575,7 @@ function drawVoices(){
   g.fillStyle='#c0b8b0';g.font='10px "Trebuchet MS",sans-serif';
   g.fillText(sampleTxt2,x+18,y+126);
   g.fillStyle='#9ab0c8';g.font='11px "Trebuchet MS",sans-serif';
-  g.fillText('• 12+ Sensi Roasts & Threats',x+18,y+156);
+  g.fillText('• 12+ Sensei Roasts & Threats',x+18,y+156);
   g.fillText('• Catch, Fall & Patrol Shouts',x+18,y+174);
   g.fillText('• Hero Saves & Class Gasps',x+18,y+192);
   g.textAlign='center';g.fillStyle=st==='fail'?'#ff8a7a':act?'#8fd16b':inst?'#ffd23f':'#9a9ab0';g.font='bold 11px "Trebuchet MS",sans-serif';
@@ -2593,11 +2593,11 @@ function drawVoices(){
  g.fillText('Back to Settings',480,475);g.restore();g.textAlign='left';
 }
 let introT=0,introNext=0,introPh=0,introFlags={};
-const SUBS=[[.8,3,'9:00 AM. Class 2-B.'],[3.2,5.4,'Everyone is bored. Everyone is quiet.'],[5.6,7.8,'Everyone... except one little RC car.'],[8.2,9.9,(sensiModelType==='fiery'?'Fiery Sensi':'Sakamoto Sensi')+': the strictest teacher in school.'],[10.1,11.8,(sakuraModelType==='meshy'?'Sakura-kun (The Protagonist)':'Sakura-kun')+' and '+(hinataModelType==='meshy'?'Hinata-chan (Class Hero)':'Hinata-chan')+': the class heroes.'],[12,13,((renModelType==='meshy'||sakuraClassmateModelType==='meshy')?'Ren Sakuragi, Sakura classmates, and curious peers.':'And a few very curious classmates.')],[13.6,16,'Meet your RC car: the Porsche 911 GTS.'],[16.2,18.8,'Fast. Loud. Absolutely not allowed in class.'],[19.4,21.3,'Then she walked in...'],[21.7,23.6,'"Whose toy is THAT?!"']];
+const SUBS=[[.8,3,'9:00 AM. Class 2-B.'],[3.2,5.4,'Everyone is bored. Everyone is quiet.'],[5.6,7.8,'Everyone... except one little RC car.'],[8.2,9.9,(senseiModelType==='fiery'?'Fiery Sensei':'Sakamoto Sensei')+': the strictest teacher in school.'],[10.1,11.8,(sakuraModelType==='meshy'?'Sakura-kun (The Protagonist)':'Sakura-kun')+' and '+(hinataModelType==='meshy'?'Hinata-chan (Class Hero)':'Hinata-chan')+': the class heroes.'],[12,13,((renModelType==='meshy'||sakuraClassmateModelType==='meshy')?'Ren Sakuragi, Sakura classmates, and curious peers.':'And a few very curious classmates.')],[13.6,16,'Meet your RC car: the Porsche 911 GTS.'],[16.2,18.8,'Fast. Loud. Absolutely not allowed in class.'],[19.4,21.3,'Then she walked in...'],[21.7,23.6,'"Whose toy is THAT?!"']];
 const MEL=[0,2,4,2,3,4,5,4,2,3,4,6,5,4,2,3],SCL=[220,261.6,293.7,329.6,392,440,523.3];
 function introStage(){level=1;nextLevel(true);teacher.x=80;teacher.y=60;car.v=0}
 function startIntro(){audioInit();goLand();introStage();introT=0;introNext=0;introPh=0;introFlags={};state='intro';try{localStorage.setItem('rcIntro','1')}catch(e){}
- SUBS[3][2]=(sensiModelType==='fiery'?'Fiery Sensi':'Sakamoto Sensi')+': the strictest teacher in school.';
+ SUBS[3][2]=(senseiModelType==='fiery'?'Fiery Sensei':'Sakamoto Sensei')+': the strictest teacher in school.';
  SUBS[4][2]=(sakuraModelType==='meshy'?'Sakura-kun (The Protagonist)':'Sakura-kun')+' and '+(hinataModelType==='meshy'?'Hinata-chan (Class Hero)':'Hinata-chan')+': the class heroes.';
  SUBS[5][2]=((renModelType==='meshy'||sakuraClassmateModelType==='meshy')?'Ren Sakuragi, Sakura classmates, and curious peers.':'And a few very curious classmates.');
  tone(880,1.6,'sine',.18,null,.2);tone(1320,1.4,'sine',.1,null,.2);tone(660,1.8,'sine',.12,null,.9)}
@@ -2683,8 +2683,8 @@ function homeClick(x,y){
    }
    if(cx>260&&cx<700&&cy>264&&cy<312){
     senseiMode=!senseiMode;
-    if(senseiMode)popups.push({t:'👑 Sensi Tag Mode Enabled',x:480,y:200,l:1.5,s:1});
-    else popups.push({t:'Sensi Tag Mode Disabled',x:480,y:200,l:1.5,s:1});
+    if(senseiMode)popups.push({t:'👑 Sensei Tag Mode Enabled',x:480,y:200,l:1.5,s:1});
+    else popups.push({t:'Sensei Tag Mode Disabled',x:480,y:200,l:1.5,s:1});
     sfx.tick();return;
    }
    if((cx>680&&cx<725&&cy>55&&cy<95)||cx<220||cx>740||cy<50||cy>470){
@@ -2839,8 +2839,8 @@ function drawModalPlay(){
  g.fillStyle='#ffd23f';g.font='bold 28px "Trebuchet MS",sans-serif';
  g.fillText('🏁 READY TO RACE?',480,90);
  g.fillStyle='#d8d8e8';g.font='14px "Trebuchet MS",sans-serif';
- g.fillText('Collect homework before Sakamoto Sensi catches you!',480,114);
- const diffs=[{n:'Easy',d:'120s • Relaxed'},{n:'Normal',d:'120s • Standard'},{n:'Hard',d:'120s • Fast Sensi'}];
+ g.fillText('Collect homework before Sakamoto Sensei catches you!',480,114);
+ const diffs=[{n:'Easy',d:'120s • Relaxed'},{n:'Normal',d:'120s • Standard'},{n:'Hard',d:'120s • Fast Sensei'}];
  diffs.forEach((df,i)=>{
   const x=250+i*160,isSel=i===diff;
   drawCard(x,140,140,44,10,isSel?'#2e7d32':'#3a3848',isSel?'#8fd16b':'rgba(255,255,255,.15)',isSel?2:1);
@@ -2878,7 +2878,7 @@ function drawModalMultiplayer(){
  g.fillStyle='#ffd23f';g.font='bold 28px "Trebuchet MS",sans-serif';
  g.fillText('👥 MULTIPLAYER LOBBY',480,90);
  g.fillStyle='#d8d8e8';g.font='14px "Trebuchet MS",sans-serif';
- g.fillText('Live WebRTC classroom racing & Sensi Tag mode',480,114);
+ g.fillText('Live WebRTC classroom racing & Sensei Tag mode',480,114);
  drawCard(260,140,440,48,12,'#2f6bb2','rgba(255,255,255,.2)',1.5);
  g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';
  g.fillText('👑 Host Room (Create)',480,170);
@@ -2887,7 +2887,7 @@ function drawModalMultiplayer(){
  g.fillText('🔑 Join Room with Code',480,232);
  drawCard(260,264,440,48,12,senseiMode?'#b82222':'#4a4858','rgba(255,255,255,.2)',1.5);
  g.fillStyle='#fff';g.font='bold 15px "Trebuchet MS",sans-serif';
- g.fillText(senseiMode?'👑 Sensi Tag Mode: ON (Play as Teacher)':'👑 Enable Sensi Tag Mode',480,294);
+ g.fillText(senseiMode?'👑 Sensei Tag Mode: ON (Play as Teacher)':'👑 Enable Sensei Tag Mode',480,294);
  g.fillStyle='#a0a0b8';g.font='12px "Trebuchet MS",sans-serif';
  g.fillText('Works across phones, tablets, and PC browsers!',480,350);
  g.fillText('Host shares room code with friends to race together.',480,370);
@@ -3003,7 +3003,7 @@ function drawPip(){if(state!=='play'&&state!=='pause')return;
  }
  g.restore();g.save();
  g.fillStyle='rgba(12,14,20,.85)';g.fillRect(x,y,72,15);g.font='bold 10px "Trebuchet MS",sans-serif';g.fillStyle='#ffd23f';g.fillText('GAME VIEW',x+5,y+11);
- g.fillStyle='rgba(0,0,0,.45)';g.fillRect(434,40,94,18);g.fillStyle='#f3efe0';g.fillText(isSensei?'SENSI CAM':'CHASE CAM',462,53);g.fillStyle=Math.sin(Date.now()/300)>0?'#ff3b30':'#701510';g.beginPath();g.arc(446,49,4,0,7);g.fill();
+ g.fillStyle='rgba(0,0,0,.45)';g.fillRect(434,40,94,18);g.fillStyle='#f3efe0';g.fillText(isSensei?'SENSEI CAM':'CHASE CAM',462,53);g.fillStyle=Math.sin(Date.now()/300)>0?'#ff3b30':'#701510';g.beginPath();g.arc(446,49,4,0,7);g.fill();
  g.restore()}
 function draw(){
  const inGame=(state==='play');
@@ -3055,7 +3055,7 @@ function draw(){
 const carImg=new Image();let carImgOK=false;carImg.onload=()=>carImgOK=true;carImg.src='car.jpg';
 const appIconImg=new Image();let appIconOK=false;appIconImg.onload=()=>appIconOK=true;appIconImg.src='icon-192.png';
 try{T3=window.THREE?init3D():null}catch(e){T3=null}
-try{loadFierySensi()}catch(_){}
+try{loadFierySensei()}catch(_){}
 try{loadSakuraKun()}catch(_){}
 try{loadHinataChan()}catch(_){}
 try{loadRenSakuragi()}catch(_){}
