@@ -90,7 +90,22 @@ body.cine #pad,body.cine #bar,body.home #pad,body.home #bar{visibility:hidden;di
 <body>
 <div id="bar"><button id="b-sensei" hidden style="background:#b82b2b;color:#fff;font-weight:bold" title="Toggle Sensei Mode">👑 Sensei Tag</button><button id="bs" hidden>Invite</button><button id="bl" hidden>Leave</button><button id="bp">⏸</button><button id="bv">🗣</button><button id="bm">🔊</button></div>
 <div id="rot"><b>📱</b>Rotate your phone to landscape to play</div>
-<div id="stage"><canvas id="gl"></canvas><canvas id="c" width="960" height="520"></canvas></div>
+<div id="stage">
+ <canvas id="gl"></canvas>
+ <canvas id="c" width="960" height="520"></canvas>
+ <input type="file" id="pfpUpload" accept="image/*" style="display:none">
+ <div id="profile-text-dialog" style="display:none;position:absolute;inset:0;background:rgba(10,8,20,.88);z-index:90;backdrop-filter:blur(8px);align-items:center;justify-content:center;">
+  <div style="background:linear-gradient(145deg,#1f1a35,#120f22);border:2px solid #00f0ff;border-radius:18px;padding:22px;width:min(90%,400px);box-shadow:0 0 32px rgba(0,240,255,.4);text-align:center;color:#fff;">
+   <h3 id="profile-dialog-title" style="margin:0 0 8px;color:#ffd23f;font-size:20px;letter-spacing:1px"></h3>
+   <p id="profile-dialog-desc" style="margin:0 0 14px;color:#cbd5e1;font-size:12px"></p>
+   <input id="profile-dialog-input" type="text" maxlength="24" style="width:100%;padding:10px 14px;background:#0b0816;border:2px solid #38bdf8;border-radius:10px;color:#fff;font-size:15px;font-weight:bold;outline:none;box-sizing:border-box;margin-bottom:16px;">
+   <div style="display:flex;gap:12px;justify-content:center">
+    <button id="profile-dialog-cancel" type="button" style="padding:8px 18px;border-radius:10px;background:#374151;border:1.5px solid #6b7280;color:#fff;font-weight:bold;cursor:pointer">Cancel</button>
+    <button id="profile-dialog-ok" type="button" style="padding:8px 22px;border-radius:10px;background:linear-gradient(135deg,#00f0ff,#0072ff);border:none;color:#fff;font-weight:bold;cursor:pointer;box-shadow:0 0 16px rgba(0,240,255,.6)">Confirm</button>
+   </div>
+  </div>
+ </div>
+</div>
 <div id="pad" style="display:none">
  <div id="car-controls" style="display:flex;justify-content:space-between;align-items:flex-end;width:100%">
   <div id="steer"><button data-k="left">◀</button><button data-k="right">▶</button></div>
@@ -194,11 +209,171 @@ const keys={up:0,down:0,left:0,right:0,nitro:0};
 const map={Shift:'nitro',n:'nitro',N:'nitro',' ':'nitro',Space:'nitro',ArrowUp:'up',w:'up',W:'up',ArrowDown:'down',s:'down',S:'down',ArrowLeft:'left',a:'left',A:'left',ArrowRight:'right',d:'right',D:'right'};
 let state='splash',splashT=0,score=0,time=45,bumps=0,bumpCd=0,best=0,msg='';
 let playerName='Jaihari21';try{playerName=localStorage.getItem('rcPlayerName')||'Jaihari21'}catch(e){}
+let playerInterest='Drift Specialist';try{playerInterest=localStorage.getItem('rcPlayerInterest')||'Drift Specialist'}catch(e){}
+let playerAvatar='male';try{playerAvatar=localStorage.getItem('rcPlayerAvatar')||'male'}catch(e){}
+let hasCreatedProfile=false;try{hasCreatedProfile=(localStorage.getItem('rcProfileCreated')==='true')}catch(e){}
 let homeModal=null,homeHover=null;
 const logoImg=new Image();let logoImgOK=false;logoImg.onload=()=>logoImgOK=true;logoImg.src='logo.png';
 const homeBgImg=new Image();let homeBgOK=false;homeBgImg.onload=()=>homeBgOK=true;homeBgImg.src='home_bg.jpg';
 const avatarImg=new Image();let avatarOK=false;avatarImg.onload=()=>avatarOK=true;avatarImg.src='avatar.png';
-function startFromSplash(){if(state!=='splash')return;audioInit();playMusic();if(sfx&&sfx.power)sfx.power();state='home'}
+
+const AVATAR_PRESETS=[
+ {id:'female',name:'Female',title:'Speed Queen',src:'avatars/avatar_female.png',col:'#ff3ca0'},
+ {id:'male',name:'Male',title:'Turbo Drift',src:'avatars/avatar_male.png',col:'#00dcff'},
+ {id:'teenage',name:'Teenage',title:'Cyber Street',src:'avatars/avatar_teen.png',col:'#b450ff'},
+ {id:'middle',name:'Middle Age',title:'Veteran Pro',src:'avatars/avatar_middle.png',col:'#ffaa28'},
+ {id:'old',name:'Old',title:'Grandpa Nitro',src:'avatars/avatar_old.png',col:'#d2dceb'},
+ {id:'baby',name:'Baby',title:'Little Nitro',src:'avatars/avatar_baby.png',col:'#ffdc32'},
+ {id:'pet_dog',name:'Pet Dog',title:'Racer Pup',src:'avatars/avatar_pet_dog.png',col:'#ff6e3c'},
+ {id:'pet_cat',name:'Pet Cat',title:'Speedy Kitty',src:'avatars/avatar_pet_cat.png',col:'#28e6b4'},
+ {id:'pet_bunny',name:'Pet Bunny',title:'Turbo Bunny',src:'avatars/avatar_pet_bunny.png',col:'#ffa532'},
+ {id:'pet_robot',name:'Robot Pet',title:'Mech Hound',src:'avatars/avatar_robot_pet.png',col:'#00f0ff'}
+];
+const avatarImages={};
+AVATAR_PRESETS.forEach(p=>{
+ const im=new Image();im.src=p.src;avatarImages[p.id]=im;
+});
+let customAvatarImg=new Image();let customAvatarOK=false;
+try{
+ const savedCust=localStorage.getItem('rcCustomAvatar');
+ if(savedCust){customAvatarImg.onload=()=>{customAvatarOK=true};customAvatarImg.src=savedCust}
+}catch(e){}
+
+const RANDOM_NAMES=[
+ 'TurboAce','DriftQueen','ApexRacer','NitroBolt','ShadowDrift',
+ 'DeskRacer','SonicWheel','VelocityKai','BlazeMaster','CyberDash',
+ 'MicroSpeed','PencilRacer','ChalkDrifter','RulerRider','EraserKing',
+ 'ElenaSpeed','MarcusPro','ZackCyber','GrandpaNitro','SpeedyLuna'
+];
+function pickRandomName(){
+ const n=RANDOM_NAMES[Math.floor(Math.random()*RANDOM_NAMES.length)];
+ playerName=n;
+ try{localStorage.setItem('rcPlayerName',playerName)}catch(e){}
+ if(sfx&&sfx.tick)sfx.tick();
+}
+
+const INTEREST_PRESETS=[
+ {id:'drift',tag:'🏎️ Drift Specialist',desc:'Cornering & high-angle slides'},
+ {id:'speed',tag:'⚡ Speed Demon',desc:'Maximum velocity & nitro boosts'},
+ {id:'score',tag:'🏆 High Score Chaser',desc:'Top desk combos & paper runs'},
+ {id:'class',tag:'📚 Class Explorer',desc:'Desk ramps & secret shortcuts'},
+ {id:'evade',tag:'🏃 Sensei Evader',desc:'Dodging teacher catches & tag'},
+ {id:'tuning',tag:'🔧 Car Tuner',desc:'Collecting & maxing out all 21 cars'},
+ {id:'stunts',tag:'🌟 Stunt Collector',desc:'Airtime, jumps & acrobatics'},
+ {id:'cruise',tag:'☕ Casual Cruiser',desc:'Relaxed classroom laps & vibes'}
+];
+
+function drawAvatarCircle(cx,cy,radius,avatarKey,isSelected,glowColor,showBorder){
+ g.save();
+ let img=null;
+ if(avatarKey==='custom'){
+  if(customAvatarOK&&customAvatarImg.complete)img=customAvatarImg;
+ }else if(avatarImages[avatarKey]&&avatarImages[avatarKey].complete){
+  img=avatarImages[avatarKey];
+ }
+ g.beginPath();g.arc(cx,cy,radius,0,Math.PI*2);
+ g.fillStyle='#1e1a2e';g.fill();
+ if(img){
+  g.save();g.beginPath();
+  g.arc(cx,cy,radius-(showBorder?2:0),0,Math.PI*2);g.clip();
+  g.drawImage(img,cx-radius,cy-radius,radius*2,radius*2);
+  g.restore();
+ }else{
+  g.fillStyle='#ffd23f';g.font='bold '+Math.round(radius*.85)+'px sans-serif';
+  g.textAlign='center';g.textBaseline='middle';
+  g.fillText(avatarKey==='custom'?'📸':'🏎️',cx,cy);
+ }
+ if(showBorder!==false){
+  const pulse=(Math.sin(Date.now()/300)+1)*.5;
+  g.strokeStyle=isSelected?(glowColor||'#ffd23f'):'rgba(255,255,255,.25)';
+  g.lineWidth=isSelected?(3+pulse*1.5):2;
+  if(isSelected){
+   g.shadowColor=glowColor||'#ffd23f';
+   g.shadowBlur=10+pulse*6;
+  }
+  g.beginPath();g.arc(cx,cy,radius,0,Math.PI*2);g.stroke();
+  g.shadowBlur=0;
+ }
+ if(isSelected){
+  const chx=cx+radius*.68,chy=cy+radius*.68;
+  g.fillStyle='#10b981';g.beginPath();
+  g.arc(chx,chy,Math.max(9,radius*.26),0,Math.PI*2);g.fill();
+  g.strokeStyle='#fff';g.lineWidth=1.5;g.stroke();
+  g.fillStyle='#fff';g.font='bold '+Math.max(9,Math.round(radius*.32))+'px sans-serif';
+  g.textAlign='center';g.textBaseline='middle';
+  g.fillText('✓',chx,chy);
+ }
+ g.restore();
+}
+
+let textDialogMode=null;
+function openTextDialog(mode){
+ textDialogMode=mode;
+ const diag=document.getElementById('profile-text-dialog');
+ const title=document.getElementById('profile-dialog-title');
+ const desc=document.getElementById('profile-dialog-desc');
+ const inp=document.getElementById('profile-dialog-input');
+ if(!diag||!title||!desc||!inp){
+  if(mode==='nickname'){
+   const res=prompt('Enter your driver nickname:',playerName);
+   if(res&&res.trim()){
+    playerName=res.trim().slice(0,18);
+    try{localStorage.setItem('rcPlayerName',playerName)}catch(e){}
+    if(sfx&&sfx.pick)sfx.pick();
+   }
+  }else{
+   const res=prompt('Enter your racing interest / specialty:',playerInterest);
+   if(res&&res.trim()){
+    playerInterest=res.trim().slice(0,24);
+    try{localStorage.setItem('rcPlayerInterest',playerInterest)}catch(e){}
+    if(sfx&&sfx.pick)sfx.pick();
+   }
+  }
+  return;
+ }
+ if(mode==='nickname'){
+  title.innerText='✏️ SET DRIVER NICKNAME';
+  desc.innerText='Choose your display handle for race records & multiplayer:';
+  inp.value=playerName;inp.maxLength=18;
+ }else{
+  title.innerText='🏎️ CUSTOM RACING INTEREST';
+  desc.innerText='Type your custom racing style or classroom specialty:';
+  inp.value=playerInterest;inp.maxLength=24;
+ }
+ diag.style.display='flex';
+ setTimeout(()=>inp.focus(),50);
+}
+
+function closeTextDialog(){
+ const diag=document.getElementById('profile-text-dialog');
+ if(diag)diag.style.display='none';
+ textDialogMode=null;
+}
+
+function confirmTextDialog(){
+ const inp=document.getElementById('profile-dialog-input');
+ if(inp&&textDialogMode){
+  const val=inp.value.trim();
+  if(val){
+   if(textDialogMode==='nickname'){
+    playerName=val.slice(0,18);
+    try{localStorage.setItem('rcPlayerName',playerName)}catch(e){}
+   }else if(textDialogMode==='interest'){
+    playerInterest=val.slice(0,24);
+    try{localStorage.setItem('rcPlayerInterest',playerInterest)}catch(e){}
+   }
+   if(sfx&&sfx.pick)sfx.pick();
+  }
+ }
+ closeTextDialog();
+}
+
+function openPhotoPicker(){
+ const inp=document.getElementById('pfpUpload');
+ if(inp){inp.value='';inp.click()}
+}
+
+function startFromSplash(){if(state!=='splash')return;audioInit();playMusic();if(sfx&&sfx.power)sfx.power();if(!hasCreatedProfile)state='profile_setup';else state='home'}
 const homeMotes=Array.from({length:18},()=>({x:Math.random()*960,y:Math.random()*520,sz:1+Math.random()*2,vy:.15+Math.random()*.25,seed:Math.random()*10,alpha:.2+Math.random()*.35}));
 try{best=+localStorage.getItem('rcBest')||0}catch(e){}
 let desks=[];buildDesks(0);
@@ -576,9 +751,10 @@ function nextLevel(first){hide=null;buildDesks(level-1);car.x=450;car.y=560;car.
  if(!first){time+=10;sfx.power();popups.push({t:'Level '+level+': '+LAYOUTS[(level-1)%6],x:480,y:230,l:2.5,s:1})}}
 addEventListener('keydown',e=>{const k=map[e.key];if(k){keys[k]=1;e.preventDefault()}
  if(state==='splash'){startFromSplash();return}
+ if(state==='profile_setup'){if((e.key==='Enter'||e.key===' ')&&!textDialogMode){profileSetupClick(480,488);return}}
  if(e.key==='p'||e.key==='Escape'){if(state==='over'){state='home';return}if(state==='volumes'){state=volPrevState||'settings';if(sfx&&sfx.tick)sfx.tick();return}if(state==='shop'||state==='settings'||state==='voices'||state==='textures'){state='home';if(sfx&&sfx.tick)sfx.tick();return}if(homeModal){homeModal=null;if(sfx&&sfx.tick)sfx.tick();return}togglePause()}if(e.key==='m')toggleMute();
  const go=e.key===' '||e.key==='Enter';
- if(state==='title'&&go)startIntro();else if(state==='intro'&&(go||e.key==='Escape'))endIntro();else if(state==='pause'&&go){state='play';playMusic()}else if(state!=='play'&&state!=='pause'&&state!=='shop'&&state!=='settings'&&state!=='voices'&&state!=='textures'&&state!=='volumes'&&state!=='splash'&&go&&!NG)reset();
+ if(state==='title'&&go)startIntro();else if(state==='intro'&&(go||e.key==='Escape'))endIntro();else if(state==='pause'&&go){state='play';playMusic()}else if(state!=='play'&&state!=='pause'&&state!=='shop'&&state!=='settings'&&state!=='voices'&&state!=='textures'&&state!=='volumes'&&state!=='splash'&&state!=='profile_setup'&&go&&!NG)reset();
  if(isSensei&&state==='play'&&(e.code==='Space'||e.key==='c'||e.key==='C')){e.preventDefault();attemptCatch()}
  if(state==='ready'&&'123'.includes(e.key))diff=+e.key-1});
 addEventListener('keyup',e=>{const k=map[e.key];if(k)keys[k]=0});
@@ -619,6 +795,7 @@ document.querySelectorAll('#pad button').forEach(b=>{const k=b.dataset.k;
 cv.addEventListener('pointerdown',e=>{audioInit();if(state==='play'||NG)return;
  const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)*960/r.width,y=(e.clientY-r.top)*520/r.height;
  if(state==='splash'){startFromSplash();return}
+ if(state==='profile_setup'){profileSetupClick(x,y);return}
  if(state==='home'){homeClick(x,y);return}
  if(state==='title'){startIntro();return}
  if(state==='intro'){if(x>760&&y<80)endIntro();return}
@@ -665,6 +842,51 @@ cv.addEventListener('pointerleave',()=>{homeHover=null;cv.style.cursor='default'
 document.getElementById('bp').onclick=function(){togglePause();this.blur()};
 document.getElementById('bm').onclick=function(){toggleMute();this.blur()};
 document.getElementById('bv').onclick=function(){toggleVoice();this.blur()};
+
+const pfpInp=document.getElementById('pfpUpload');
+if(pfpInp){
+ pfpInp.addEventListener('change',function(e){
+  const file=e.target.files&&e.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(evt){
+   const temp=new Image();
+   temp.onload=function(){
+    const oc=document.createElement('canvas');
+    oc.width=256;oc.height=256;
+    const og=oc.getContext('2d');
+    const minDim=Math.min(temp.width,temp.height);
+    const sx=(temp.width-minDim)/2,sy=(temp.height-minDim)/2;
+    og.drawImage(temp,sx,sy,minDim,minDim,0,0,256,256);
+    const dataUrl=oc.toDataURL('image/jpeg',0.88);
+    try{localStorage.setItem('rcCustomAvatar',dataUrl)}catch(err){console.warn(err)}
+    customAvatarImg=new Image();
+    customAvatarImg.onload=()=>{
+     customAvatarOK=true;
+     playerAvatar='custom';
+     try{localStorage.setItem('rcPlayerAvatar','custom')}catch(e){}
+     if(sfx&&sfx.pick)sfx.pick();
+     popups.push({t:'📸 Physical Photo Updated!',x:480,y:180,l:2.2,s:1,c:'#00ff88'});
+    };
+    customAvatarImg.src=dataUrl;
+   };
+   temp.src=evt.target.result;
+  };
+  reader.readAsDataURL(file);
+ });
+}
+
+const diagOk=document.getElementById('profile-dialog-ok');
+if(diagOk)diagOk.addEventListener('click',confirmTextDialog);
+const diagCancel=document.getElementById('profile-dialog-cancel');
+if(diagCancel)diagCancel.addEventListener('click',closeTextDialog);
+const diagInp=document.getElementById('profile-dialog-input');
+if(diagInp){
+ diagInp.addEventListener('keydown',function(e){
+  if(e.key==='Enter')confirmTextDialog();
+  else if(e.key==='Escape')closeTextDialog();
+ });
+}
 
 function update(dt){
  if(duckTimer>0){duckTimer=Math.max(0,duckTimer-dt);updateVolumeGains();updateMusicVolume()}
@@ -1319,7 +1541,7 @@ function draw2D(){
  if(state==='ready')panel('RC Car in Class?',['Grab homework before the bell.','Dodge students, desks and the teacher.','Steer buttons on the left, gas and reverse on the right.','Keys: arrows or WASD, P pauses, M mutes.'],true);
  else if(state==='over')drawGameOver();
  else if(state==='pause')drawPause();
- else if(state==='shop')drawShop();else if(state==='settings')drawSettings();else if(state==='voices')drawVoices();else if(state==='textures')drawTex();else if(state==='volumes')drawVolumes();else if(state==='splash')drawSplash();else if(state==='intro')drawIntro();else if(state==='title')drawTitle();
+ else if(state==='shop')drawShop();else if(state==='settings')drawSettings();else if(state==='voices')drawVoices();else if(state==='textures')drawTex();else if(state==='volumes')drawVolumes();else if(state==='splash')drawSplash();else if(state==='profile_setup')drawProfileSetup();else if(state==='intro')drawIntro();else if(state==='title')drawTitle();
  g.restore();
 }
 
@@ -3694,18 +3916,36 @@ function homeClick(x,y){
     homeModal=null;sfx.tick();return;
    }
   }else if(homeModal==='profile'){
-   if(cx>350&&cx<610&&cy>238&&cy<276){
-    const n=prompt('Enter your driver name:',playerName);
-    if(n&&n.trim()){
-     playerName=n.trim().slice(0,16);
-     try{localStorage.setItem('rcPlayerName',playerName)}catch(e){}
-     sfx.pick();
-    }
-    return;
-   }
-   if((cx>380&&cx<580&&cy>395&&cy<440)||(cx>670&&cx<710&&cy>55&&cy<90)||cx<240||cx>720||cy<50||cy>470){
+   if((cx>=850&&cx<=884&&cy>=38&&cy<=72)||cx<60||cx>900||cy<25||cy>495){
     homeModal=null;sfx.tick();return;
    }
+   if(cx>=98&&cx<=216&&cy>=234&&cy<=262){openTextDialog('nickname');return}
+   if(cx>=228&&cx<=346&&cy>=234&&cy<=262){pickRandomName();return}
+   if(cx>=98&&cx<=346&&cy>=270&&cy<=300){openPhotoPicker();return}
+   if(cx>=98&&cx<=346&&cy>=430&&cy<=458){homeModal=null;state='profile_setup';sfx.tick();return}
+   for(let i=0;i<AVATAR_PRESETS.length;i++){
+    const row=Math.floor(i/5),col=i%5;
+    const bx=394+col*96,by=112+row*66;
+    if(cx>=bx&&cx<=bx+88&&cy>=by&&cy<=by+60){
+     playerAvatar=AVATAR_PRESETS[i].id;
+     try{localStorage.setItem('rcPlayerAvatar',playerAvatar)}catch(e){}
+     if(sfx&&sfx.tick)sfx.tick();
+     return;
+    }
+   }
+   for(let idx=0;idx<INTEREST_PRESETS.length;idx++){
+    const r=Math.floor(idx/4),c=idx%4;
+    const ix=394+c*118,iy=280+r*38;
+    if(cx>=ix&&cx<=ix+112&&cy>=iy&&cy<=iy+32){
+     playerInterest=INTEREST_PRESETS[idx].tag;
+     try{localStorage.setItem('rcPlayerInterest',playerInterest)}catch(e){}
+     if(sfx&&sfx.tick)sfx.tick();
+     return;
+    }
+   }
+   if(cx>=394&&cx<=614&&cy>=366&&cy<=398){openTextDialog('interest');return}
+   if(cx>=630&&cx<=866&&cy>=366&&cy<=398){homeModal=null;sfx.tick();return}
+   return;
   }else if(homeModal==='exit'){
    if(cx>290&&cx<470&&cy>250&&cy<296){
     try{window.close()}catch(e){}
@@ -3793,14 +4033,19 @@ function drawHome(){
   g.fillText('🔇',871,38);
   g.restore();
  }
- if(playerName!=='Jaihari21'){
-  g.save();
-  fillRoundRect(446,168,118,28,6,'rgba(45,22,12,.94)');
-  strokeRoundRect(446,168,118,28,6,'rgba(255,215,80,.35)',1);
-  g.textAlign='center';g.font='bold 12px "Trebuchet MS",sans-serif';
-  g.fillStyle='#ffffff';g.fillText(playerName,505,187);
-  g.restore();
- }
+ // Profile Badge on Home screen
+ g.save();
+ fillRoundRect(394,158,173,59,12,'rgba(26,18,38,.92)');
+ strokeRoundRect(394,158,173,59,12,'rgba(255,215,80,.4)',1.5);
+ drawAvatarCircle(420,187,19,playerAvatar,false,null,true);
+ g.textAlign='left';
+ g.fillStyle='#ffffff';g.font='bold 12px "Trebuchet MS",sans-serif';
+ const truncName=playerName.length>11?playerName.slice(0,10)+'…':playerName;
+ g.fillText(truncName,448,178);
+ g.fillStyle='#00f0ff';g.font='bold 10px "Trebuchet MS",sans-serif';
+ const truncInt=playerInterest.length>14?playerInterest.slice(0,13)+'…':playerInterest;
+ g.fillText(truncInt,448,197);
+ g.restore();
  const pulse=(Math.sin(Date.now()/340)+1)*.5;
  g.save();
  g.strokeStyle='rgba(180,255,60,'+(.3+pulse*.45)+')';
@@ -3949,39 +4194,291 @@ function drawModalLeaderboard(){
  g.fillText('✕',703,74);
 }
 function drawModalProfile(){
- drawCard(240,50,480,420,20,['rgba(26,20,40,.97)','rgba(12,10,22,.99)'],['#ffd23f','#f59e0b'],2,'rgba(255,210,63,.3)');
+ const W=960,H=520;
+ drawCard(60,25,840,470,20,['rgba(26,20,44,.97)','rgba(12,10,22,.99)'],['#ffd23f','#00f0ff'],2,'rgba(255,210,63,.3)');
  g.textAlign='center';
- g.fillStyle='#ffd23f';g.font='bold 28px "Trebuchet MS",sans-serif';
+ g.fillStyle='#ffd23f';g.font='bold 26px "Trebuchet MS",sans-serif';
  g.shadowColor='#ffd23f';g.shadowBlur=8;
- g.fillText('👤 DRIVER PROFILE',480,90);
+ g.fillText('👤 DRIVER PROFILE & CUSTOMIZATION',W/2,62);
  g.shadowBlur=0;
- const ax=430,ay=105,aw=100,ah=100;
- g.save();
- g.beginPath();g.arc(480,155,48,0,Math.PI*2);g.clip();
- if(avatarOK)g.drawImage(avatarImg,ax,ay,aw,ah);
- else{g.fillStyle='#3a6ea5';g.fill()}
- g.restore();
- g.strokeStyle='#ffd23f';g.lineWidth=3;g.beginPath();g.arc(480,155,48,0,Math.PI*2);g.stroke();
- g.fillStyle='#fff';g.font='bold 22px "Trebuchet MS",sans-serif';
- g.fillText(playerName,480,230);
- drawCard(370,242,220,34,10,['#2563eb','#1d4ed8'],'#60a5fa',1.5);
- g.fillStyle='#ffffff';g.font='bold 13px "Trebuchet MS",sans-serif';
- g.fillText('✏️ Change Driver Name',480,264);
- drawCard(266,290,428,90,12,['rgba(18,14,28,.8)','rgba(10,8,18,.9)'],['rgba(255,255,255,.1)','rgba(0,240,255,.15)'],1);
- g.textAlign='left';g.font='13px "Trebuchet MS",sans-serif';
- g.fillStyle='#ffd23f';g.fillText('🪙 Total Coins:',285,316);
- g.fillStyle='#fff';g.fillText(coins.toLocaleString(),400,316);
- g.fillStyle='#ffd23f';g.fillText('🏎️ Equipped Car:',285,340);
- g.fillStyle='#fff';g.fillText(CARS[carSel][0],400,340);
- g.fillStyle='#ffd23f';g.fillText('🏆 Best Record:',285,364);
- g.fillStyle='#fff';g.fillText(best+' pts ('+owned.length+'/21 cars owned)',400,364);
- g.textAlign='center';
- drawCard(380,396,200,42,12,['#10b981','#059669'],'#34d399',2,'#10b981');
- g.fillStyle='#ffffff';g.font='bold 16px "Trebuchet MS",sans-serif';
- g.fillText('Done',480,422);
- drawCard(676,60,34,34,17,['#ef4444','#b91c1c'],'#fca5a5',1.5);
+
+ drawCard(850,38,34,34,17,['#ef4444','#b91c1c'],'#fca5a5',1.5);
  g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';
- g.fillText('✕',693,82);
+ g.fillText('✕',867,60);
+
+ const activePreset=AVATAR_PRESETS.find(p=>p.id===playerAvatar);
+ const activeCol=(playerAvatar==='custom')?'#00ff88':(activePreset?activePreset.col:'#ffd23f');
+
+ drawCard(82,80,280,395,14,['rgba(18,14,30,.8)','rgba(10,8,18,.92)'],[activeCol,'rgba(255,255,255,.15)'],1.5);
+ drawAvatarCircle(222,142,46,playerAvatar,true,activeCol,true);
+
+ g.textAlign='center';
+ g.fillStyle='#fff';g.font='bold 18px "Trebuchet MS",sans-serif';
+ g.fillText(playerName,222,204);
+
+ g.fillStyle='#00f0ff';g.font='bold 12px "Trebuchet MS",sans-serif';
+ g.fillText(playerInterest,222,222);
+
+ drawCard(98,234,118,28,8,['#2563eb','#1d4ed8'],'#60a5fa',1);
+ g.fillStyle='#fff';g.font='bold 11px "Trebuchet MS",sans-serif';
+ g.fillText('✏️ Edit Name',157,252);
+
+ drawCard(228,234,118,28,8,['#d97706','#b45309'],'#fcd34d',1);
+ g.fillStyle='#fff';g.font='bold 11px "Trebuchet MS",sans-serif';
+ g.fillText('🎲 Random',287,252);
+
+ const isCust=(playerAvatar==='custom');
+ drawCard(98,270,248,30,8,isCust?['#059669','#047857']:['#6366f1','#4f46e5'],isCust?'#34d399':'#818cf8',1);
+ g.fillStyle='#fff';g.font='bold 11px "Trebuchet MS",sans-serif';
+ g.fillText(isCust?'✓ Physical Photo Active':'📸 Pick / Upload Photo',222,289);
+
+ drawCard(98,310,248,110,10,['rgba(10,8,18,.9)','rgba(6,5,12,.95)'],['rgba(255,210,63,.2)','rgba(0,240,255,.1)'],1);
+ g.textAlign='left';g.font='11px "Trebuchet MS",sans-serif';
+ g.fillStyle='#ffd23f';g.fillText('🪙 Total Coins:',110,332);
+ g.fillStyle='#fff';g.fillText(coins.toLocaleString(),220,332);
+ g.fillStyle='#ffd23f';g.fillText('🏎️ Equipped Car:',110,356);
+ g.fillStyle='#fff';g.fillText(CARS[carSel][0],220,356);
+ g.fillStyle='#ffd23f';g.fillText('🏆 Best Score:',110,380);
+ g.fillStyle='#fff';g.fillText(best+' pts',220,380);
+ g.fillStyle='#ffd23f';g.fillText('📦 Garage Cars:',110,404);
+ g.fillStyle='#fff';g.fillText(owned.length+'/21 unlocked',220,404);
+
+ g.textAlign='center';
+ drawCard(98,430,248,28,8,['#334155','#1e293b'],'#64748b',1);
+ g.fillStyle='#cbd5e1';g.font='bold 11px "Trebuchet MS",sans-serif';
+ g.fillText('🔄 Re-run Setup Screen',222,448);
+
+ drawCard(378,80,504,395,14,['rgba(18,14,30,.8)','rgba(10,8,18,.92)'],['rgba(255,255,255,.12)','rgba(0,240,255,.15)'],1.5);
+
+ g.textAlign='left';
+ g.fillStyle='#ffd23f';g.font='bold 12px "Trebuchet MS",sans-serif';
+ g.fillText('CHOOSE AVATAR (10 PRESETS):',394,102);
+
+ AVATAR_PRESETS.forEach((p,i)=>{
+  const row=Math.floor(i/5),col=i%5;
+  const bx=394+col*96,by=112+row*66;
+  const isSel=(playerAvatar===p.id);
+  drawCard(bx,by,88,60,10,isSel?['rgba(255,210,63,.22)','rgba(245,158,11,.15)']:['rgba(20,16,32,.8)','rgba(10,8,18,.9)'],isSel?p.col:'rgba(255,255,255,.15)',isSel?2.5:1,isSel?p.col:null);
+  drawAvatarCircle(bx+44,by+24,16,p.id,isSel,p.col,false);
+  g.textAlign='center';
+  g.fillStyle=isSel?'#ffffff':'#cbd5e1';
+  g.font=(isSel?'bold ':'')+'10px "Trebuchet MS",sans-serif';
+  g.fillText(p.name,bx+44,by+52);
+ });
+
+ g.strokeStyle='rgba(255,255,255,.12)';g.lineWidth=1;
+ g.beginPath();g.moveTo(394,250);g.lineTo(866,250);g.stroke();
+
+ g.textAlign='left';
+ g.fillStyle='#00f0ff';g.font='bold 12px "Trebuchet MS",sans-serif';
+ g.fillText('CHOOSE RACING INTEREST / SPECIALTY:',394,270);
+
+ INTEREST_PRESETS.forEach((item,idx)=>{
+  const r=Math.floor(idx/4),c=idx%4;
+  const ix=394+c*118,iy=280+r*38;
+  const isSel=(playerInterest===item.tag);
+  drawCard(ix,iy,112,32,8,isSel?['#059669','#047857']:['rgba(22,18,36,.8)','rgba(12,10,20,.9)'],isSel?'#34d399':'rgba(255,255,255,.16)',isSel?2:1,isSel?'#10b981':null);
+  g.textAlign='center';
+  g.fillStyle=isSel?'#ffffff':'#cbd5e1';
+  g.font=(isSel?'bold ':'')+'10px "Trebuchet MS",sans-serif';
+  g.fillText(item.tag,ix+56,iy+20);
+ });
+
+ drawCard(394,366,220,32,8,['#2563eb','#1d4ed8'],'#60a5fa',1);
+ g.textAlign='center';
+ g.fillStyle='#fff';g.font='bold 12px "Trebuchet MS",sans-serif';
+ g.fillText('✏️ Custom Interest',504,386);
+
+ drawCard(630,366,236,32,10,['#10b981','#059669'],'#34d399',1.5,'#10b981');
+ g.fillStyle='#fff';g.font='bold 13px "Trebuchet MS",sans-serif';
+ g.fillText('✓ Save & Done',748,387);
+}
+
+function drawProfileSetup(){
+ const W=960,H=520;
+ g.clearRect(0,0,W,H);
+ const bg=g.createLinearGradient(0,0,W,H);
+ bg.addColorStop(0,'#1e1432');bg.addColorStop(.5,'#0e0a1b');bg.addColorStop(1,'#06040c');
+ g.fillStyle=bg;g.fillRect(0,0,W,H);
+
+ homeMotes.forEach(m=>{
+  m.y-=m.vy;m.x+=Math.sin(Date.now()*.001+m.seed)*.3;
+  if(m.y<-10){m.y=H+10;m.x=Math.random()*W}
+  g.save();
+  g.fillStyle='rgba(255,215,80,'+m.alpha+')';
+  g.shadowColor='#ffd23f';g.shadowBlur=6;
+  g.beginPath();g.arc(m.x,m.y,m.sz,0,Math.PI*2);g.fill();
+  g.restore();
+ });
+
+ g.textAlign='center';
+ g.save();
+ g.fillStyle='#ffd23f';g.font='bold 26px "Trebuchet MS",sans-serif';
+ g.shadowColor='#ffd23f';g.shadowBlur=12;
+ g.fillText('🏁 CREATE YOUR RACER PROFILE',W/2,36);
+ g.shadowBlur=0;
+ g.fillStyle='#94a3b8';g.font='13px "Trebuchet MS",sans-serif';
+ g.fillText('Welcome to RC Car in Class! Customize your driver identity before hitting the tracks.',W/2,56);
+ g.restore();
+
+ const activePreset=AVATAR_PRESETS.find(p=>p.id===playerAvatar);
+ const activeCol=(playerAvatar==='custom')?'#00ff88':(activePreset?activePreset.col:'#ffd23f');
+
+ drawCard(32,70,326,375,18,['rgba(28,21,46,.95)','rgba(14,10,24,.98)'],[activeCol,'#ffd23f'],1.5,'rgba(0,240,255,.2)');
+ g.textAlign='center';
+ g.fillStyle='#ffd23f';g.font='bold 14px "Trebuchet MS",sans-serif';
+ g.fillText('CURRENT DRIVER IDENTITY',195,95);
+
+ drawAvatarCircle(195,150,50,playerAvatar,true,activeCol,true);
+
+ g.fillStyle='#ffffff';g.font='bold 15px "Trebuchet MS",sans-serif';
+ if(playerAvatar==='custom'){
+  g.fillText('📸 Physical Photo',195,218);
+ }else{
+  g.fillText((activePreset?activePreset.name:'Racer')+' • '+(activePreset?activePreset.title:'Pro'),195,218);
+ }
+
+ const isCust=(playerAvatar==='custom');
+ drawCard(68,232,254,34,10,isCust?['#059669','#047857']:['#6366f1','#4f46e5'],isCust?'#34d399':'#818cf8',1.5,isCust?'#10b981':null);
+ g.fillStyle='#ffffff';g.font='bold 12px "Trebuchet MS",sans-serif';
+ g.fillText(isCust?'✓ Physical Photo Active':'📸 Pick / Upload Photo (Camera/Files)',195,253);
+
+ g.strokeStyle='rgba(255,255,255,.12)';g.lineWidth=1;
+ g.beginPath();g.moveTo(52,278);g.lineTo(338,278);g.stroke();
+
+ g.textAlign='left';
+ g.fillStyle='#94a3b8';g.font='11px "Trebuchet MS",sans-serif';
+ g.fillText('DRIVER NICKNAME:',52,296);
+ drawCard(52,304,286,36,8,['#0a0815','#120d22'],'rgba(255,210,63,.4)',1);
+ g.fillStyle='#ffffff';g.font='bold 16px "Trebuchet MS",sans-serif';
+ g.fillText(playerName,66,328);
+
+ g.textAlign='center';
+ drawCard(52,348,138,30,8,['#2563eb','#1d4ed8'],'#60a5fa',1);
+ g.fillStyle='#ffffff';g.font='bold 12px "Trebuchet MS",sans-serif';
+ g.fillText('✏️ Edit Name',121,368);
+
+ drawCard(200,348,138,30,8,['#d97706','#b45309'],'#fcd34d',1);
+ g.fillStyle='#ffffff';g.font='bold 12px "Trebuchet MS",sans-serif';
+ g.fillText('🎲 Random',269,368);
+
+ g.textAlign='left';
+ g.fillStyle='#94a3b8';g.font='11px "Trebuchet MS",sans-serif';
+ g.fillText('RACING INTEREST:',52,398);
+ g.fillStyle='#00f0ff';g.font='bold 13px "Trebuchet MS",sans-serif';
+ const dispInt=playerInterest.length>24?playerInterest.slice(0,22)+'...':playerInterest;
+ g.fillText(dispInt,52,420);
+ g.textAlign='center';
+ drawCard(242,400,96,28,8,['#0284c7','#0369a1'],'#38bdf8',1);
+ g.fillStyle='#ffffff';g.font='bold 11px "Trebuchet MS",sans-serif';
+ g.fillText('✏️ Custom',290,418);
+
+ drawCard(374,70,554,375,18,['rgba(26,20,44,.95)','rgba(12,10,22,.98)'],['#ffd23f','#00f0ff'],1.5,'rgba(255,210,63,.2)');
+
+ g.textAlign='left';
+ g.fillStyle='#ffd23f';g.font='bold 13px "Trebuchet MS",sans-serif';
+ g.fillText('CHOOSE AVATAR (10 PRESETS OR UPLOAD PHOTO):',392,94);
+
+ AVATAR_PRESETS.forEach((p,i)=>{
+  const row=Math.floor(i/5),col=i%5;
+  const bx=392+col*106,by=104+row*72;
+  const isSel=(playerAvatar===p.id);
+  drawCard(bx,by,98,66,10,isSel?['rgba(255,210,63,.22)','rgba(245,158,11,.15)']:['rgba(20,16,32,.8)','rgba(10,8,18,.9)'],isSel?p.col:'rgba(255,255,255,.15)',isSel?2.5:1,isSel?p.col:null);
+  drawAvatarCircle(bx+49,by+26,18,p.id,isSel,p.col,false);
+  g.textAlign='center';
+  g.fillStyle=isSel?'#ffffff':'#cbd5e1';
+  g.font=(isSel?'bold ':'')+'11px "Trebuchet MS",sans-serif';
+  g.fillText(p.name,bx+49,by+56);
+ });
+
+ g.strokeStyle='rgba(255,255,255,.12)';g.lineWidth=1;
+ g.beginPath();g.moveTo(392,254);g.lineTo(912,254);g.stroke();
+
+ g.textAlign='left';
+ g.fillStyle='#00f0ff';g.font='bold 13px "Trebuchet MS",sans-serif';
+ g.fillText('RACING INTEREST / SPECIALTY:',392,274);
+
+ INTEREST_PRESETS.forEach((item,idx)=>{
+  const r=Math.floor(idx/4),c=idx%4;
+  const ix=392+c*130,iy=284+r*40;
+  const isSel=(playerInterest===item.tag);
+  drawCard(ix,iy,122,34,8,isSel?['#059669','#047857']:['rgba(22,18,36,.8)','rgba(12,10,20,.9)'],isSel?'#34d399':'rgba(255,255,255,.16)',isSel?2:1,isSel?'#10b981':null);
+  g.textAlign='center';
+  g.fillStyle=isSel?'#ffffff':'#cbd5e1';
+  g.font=(isSel?'bold ':'')+'11px "Trebuchet MS",sans-serif';
+  g.fillText(item.tag,ix+61,iy+21);
+ });
+
+ drawCard(392,374,518,48,10,['rgba(16,12,28,.85)','rgba(10,8,18,.95)'],['rgba(0,240,255,.2)','rgba(255,210,63,.2)'],1);
+ g.textAlign='left';
+ g.fillStyle='#ffd23f';g.font='bold 12px "Trebuchet MS",sans-serif';
+ g.fillText('Active Interest: "'+playerInterest+'"',406,403);
+ drawCard(730,382,168,32,8,['#2563eb','#1d4ed8'],'#60a5fa',1);
+ g.textAlign='center';
+ g.fillStyle='#ffffff';g.font='bold 12px "Trebuchet MS",sans-serif';
+ g.fillText('✏️ Custom Interest',814,402);
+
+ const pulse=(Math.sin(Date.now()/280)+1)*.5;
+ const btnGlow='rgba(16,185,129,'+(.4+pulse*.4)+')';
+ drawCard(280,458,400,48,14,['#10b981','#059669'],'#34d399',2.5,btnGlow);
+ g.textAlign='center';
+ g.fillStyle='#ffffff';g.font='bold 17px "Trebuchet MS",sans-serif';
+ g.shadowColor='#10b981';g.shadowBlur=8;
+ g.fillText('🚀 SAVE PROFILE & START RACING ▶',480,488);
+ g.shadowBlur=0;
+
+ popups.forEach(p=>{
+  const l=Math.min(1,p.l),yy=p.y-(1-l)*30;
+  g.save();g.globalAlpha=l;g.font='italic 900 20px "Trebuchet MS",sans-serif';
+  g.lineWidth=4;g.strokeStyle='#14101e';g.strokeText(p.t,p.x,yy);
+  g.fillStyle=p.c||'#ffd23f';g.fillText(p.t,p.x,yy);
+  g.restore();
+ });
+}
+
+function profileSetupClick(cx,cy){
+ if(cx>=68&&cx<=322&&cy>=232&&cy<=266){openPhotoPicker();return}
+ if(cx>=52&&cx<=190&&cy>=348&&cy<=378){openTextDialog('nickname');return}
+ if(cx>=200&&cx<=338&&cy>=348&&cy<=378){pickRandomName();return}
+ if(cx>=242&&cx<=338&&cy>=400&&cy<=428){openTextDialog('interest');return}
+
+ for(let i=0;i<AVATAR_PRESETS.length;i++){
+  const row=Math.floor(i/5),col=i%5;
+  const bx=392+col*106,by=104+row*72;
+  if(cx>=bx&&cx<=bx+98&&cy>=by&&cy<=by+66){
+   playerAvatar=AVATAR_PRESETS[i].id;
+   try{localStorage.setItem('rcPlayerAvatar',playerAvatar)}catch(e){}
+   if(sfx&&sfx.tick)sfx.tick();
+   return;
+  }
+ }
+
+ for(let idx=0;idx<INTEREST_PRESETS.length;idx++){
+  const r=Math.floor(idx/4),c=idx%4;
+  const ix=392+c*130,iy=284+r*40;
+  if(cx>=ix&&cx<=ix+122&&cy>=iy&&cy<=iy+34){
+   playerInterest=INTEREST_PRESETS[idx].tag;
+   try{localStorage.setItem('rcPlayerInterest',playerInterest)}catch(e){}
+   if(sfx&&sfx.tick)sfx.tick();
+   return;
+  }
+ }
+
+ if(cx>=730&&cx<=898&&cy>=382&&cy<=414){openTextDialog('interest');return}
+
+ if(cx>=280&&cx<=680&&cy>=458&&cy<=506){
+  hasCreatedProfile=true;
+  try{
+   localStorage.setItem('rcProfileCreated','true');
+   localStorage.setItem('rcPlayerName',playerName);
+   localStorage.setItem('rcPlayerInterest',playerInterest);
+   localStorage.setItem('rcPlayerAvatar',playerAvatar);
+  }catch(e){}
+  if(sfx&&sfx.power)sfx.power();
+  state='home';
+  popups.push({t:'🎉 Profile Ready! Welcome '+playerName,x:480,y:200,l:2.4,s:1,c:'#ffd23f'});
+  return;
+ }
 }
 function drawModalExit(){
  drawCard(260,130,440,260,20,['rgba(26,20,40,.98)','rgba(12,10,22,.99)'],['#ef4444','#dc2626'],2,'rgba(239,68,68,.35)');
@@ -4032,8 +4529,8 @@ function drawPip(){if(state!=='play'&&state!=='pause')return;
 function draw(){
  const inGame=(state==='play');
  document.body.classList.toggle('in-game',inGame);
- document.body.classList.toggle('home',state==='home');
- document.body.classList.toggle('cine',state==='intro'||state==='title'||state==='splash');
+ document.body.classList.toggle('home',state==='home'||state==='profile_setup');
+ document.body.classList.toggle('cine',state==='intro'||state==='title'||state==='splash'||state==='profile_setup');
  const padEl=document.getElementById('pad');
  if(padEl)padEl.style.display=inGame?'':'none';
  const bpEl=document.getElementById('bp');
@@ -4041,8 +4538,9 @@ function draw(){
  if(inGame)updatePedUI();
  if(!inGame){for(const k in keys)keys[k]=0;document.querySelectorAll('#pad button.on').forEach(b=>b.classList.remove('on'))}
  const glEl=document.getElementById('gl');
- if(glEl)glEl.style.display=(state==='home'||state==='title'||state==='splash'||!T3)?'none':'block';
+ if(glEl)glEl.style.display=(state==='home'||state==='title'||state==='splash'||state==='profile_setup'||!T3)?'none':'block';
  if(state==='splash'){drawSplash();return}
+ if(state==='profile_setup'){drawProfileSetup();return}
  if(state==='home'){drawHome();return}
  if(!T3){draw2D();return}
  g.clearRect(0,0,960,520);camX=camY=0;render3D();
@@ -4065,7 +4563,7 @@ function draw(){
  if(state==='ready')panel('RC Car in Class?',['Grab homework before the bell.','Dodge students, desks and the teacher.','Steer buttons on the left, gas and reverse on the right.','Keys: arrows or WASD, P pauses, M mutes.'],true);
  else if(state==='over')drawGameOver();
  else if(state==='pause')drawPause();
- else if(state==='shop')drawShop();else if(state==='settings')drawSettings();else if(state==='voices')drawVoices();else if(state==='textures')drawTex();else if(state==='volumes')drawVolumes();else if(state==='splash')drawSplash();else if(state==='intro')drawIntro();else if(state==='title')drawTitle();
+ else if(state==='shop')drawShop();else if(state==='settings')drawSettings();else if(state==='voices')drawVoices();else if(state==='textures')drawTex();else if(state==='volumes')drawVolumes();else if(state==='splash')drawSplash();else if(state==='profile_setup')drawProfileSetup();else if(state==='intro')drawIntro();else if(state==='title')drawTitle();
  if(state==='ready'&&carImgOK){
   g.save();g.globalAlpha=ea;drawCard(4,96,196,318,16,['rgba(26,20,40,.92)','rgba(12,10,22,.96)'],['#00f0ff','#7928ca'],1.5,'rgba(0,240,255,.2)');
   g.save();rr(8,100,188,280,12);g.clip();g.drawImage(carImg,8,100,188,280);g.restore();
