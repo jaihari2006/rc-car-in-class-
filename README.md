@@ -5,8 +5,8 @@
 Play online or download the native Android app:
 
 - **🌐 Play in Browser**: [https://jaihari2006.github.io/rc-car-in-class-/](https://jaihari2006.github.io/rc-car-in-class-/)
-- **📱 Download Android APK**: [Download Rc Car in Class?. apk](Rc%20Car%20in%20Class%3F.%20apk)
-- **🏷️ GitHub Release**: [v1.0.0 Release Page](https://github.com/jaihari2006/rc-car-in-class-/releases/tag/v1.0.0)
+- **📱 Download Android APK**: [Download Rc.Car.in.Class.apk (v1.1.0)](https://github.com/jaihari2006/rc-car-in-class-/releases/download/v1.0.0/Rc.Car.in.Class.apk) | [Download app-debug.apk](https://github.com/jaihari2006/rc-car-in-class-/releases/download/v1.0.0/app-debug.apk) | [Direct File (Rc Car in Class?. apk)](Rc%20Car%20in%20Class%3F.%20apk)
+- **🏷️ GitHub Release**: [v1.1.0 Release Page](https://github.com/jaihari2006/rc-car-in-class-/releases/tag/v1.0.0)
 
 ---
 
