@@ -1,0 +1,49 @@
+{
+  "id": "modern",
+  "name": "Modern Type",
+  "desc": "Sleek minimalist studio, white porcelain tiles, whiteboard with blue marker",
+  "swatches": ["#e4e7eb", "#1a73e8", "#ffffff"],
+  "floor": {
+    "style": "tile",
+    "hsl": [210, 15, 88],
+    "var": 4,
+    "line": "rgba(180, 190, 205, 0.7)",
+    "grid": "rgba(180, 190, 205, 0.75)",
+    "gloss": 0.18
+  },
+  "wall": {
+    "top": "#fbfcfd",
+    "bottom": "#eaeff5",
+    "wain": "#d0d8e2",
+    "base": "#98a6b8",
+    "neon": null,
+    "petals": false
+  },
+  "board": {
+    "top": "#fcfdff",
+    "bottom": "#eef3f9",
+    "chalk": "#1a73e8",
+    "glow": false
+  },
+  "desk": {
+    "wood": "#e4e7eb",
+    "grain": [190, 200, 215]
+  },
+  "ceil": "#ffffff",
+  "sky": ["#70b5ff"],
+  "bg": "#0c1018",
+  "light": {
+    "sky": "#f4f8ff",
+    "ground": "#a0b0c4",
+    "hemi": 0.75,
+    "sun": "#ffffff",
+    "sunI": 1.1
+  },
+  "car": {
+    "metal": 0.85,
+    "rough": 0.15,
+    "clear": 1.0,
+    "rim": "#c8d0da",
+    "glow": "#4fc3f7"
+  }
+}
