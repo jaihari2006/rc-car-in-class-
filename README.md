@@ -21,6 +21,7 @@ Play online or download the native Android app / Windows edition:
 ---
 
 ### Features
+- **🎓 Interactive Tutorial Level**: First-time launch onboarding with step-by-step driver training (Steering & Gas, Power Slide & Drift, Nitro Boost, and Sensei evasion) with S-Rank completion and replay anytime directly from Settings.
 - **⏸️ Auto-Pause on App Switch**: The game automatically freezes race action, timer, physics, and audio when switching to other apps, opening recent tasks, or minimizing the window, letting you resume seamlessly when returning.
 - **🖼️ Custom Homepage Backdrop & Streamlined Settings**: High-detail customized main menu backdrop with single-gear Settings access for quick tuning.
 - **👤 First-Time Racer Profile Setup & Customization**: First launch interactive profile creator allowing racers to set their handle (with stylish randomizer), pick racing interests (Drift Specialist, Speed Demon, Sensei Evader, etc.), and view career stats anytime via the Home profile badge.
