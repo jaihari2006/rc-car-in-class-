@@ -2,10 +2,11 @@
 
 ![RC Car in Class Banner](images/banner.jpg)
 
-Play online or download the native Android app:
+Play online or download the native Android app / Windows edition:
 
 - **🌐 Play in Browser**: [https://jaihari2006.github.io/rc-car-in-class-/](https://jaihari2006.github.io/rc-car-in-class-/)
 - **📱 Download Android APK**: [Download Rc.Car.in.Class.apk (v1.2.1)](https://github.com/jaihari2006/rc-car-in-class-/releases/download/v1.2.1/Rc.Car.in.Class.apk) | [Download app-debug.apk](https://github.com/jaihari2006/rc-car-in-class-/releases/download/v1.2.1/app-debug.apk) | [Direct File (Rc Car in Class?. apk)](Rc%20Car%20in%20Class%3F.%20apk)
+- **💻 Download Windows Edition**: [Download Rc.Car.in.Class-Windows-v1.2.1.zip (Portable 64-bit .exe)](https://github.com/jaihari2006/rc-car-in-class-/releases/download/v1.2.1/Rc.Car.in.Class-Windows-v1.2.1.zip) | [Windows Guide & Source](windows/README.md)
 - **🏷️ GitHub Release**: [v1.2.1 Release Page](https://github.com/jaihari2006/rc-car-in-class-/releases/tag/v1.2.1)
 - **🎮 Unreal Engine 5 Project Edition**: Full native Unreal Engine 5.4 project in [`RCCarInClass_Unreal/`](RCCarInClass_Unreal/) with Chaos vehicle physics, Sakamoto Sensei AI, and 3D PBR assets.
 

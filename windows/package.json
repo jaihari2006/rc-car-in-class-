@@ -1,0 +1,11 @@
+{
+  "name": "rc-car-in-class",
+  "version": "1.2.1",
+  "description": "RC Car in Class - 3D Classroom RC Racing & Teacher Chase Game (Windows Desktop Edition)",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "JAIHARI U S",
+  "license": "MIT"
+}
