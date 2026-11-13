@@ -21,6 +21,8 @@ Play online or download the native Android app / Windows edition:
 ---
 
 ### Features
+- **🦵 Character Panic Reactions (Kick & Throw to Half Classroom Distance)**: When the RC Car buzzes near student characters (Sakura-kun, Hinata-chan, Ren-kun, Classmates - except Sensei) and their panic/fear meter spikes (>=65% with sweat drop indicators `💦` and shivering), if Sakamoto Sensei is not nearby (>220 units away), there is a **20% chance** they will frantically react by either **kicking** (`💥 KICK!`) or **throwing** (`💨 THROW!`) the car across half the classroom distance (~440 units) with 3D aerial parabolic tumble, ground skid sparks, and spoken voice lines across English, Japanese, and Tamil!
+- **🎙️ Dedicated Character Voice Module (95 Clips)**: Full offline neural voice acting across **English**, **Japanese Anime**, and **Tamil** for Sakamoto Sensei, Sakura-kun, Hinata-chan, Ren-kun, and Classmates. Includes dedicated Kick/Throw reactions, 3D directional stereo panning (`StereoPannerNode`), distance rolloff, speech bubble visualizers with dancing equalizer bars, and multi-character language previews.
 - **🎓 Interactive Tutorial Level**: First-time launch onboarding with step-by-step driver training (Steering & Gas, Power Slide & Drift, Nitro Boost, and Sensei evasion) with S-Rank completion and replay anytime directly from Settings.
 - **⏸️ Auto-Pause on App Switch**: The game automatically freezes race action, timer, physics, and audio when switching to other apps, opening recent tasks, or minimizing the window, letting you resume seamlessly when returning.
 - **🖼️ Custom Homepage Backdrop & Streamlined Settings**: High-detail customized main menu backdrop with single-gear Settings access for quick tuning.
