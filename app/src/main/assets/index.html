@@ -212,6 +212,7 @@ let playerName='Jaihari21';try{playerName=localStorage.getItem('rcPlayerName')||
 let playerInterest='Drift Specialist';try{playerInterest=localStorage.getItem('rcPlayerInterest')||'Drift Specialist'}catch(e){}
 let playerAvatar='male';try{playerAvatar=localStorage.getItem('rcPlayerAvatar')||'male'}catch(e){}
 let hasCreatedProfile=false;try{hasCreatedProfile=(localStorage.getItem('rcProfileCreated')==='true')}catch(e){}
+let hasPromptedTutorial=false;try{hasPromptedTutorial=(localStorage.getItem('rcTutorialPrompted')==='true')}catch(e){}
 let homeModal=null,homeHover=null;
 const logoImg=new Image();let logoImgOK=false;logoImg.onload=()=>logoImgOK=true;logoImg.src='logo.png';
 const homeBgImg=new Image();let homeBgOK=false;homeBgImg.onload=()=>homeBgOK=true;homeBgImg.src='home_bg.jpg';
@@ -373,7 +374,48 @@ function openPhotoPicker(){
  if(inp){inp.value='';inp.click()}
 }
 
-function startFromSplash(){if(state!=='splash')return;audioInit();playMusic();if(sfx&&sfx.power)sfx.power();if(!hasCreatedProfile)state='profile_setup';else state='home'}
+function startFromSplash(){if(state!=='splash')return;audioInit();playMusic();if(sfx&&sfx.power)sfx.power();if(!hasCreatedProfile)state='profile_setup';else{state='home';if(!hasPromptedTutorial)homeModal='tutorial_ask'}}
+let isTutorial=false,tutStep=1,tutDriftTime=0,tutCheckpoint={x:450,y:320,r:42};
+function startTutorial(){
+ audioInit();playMusic();goLand();
+ isTutorial=true;
+ tutStep=1;
+ tutDriftTime=0;
+ tutCheckpoint={x:450,y:320,r:42};
+ state='play';
+ level=1;
+ score=0;
+ collected=0;
+ combo=0;
+ bumps=0;
+ time=999;
+ car.x=450;car.y=560;car.a=-Math.PI/2;car.v=0;car.boost=0;car.drift=0;steerS=0;
+ nitro=100;nitroOK=true;nitroT=0;
+ buildDesks(0);
+ initChars();
+ setupClutter();
+ papers=[];
+ powers=[];
+ teacher.x=100;teacher.y=100;teacher.downT=0;teacher.freeze=0;teacher.alert=0;
+ popups=[{t:'🎓 Welcome to Driver Training!',x:480,y:220,l:2.4,s:1,c:'#00f0ff'}];
+ if(sfx&&sfx.power)sfx.power();
+}
+function tutorialClick(x,y){
+ if(!isTutorial)return false;
+ if(x>=10&&x<=125&&y>=8&&y<=40){
+  isTutorial=false;state='home';if(sfx&&sfx.tick)sfx.tick();return true;
+ }
+ if(tutStep===5){
+  if(x>=250&&x<=460&&y>=282&&y<=330){
+   isTutorial=false;reset();return true;
+  }
+  if(x>=500&&x<=710&&y>=282&&y<=330){
+   isTutorial=false;state='home';if(sfx&&sfx.tick)sfx.tick();return true;
+  }
+  return true;
+ }
+ return false;
+}
 const homeMotes=Array.from({length:18},()=>({x:Math.random()*960,y:Math.random()*520,sz:1+Math.random()*2,vy:.15+Math.random()*.25,seed:Math.random()*10,alpha:.2+Math.random()*.35}));
 try{best=+localStorage.getItem('rcBest')||0}catch(e){}
 let desks=[];buildDesks(0);
@@ -769,7 +811,7 @@ function pushOut(o,r){
 let papers=[];
 function free(x,y){return !desks.some(d=>x>d.x-20&&x<d.x+d.w+20&&y>d.y-20&&y<d.y+d.h+20)}
 function spawn(){let x,y;do{x=40+Math.random()*(WW-80);y=40+Math.random()*(WH-80)}while(!free(x,y));papers.push({x,y,t:Math.random()*6})}
-function reset(){audioInit();playMusic();goLand();nitro=100;nitroOK=true;nitroT=0;hide=null;steerS=0;dispScore=0;level=1;score=0;collected=0;combo=0;bumps=0;time=DIFF[diff].t;car.boost=0;skids=[];powers=[];pTimer=5;popups=[];msg='';teacher.downT=0;if(NH&&conns.length>0&&senseiMode){randomSensei()}else{isSensei=false;senseiMode=false;senseiPlayerId='';senseiCaught=0;updatePedUI()}nextLevel(true);state='play'}
+function reset(){audioInit();playMusic();goLand();isTutorial=false;nitro=100;nitroOK=true;nitroT=0;hide=null;steerS=0;dispScore=0;level=1;score=0;collected=0;combo=0;bumps=0;time=DIFF[diff].t;car.boost=0;skids=[];powers=[];pTimer=5;popups=[];msg='';teacher.downT=0;if(NH&&conns.length>0&&senseiMode){randomSensei()}else{isSensei=false;senseiMode=false;senseiPlayerId='';senseiCaught=0;updatePedUI()}nextLevel(true);state='play'}
 function nextLevel(first){hide=null;buildDesks(level-1);car.x=450;car.y=560;car.a=-Math.PI/2;car.v=0;initChars();setupClutter();papers=[];for(let i=0;i<5;i++)spawn();
  if(!first){time+=10;sfx.power();popups.push({t:'Level '+level+': '+LAYOUTS[(level-1)%6],x:480,y:230,l:2.5,s:1})}}
 addEventListener('keydown',e=>{const k=map[e.key];if(k){keys[k]=1;e.preventDefault()}
@@ -815,8 +857,10 @@ setupJoystick();
 document.querySelectorAll('#pad button').forEach(b=>{const k=b.dataset.k;
  const on=e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}if(k)keys[k]=1;b.classList.add('on');if(b.id==='btn-sensei-catch')attemptCatch()},off=e=>{e.preventDefault();if(k)keys[k]=0;b.classList.remove('on')};
  b.addEventListener('pointerdown',on);['pointerup','pointercancel','lostpointercapture'].forEach(t=>b.addEventListener(t,off))});
-cv.addEventListener('pointerdown',e=>{audioInit();if(state==='play'||NG)return;
+cv.addEventListener('pointerdown',e=>{audioInit();
  const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)*960/r.width,y=(e.clientY-r.top)*520/r.height;
+ if(isTutorial&&state==='play'){if(tutorialClick(x,y))return}
+ if(state==='play'||NG)return;
  if(state==='splash'){startFromSplash();return}
  if(state==='profile_setup'){profileSetupClick(x,y);return}
  if(state==='home'){homeClick(x,y);return}
@@ -914,7 +958,50 @@ if(diagInp){
 function update(dt){
  if(duckTimer>0){duckTimer=Math.max(0,duckTimer-dt);updateVolumeGains();updateMusicVolume()}
  if(state!=='play')return;
- if(!NG){time-=dt;if(time<=0){time=0;end('')}}
+ if(isTutorial){
+  time=999;
+  if(tutStep===1){
+   const dist=Math.hypot(car.x-tutCheckpoint.x,car.y-tutCheckpoint.y);
+   if(dist<tutCheckpoint.r){
+    if(sfx&&sfx.pick)sfx.pick();
+    popups.push({t:'✅ CHECKPOINT 1 CLEARED!',x:480,y:200,l:1.8,s:1,c:'#10b981'});
+    tutStep=2;
+    tutCheckpoint={x:720,y:260,r:44};
+   }
+  }else if(tutStep===2){
+   if(car.drift&&Math.abs(car.drift)>0.04&&Math.abs(car.v)>1.2){
+    tutDriftTime+=dt;
+   }
+   const dist=Math.hypot(car.x-tutCheckpoint.x,car.y-tutCheckpoint.y);
+   if(tutDriftTime>0.5||(dist<tutCheckpoint.r&&Math.abs(steerS)>0.25)){
+    if(sfx&&sfx.power)sfx.power();
+    popups.push({t:'🔥 DRIFT MASTERED!',x:480,y:200,l:1.8,s:1,c:'#00f0ff'});
+    tutStep=3;
+    nitro=100;nitroOK=true;
+   }
+  }else if(tutStep===3){
+   if(nitroOn||car.boost>0){
+    if(sfx&&sfx.power)sfx.power();
+    popups.push({t:'⚡ NITRO ACTIVATED! SUPER SPEED!',x:480,y:200,l:2.0,s:1,c:'#ffd23f'});
+    tutStep=4;
+    collected=0;
+    papers=[
+     {x:260,y:220,t:0},
+     {x:480,y:400,t:0},
+     {x:740,y:240,t:0}
+    ];
+    teacher.x=220;teacher.y=120;teacher.alert=0;teacher.freeze=0;
+   }
+  }else if(tutStep===4){
+   if(collected>=3||papers.length===0){
+    tutStep=5;
+    if(sfx&&sfx.power)sfx.power();
+    popups.push({t:'🎉 ALL HOMEWORK COLLECTED!',x:480,y:160,l:2.5,s:1,c:'#10b981'});
+   }
+  }
+ }else{
+  if(!NG){time-=dt;if(time<=0){time=0;end('')}}
+ }
  bumpCd=Math.max(0,bumpCd-dt);shake=Math.max(0,shake-dt*30);comboT-=dt;if(comboT<=0)combo=0;
  popups.forEach(p=>p.l-=dt);popups=popups.filter(p=>p.l>0);
  car.boost=Math.max(0,(car.boost||0)-dt);
@@ -1061,7 +1148,16 @@ function update(dt){
    if(T.sayT<=0&&Math.random()<dt*.15){T.say=pk_(LN('teacher','patrol',['No running in class!','Slow down!','Homework, please!']));T.sayT=1.8;speak(T,T.say)}}
   const ex=tx-T.x,ey=ty-T.y,ed=Math.hypot(ex,ey)||1;if(ed>3){T.x+=ex/ed*sp;T.y+=ey/ed*sp}
   pushHit(T,13);
-  if(d<25)end('caught');
+  if(d<25){
+   if(isTutorial){
+    popups.push({t:'⚠️ Watch out for Sensei! Repositioning...',x:480,y:220,l:2.0,s:1,c:'#ff4b2b'});
+    car.x=450;car.y=540;car.v=0;
+    teacher.downT=3;teacher.freeze=3;teacher.alert=0;
+    if(sfx&&sfx.bump)sfx.bump();
+   }else{
+    end('caught');
+   }
+  }
  }
  if(!NG&&!hide)heroCheck(dt);
  if(NG){papers.forEach(p=>p.t+=dt*3);powers.forEach(p=>p.t+=dt*3);return}
@@ -1254,6 +1350,84 @@ function hud(){
  if(combo>1)bar(comboT/3,['#ff9900','#ff0055'],'🔥 Combo x'+combo,'#ff9900');
  if(car.boost>0)bar(car.boost/5,['#00ff88','#00c6ff'],'🚀 Boost','#00ff88');
  if(teacher.freeze>0)bar(teacher.freeze/3,['#a0e9ff','#0072ff'],'❄️ Sensei Frozen','#00f0ff');
+ if(isTutorial){
+  const pulse=(Math.sin(Date.now()/250)+1)*.5;
+  drawCard(180,6,600,42,12,['rgba(16,12,28,.95)','rgba(8,6,16,.98)'],['#00f0ff','#ffd23f'],1.5,'rgba(0,240,255,'+(0.2+pulse*0.3)+')');
+  g.textAlign='center';
+  g.fillStyle='#ffd23f';g.font='bold 11px "Trebuchet MS",sans-serif';
+  let tutTitle='',tutDesc='';
+  if(tutStep===1){
+   tutTitle='🎓 STEP 1/4: BASIC DRIVING & THROTTLE';
+   tutDesc='Steer with Left/Right (or Joystick/A/D) and press Gas to reach the green Checkpoint ahead!';
+  }else if(tutStep===2){
+   tutTitle='🎓 STEP 2/4: POWER SLIDE & DRIFT';
+   tutDesc='Turn sharply while driving (or hold Space/Handbrake) to trigger a Drift around the desk!';
+  }else if(tutStep===3){
+   tutTitle='🎓 STEP 3/4: NITRO BOOST RUSH';
+   tutDesc='Press the Nitro button (or Shift key) to unleash high-speed twin flame plumes!';
+  }else if(tutStep===4){
+   tutTitle='🎓 STEP 4/4: HOMEWORK & SAKAMOTO SENSEI';
+   tutDesc='Collect all 3 homework papers while dodging the teacher! (Papers: '+(3-papers.length)+'/3)';
+  }else if(tutStep===5){
+   tutTitle='🎉 TUTORIAL COMPLETED!';
+   tutDesc='Outstanding driving! You are ready to challenge the Classroom GP!';
+  }
+  g.fillText(tutTitle,480,20);
+  g.fillStyle='#ffffff';g.font='bold 12px "Trebuchet MS",sans-serif';
+  g.fillText(tutDesc,480,37);
+
+  drawCard(10,8,114,32,8,['#dc2626','#991b1b'],'#f87171',1.5);
+  g.fillStyle='#ffffff';g.font='bold 12px "Trebuchet MS",sans-serif';
+  g.fillText('✖ Exit Tutorial',67,29);
+
+  if(tutStep===1||tutStep===2){
+   const cp=P(tutCheckpoint.x,tutCheckpoint.y,0);
+   if(cp){
+    const cx=cp[0],cy=cp[1];
+    g.save();
+    g.shadowColor=tutStep===1?'#00f0ff':'#f59e0b';
+    g.shadowBlur=18+pulse*12;
+    g.strokeStyle=tutStep===1?'rgba(0,240,255,'+(0.6+pulse*0.4)+')':'rgba(255,180,20,'+(0.6+pulse*0.4)+')';
+    g.lineWidth=4+pulse*2;
+    g.beginPath();
+    g.ellipse(cx,cy,34+pulse*8,18+pulse*4,0,0,Math.PI*2);
+    g.stroke();
+    g.textAlign='center';
+    g.font='bold 13px "Trebuchet MS",sans-serif';
+    g.fillStyle='#ffffff';
+    g.fillText(tutStep===1?'🎯 CHECKPOINT 1':'🔥 DRIFT CORNER',cx,cy-28);
+    g.restore();
+   }
+  }
+
+  if(tutStep===5){
+   drawTutorialVictoryCard();
+  }
+ }
+}
+function drawTutorialVictoryCard(){
+ const pulse=(Math.sin(Date.now()/300)+1)*.5;
+ drawCard(220,95,520,345,20,['rgba(26,20,42,.98)','rgba(12,10,24,.99)'],['#10b981','#00f0ff'],2,'rgba(16,185,129,'+(0.3+pulse*0.35)+')');
+ g.textAlign='center';
+ g.fillStyle='#ffd23f';g.font='bold 28px "Trebuchet MS",sans-serif';
+ g.shadowColor='#ffd23f';g.shadowBlur=12;
+ g.fillText('🎓 TUTORIAL COMPLETED!',480,140);
+ g.shadowBlur=0;
+ g.fillStyle='#e2e8f0';g.font='15px "Trebuchet MS",sans-serif';
+ g.fillText('Outstanding driving! You mastered steering, drifting, nitro,',480,172);
+ g.fillText('and evading Sakamoto Sensei like a true Classroom GP pro!',480,192);
+
+ drawCard(390,210,180,42,10,['#10b981','#047857'],'#6ee7b7',1.5);
+ g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';
+ g.fillText('RANK: S-RANK ★★★',480,237);
+
+ drawCard(250,282,210,48,14,['#f97316','#c2410c'],['#fed7aa','#fb923c'],2,'#f97316');
+ g.fillStyle='#ffffff';g.font='bold 15px "Trebuchet MS",sans-serif';
+ g.fillText('🏁 START REAL RACE',355,312);
+
+ drawCard(500,282,210,48,14,['#2563eb','#1d4ed8'],['#93c5fd','#60a5fa'],1.5);
+ g.fillStyle='#ffffff';g.font='bold 15px "Trebuchet MS",sans-serif';
+ g.fillText('🏠 MAIN MENU',605,312);
 }
 function drawParts(){
  parts.forEach(p=>{
@@ -3555,45 +3729,47 @@ function cycleAllCharactersModel(){
 function drawSettings(){
  g.save();g.globalAlpha=ea;
  const pulse=(Math.sin(Date.now()/320)+1)*.5;
- drawCard(270,12,420,496,18,['rgba(26,20,40,.96)','rgba(12,10,22,.98)'],['#a855f7','#00f0ff'],2,'rgba(168,85,247,'+(0.2+pulse*0.3)+')');
+ drawCard(270,8,420,504,18,['rgba(26,20,40,.96)','rgba(12,10,22,.98)'],['#a855f7','#00f0ff'],2,'rgba(168,85,247,'+(0.2+pulse*0.3)+')');
  g.textAlign='center';g.fillStyle='#ffd23f';g.font='bold 24px "Trebuchet MS",sans-serif';
  g.shadowColor='#ffd23f';g.shadowBlur=8;
- g.fillText('⚙️ SETTINGS',480,40);
+ g.fillText('⚙️ SETTINGS',480,34);
  g.shadowBlur=0;
  const btn=(y,label,bgGrad,borderCol,glow)=>{
-  drawCard(290,y,380,32,10,bgGrad||['#3f3f46','#27272a'],borderCol||'rgba(255,255,255,.2)',1.5,glow);
-  g.fillStyle='#fff';g.font='bold 13px "Trebuchet MS",sans-serif';g.fillText(label,480,y+21);
+  drawCard(290,y,380,31,10,bgGrad||['#3f3f46','#27272a'],borderCol||'rgba(255,255,255,.2)',1.5,glow);
+  g.fillStyle='#fff';g.font='bold 13px "Trebuchet MS",sans-serif';g.fillText(label,480,y+20);
  };
- btn(52,'🎚️  Audio Volumes (General, Voices, Car, Music)',['#06b6d4','#0e7490'],'#67e8f9','#06b6d4');
- btn(90,'🎮  Steering Sensitivity: '+SENS_NAMES[sensIdx],['#f97316','#c2410c'],'#fdba74');
- btn(128,'🏎️  Car Model: '+(porscheModelType==='meshy'?'Blue Horizon Porsche (3D)':'Classic 911'),porscheModelType==='meshy'?['#0ea5e9','#0369a1']:['#3f3f46','#27272a'],porscheModelType==='meshy'?'#7dd3fc':'#71717a',porscheModelType==='meshy'?'#0ea5e9':null);
+ btn(46,'🎓  Play Tutorial Level (Practice Controls)',['#10b981','#047857'],'#6ee7b7','#10b981');
+ btn(82,'🎚️  Audio Volumes (General, Voices, Car, Music)',['#06b6d4','#0e7490'],'#67e8f9','#06b6d4');
+ btn(118,'🎮  Steering Sensitivity: '+SENS_NAMES[sensIdx],['#f97316','#c2410c'],'#fdba74');
+ btn(154,'🏎️  Car Model: '+(porscheModelType==='meshy'?'Blue Horizon Porsche (3D)':'Classic 911'),porscheModelType==='meshy'?['#0ea5e9','#0369a1']:['#3f3f46','#27272a'],porscheModelType==='meshy'?'#7dd3fc':'#71717a',porscheModelType==='meshy'?'#0ea5e9':null);
  const isAll3D=areAllCharacters3D(),isAllClassic=areAllCharactersClassic();
  const charGrad=isAll3D?['#d946ef','#86198f']:(isAllClassic?['#3f3f46','#27272a']:['#f59e0b','#b45309']);
  const charBord=isAll3D?'#f0abfc':(isAllClassic?'#71717a':'#fde68a');
  const charLabel=isAll3D?'👥  Character Models: 3D Anime (All 5 Active)':(isAllClassic?'👥  Character Models: Classic Retro (All 5)':'👥  Character Models: Mixed (Tap for 3D)');
- btn(166,charLabel,charGrad,charBord,isAll3D?'#d946ef':null);
- btn(204,'🗣️  Voice Packs (EN, JA & Tamil)',['#06b6d4','#0e7490'],'#67e8f9');
- btn(242,'🎨  Texture Themes (Old School, Modern, Cyber)',['#8b5cf6','#6d28d9'],'#c4b5fd');
- btn(280,'⚡  Graphics: '+GFX[0].toUpperCase()+GFX.slice(1),['#10b981','#047857'],'#6ee7b7');
- btn(318,'🎬  Replay Anime Intro',['#f43f5e','#be123c'],'#fda4af');
- btn(356,'🗣️  Anime Voices: '+(voiceOn?'ON':'OFF'),voiceOn?['#10b981','#047857']:['#3f3f46','#27272a'],voiceOn?'#34d399':'#71717a',voiceOn?'#10b981':null);
- btn(394,'🔊  Master Audio: '+(muted?'MUTED':'ON'),muted?['#3f3f46','#27272a']:['#10b981','#047857'],muted?'#71717a':'#34d399',muted?null:'#10b981');
- btn(440,'Back to Menu',['#f59e0b','#b45309'],'#fde68a','#f59e0b');
+ btn(190,charLabel,charGrad,charBord,isAll3D?'#d946ef':null);
+ btn(226,'🗣️  Voice Packs (EN, JA & Tamil)',['#06b6d4','#0e7490'],'#67e8f9');
+ btn(262,'🎨  Texture Themes (Old School, Modern, Cyber)',['#8b5cf6','#6d28d9'],'#c4b5fd');
+ btn(298,'⚡  Graphics: '+GFX[0].toUpperCase()+GFX.slice(1),['#10b981','#047857'],'#6ee7b7');
+ btn(334,'🎬  Replay Anime Intro',['#f43f5e','#be123c'],'#fda4af');
+ btn(370,'🗣️  Anime Voices: '+(voiceOn?'ON':'OFF'),voiceOn?['#10b981','#047857']:['#3f3f46','#27272a'],voiceOn?'#34d399':'#71717a',voiceOn?'#10b981':null);
+ btn(406,'🔊  Master Audio: '+(muted?'MUTED':'ON'),muted?['#3f3f46','#27272a']:['#10b981','#047857'],muted?'#71717a':'#34d399',muted?null:'#10b981');
+ btn(450,'Back to Menu',['#f59e0b','#b45309'],'#fde68a','#f59e0b');
  g.restore();g.textAlign='left';
 }
 function settingsClick(x,y){
- const ib=by=>x>=290&&x<=670&&y>=by&&y<=by+32;
- if(ib(52)){volPrevState='settings';state='volumes';if(sfx&&sfx.tick)sfx.tick()}
- else if(ib(90))cycleSens();
- else if(ib(128))cyclePorscheModel();
- else if(ib(166))cycleAllCharactersModel();
- else if(ib(204))state='voices';
- else if(ib(242))state='textures';
- else if(ib(280))cycleGfx();
- else if(ib(318))startIntro();
- else if(ib(356))toggleVoice();
- else if(ib(394))toggleMute();
- else if(ib(440)||(x>=290&&x<=670&&y>=432&&y<=480))state='home';
+ const ib=by=>x>=290&&x<=670&&y>=by&&y<=by+31;
+ if(ib(46)){startTutorial()}
+ else if(ib(82)){volPrevState='settings';state='volumes';if(sfx&&sfx.tick)sfx.tick()}
+ else if(ib(118))cycleSens();
+ else if(ib(154))cyclePorscheModel();
+ else if(ib(190))cycleAllCharactersModel();
+ else if(ib(226))state='voices';
+ else if(ib(262))state='textures';
+ else if(ib(298))cycleGfx();
+ else if(ib(334))startIntro();
+ else if(ib(370))toggleVoice();
+ else if(ib(406))toggleMute();
+ else if(ib(450)||(x>=290&&x<=670&&y>=440&&y<=485))state='home';
 }
 function drawVoices(){
  g.save();g.globalAlpha=ea;
@@ -3979,6 +4155,22 @@ function homeClick(x,y){
    if((cx>490&&cx<670&&cy>250&&cy<296)||(cx>650&&cx<695&&cy>135&&cy<175)||cx<260||cx>700||cy<130||cy>390){
     homeModal=null;sfx.tick();return;
    }
+  }else if(homeModal==='tutorial_ask'){
+   if((cx>=490&&cx<=740&&cy>=355&&cy<=415)||(cx>=715&&cx<=760&&cy>=50&&cy<=95)||cx<180||cx>780||cy<40||cy>485){
+    hasPromptedTutorial=true;
+    try{localStorage.setItem('rcTutorialPrompted','true')}catch(e){}
+    homeModal=null;
+    if(sfx&&sfx.tick)sfx.tick();
+    return;
+   }
+   if(cx>=220&&cx<=470&&cy>=355&&cy<=415){
+    hasPromptedTutorial=true;
+    try{localStorage.setItem('rcTutorialPrompted','true')}catch(e){}
+    homeModal=null;
+    startTutorial();
+    return;
+   }
+   return;
   }
   return;
  }
@@ -4109,6 +4301,7 @@ function drawHome(){
   else if(homeModal==='leaderboard')drawModalLeaderboard();
   else if(homeModal==='profile')drawModalProfile();
   else if(homeModal==='exit')drawModalExit();
+  else if(homeModal==='tutorial_ask')drawModalTutorialAsk();
   g.restore();
  }
 }
@@ -4498,9 +4691,58 @@ function profileSetupClick(cx,cy){
   }catch(e){}
   if(sfx&&sfx.power)sfx.power();
   state='home';
-  popups.push({t:'🎉 Profile Ready! Welcome '+playerName,x:480,y:200,l:2.4,s:1,c:'#ffd23f'});
+  if(!hasPromptedTutorial){
+   homeModal='tutorial_ask';
+  }else{
+   popups.push({t:'🎉 Profile Ready! Welcome '+playerName,x:480,y:200,l:2.4,s:1,c:'#ffd23f'});
+  }
   return;
  }
+}
+function drawModalTutorialAsk(){
+ const pulse=(Math.sin(Date.now()/300)+1)*.5;
+ drawCard(190,45,580,430,22,['rgba(26,20,42,.98)','rgba(12,10,24,.99)'],['#00f0ff','#7928ca'],2,'rgba(0,240,255,'+(0.25+pulse*0.35)+')');
+ g.textAlign='center';
+ g.fillStyle='#ffd23f';g.font='bold 28px "Trebuchet MS",sans-serif';
+ g.shadowColor='#ffd23f';g.shadowBlur=10;
+ g.fillText('🎓 FIRST TIME RACER?',480,95);
+ g.shadowBlur=0;
+ 
+ g.fillStyle='#e2e8f0';g.font='15px "Trebuchet MS",sans-serif';
+ g.fillText('Welcome to RC Car in Class! Would you like to play the Tutorial',480,128);
+ g.fillText('to practice driving, drifting, nitro, and dodging Sakamoto Sensei?',480,148);
+
+ const steps=[
+  ['🚗 Step 1: Steering & Gas','Learn smooth analog steering and throttle control'],
+  ['🔥 Step 2: Power Slide & Drift','Execute high-speed slides around desks and corners'],
+  ['⚡ Step 3: Nitro Boost Rush','Ignite your dual turbo nitro plumes for max speed'],
+  ['📝 Step 4: Homework & Sensei','Collect floating papers while evading detention!']
+ ];
+ steps.forEach(([title,desc],i)=>{
+  const y=170+i*42;
+  drawCard(220,y,520,36,8,['rgba(18,14,30,.8)','rgba(10,8,18,.9)'],['rgba(255,255,255,.08)','rgba(0,240,255,.2)'],1);
+  g.textAlign='left';
+  g.fillStyle='#00f0ff';g.font='bold 13px "Trebuchet MS",sans-serif';
+  g.fillText(title,236,y+23);
+  g.fillStyle='#94a3b8';g.font='11px "Trebuchet MS",sans-serif';
+  g.fillText(desc,440,y+23);
+ });
+
+ g.textAlign='center';
+ g.fillStyle='#a78bfa';g.font='italic 12px "Trebuchet MS",sans-serif';
+ g.fillText('💡 You can also replay this Tutorial anytime from Settings ⚙️',480,344);
+
+ drawCard(230,358,230,50,14,['#10b981','#059669'],['#34d399','#6ee7b7'],2,'#10b981');
+ g.fillStyle='#ffffff';g.font='bold 16px "Trebuchet MS",sans-serif';
+ g.fillText('✅  YES, PLAY TUTORIAL',345,390);
+
+ drawCard(500,358,230,50,14,['#334155','#1e293b'],['#64748b','#475569'],1.5);
+ g.fillStyle='#e2e8f0';g.font='bold 15px "Trebuchet MS",sans-serif';
+ g.fillText('❌  NO, SKIP TO GAME',615,390);
+
+ drawCard(724,56,32,32,16,['#ef4444','#b91c1c'],'#fca5a5',1.5);
+ g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';
+ g.fillText('✕',740,78);
 }
 function drawModalExit(){
  drawCard(260,130,440,260,20,['rgba(26,20,40,.98)','rgba(12,10,22,.99)'],['#ef4444','#dc2626'],2,'rgba(239,68,68,.35)');
