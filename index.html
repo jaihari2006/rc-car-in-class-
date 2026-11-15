@@ -219,7 +219,8 @@ const P=(x,y,z=0)=>{if(!T3)return[x+OX,y*SY+OY-z];const v=T3.v.set(x*.1,z*.1,y*.
 const keys={up:0,down:0,left:0,right:0,nitro:0,jump:0,ink:0,chalk:0,elastic:0,magnet:0,fan:0};
 const map={Shift:'nitro',n:'nitro',N:'nitro',' ':'jump',Space:'jump',j:'jump',J:'jump',e:'ink',E:'ink',i:'ink',I:'ink',q:'chalk',Q:'chalk',r:'elastic',R:'elastic',b:'elastic',B:'elastic',m:'magnet',M:'magnet',g:'magnet',G:'magnet',f:'fan',F:'fan',t:'chat',T:'chat',c:'spectate',C:'spectate',ArrowUp:'up',w:'up',W:'up',ArrowDown:'down',s:'down',S:'down',ArrowLeft:'left',a:'left',A:'left',ArrowRight:'right',d:'right',D:'right'};
 let state='splash',splashT=0,score=0,time=45,bumps=0,bumpCd=0,best=0,msg='';
-let playerName='Jaihari21';try{playerName=localStorage.getItem('rcPlayerName')||'Jaihari21'}catch(e){}
+let playerName='guy';try{playerName=localStorage.getItem('rcPlayerName')||'guy'}catch(e){}
+if(playerName==='Jaihari21')playerName='guy';
 let playerInterest='Drift Specialist';try{playerInterest=localStorage.getItem('rcPlayerInterest')||'Drift Specialist'}catch(e){}
 let playerAvatar='male';try{playerAvatar=localStorage.getItem('rcPlayerAvatar')||'male'}catch(e){}
 let hasCreatedProfile=false;try{hasCreatedProfile=(localStorage.getItem('rcProfileCreated')==='true')}catch(e){}
@@ -252,7 +253,7 @@ try{
 }catch(e){}
 
 const RANDOM_NAMES=[
- 'TurboAce','DriftQueen','ApexRacer','NitroBolt','ShadowDrift',
+ 'guy','TurboAce','DriftQueen','ApexRacer','NitroBolt','ShadowDrift',
  'DeskRacer','SonicWheel','VelocityKai','BlazeMaster','CyberDash',
  'MicroSpeed','PencilRacer','ChalkDrifter','RulerRider','EraserKing',
  'ElenaSpeed','MarcusPro','ZackCyber','GrandpaNitro','SpeedyLuna'
@@ -328,9 +329,10 @@ function openTextDialog(mode){
  if(!diag||!title||!desc||!inp){
   if(mode==='nickname'){
    const res=prompt('Enter your driver nickname:',playerName);
-   if(res&&res.trim()){
-    playerName=res.trim().slice(0,18);
+   if(res!==null){
+    playerName=(res.trim()||'guy').slice(0,18);
     try{localStorage.setItem('rcPlayerName',playerName)}catch(e){}
+    popups.push({t:'✏️ Nickname: '+playerName,x:480,y:200,l:1.8,s:1,c:'#00f0ff'});
     if(sfx&&sfx.pick)sfx.pick();
    }
   }else{
@@ -338,6 +340,7 @@ function openTextDialog(mode){
    if(res&&res.trim()){
     playerInterest=res.trim().slice(0,24);
     try{localStorage.setItem('rcPlayerInterest',playerInterest)}catch(e){}
+    popups.push({t:'🏎️ Interest: '+playerInterest,x:480,y:200,l:1.8,s:1,c:'#00f0ff'});
     if(sfx&&sfx.pick)sfx.pick();
    }
   }
@@ -353,7 +356,10 @@ function openTextDialog(mode){
   inp.value=playerInterest;inp.maxLength=24;
  }
  diag.style.display='flex';
- setTimeout(()=>inp.focus(),50);
+ setTimeout(()=>{
+  inp.focus();
+  try{inp.select()}catch(e){}
+ },50);
 }
 
 function closeTextDialog(){
@@ -366,15 +372,18 @@ function confirmTextDialog(){
  const inp=document.getElementById('profile-dialog-input');
  if(inp&&textDialogMode){
   const val=inp.value.trim();
-  if(val){
-   if(textDialogMode==='nickname'){
-    playerName=val.slice(0,18);
-    try{localStorage.setItem('rcPlayerName',playerName)}catch(e){}
-   }else if(textDialogMode==='interest'){
+  if(textDialogMode==='nickname'){
+   playerName=(val||'guy').slice(0,18);
+   try{localStorage.setItem('rcPlayerName',playerName)}catch(e){}
+   popups.push({t:'✏️ Nickname: '+playerName,x:480,y:200,l:1.8,s:1,c:'#00f0ff'});
+   if(sfx&&sfx.pick)sfx.pick();
+  }else if(textDialogMode==='interest'){
+   if(val){
     playerInterest=val.slice(0,24);
     try{localStorage.setItem('rcPlayerInterest',playerInterest)}catch(e){}
+    popups.push({t:'🏎️ Interest: '+playerInterest,x:480,y:200,l:1.8,s:1,c:'#00f0ff'});
+    if(sfx&&sfx.pick)sfx.pick();
    }
-   if(sfx&&sfx.pick)sfx.pick();
   }
  }
  closeTextDialog();
@@ -5223,7 +5232,7 @@ function homeClick(x,y){
    if((cx>=850&&cx<=884&&cy>=38&&cy<=72)||cx<60||cx>900||cy<25||cy>495){
     homeModal=null;sfx.tick();return;
    }
-   if(cx>=98&&cx<=216&&cy>=234&&cy<=262){openTextDialog('nickname');return}
+   if((cx>=98&&cx<=216&&cy>=234&&cy<=262)||(cx>=98&&cx<=346&&cy>=188&&cy<=218)){openTextDialog('nickname');return}
    if(cx>=228&&cx<=346&&cy>=234&&cy<=262){pickRandomName();return}
    if(cx>=98&&cx<=346&&cy>=270&&cy<=300){openPhotoPicker();return}
    if(cx>=98&&cx<=346&&cy>=430&&cy<=458){homeModal=null;state='profile_setup';sfx.tick();return}
@@ -5811,7 +5820,7 @@ function drawProfileSetup(){
 
 function profileSetupClick(cx,cy){
  if(cx>=68&&cx<=322&&cy>=232&&cy<=266){openPhotoPicker();return}
- if(cx>=52&&cx<=190&&cy>=348&&cy<=378){openTextDialog('nickname');return}
+ if((cx>=52&&cx<=190&&cy>=348&&cy<=378)||(cx>=52&&cx<=338&&cy>=296&&cy<=344)){openTextDialog('nickname');return}
  if(cx>=200&&cx<=338&&cy>=348&&cy<=378){pickRandomName();return}
  if(cx>=242&&cx<=338&&cy>=400&&cy<=428){openTextDialog('interest');return}
 
