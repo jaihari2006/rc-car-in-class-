@@ -5117,18 +5117,33 @@ function drawTitle(){const W=960,H=520;g.fillStyle='#0c0a14';g.fillRect(0,0,W,H)
  if(Math.sin(Date.now()/350)>-.3){g.fillStyle='#fff';g.font='bold 24px "Trebuchet MS",sans-serif';g.fillText('Tap to start',W/2,365)}
  g.font='13px "Trebuchet MS",sans-serif';g.fillStyle='rgba(255,255,255,.7)';g.fillText('Best played in landscape with sound on',W/2,410);g.textAlign='left'}
 const HOME_BTNS={
- coins:      {x:720,y:3,  w:125,h:54, r:10,n:'Coins'},
- sound:      {x:845,y:3,  w:53, h:54, r:10,n:'Sound'},
- gear:       {x:895,y:2,  w:58, h:56, r:10,n:'Settings'},
- garage:     {x:19, y:324,w:144,h:64, r:12,n:'Garage'},
- play:       {x:634,y:196,w:268,h:128,r:16,n:'Play'},
- multiplayer:{x:307,y:447,w:163,h:54, r:12,n:'Multiplayer'},
- leaderboard:{x:489,y:447,w:163,h:54, r:12,n:'Leaderboard'},
- exit:       {x:816,y:447,w:125,h:59, r:12,n:'Exit'},
- profile:    {x:394,y:158,w:173,h:59, r:12,n:'Profile'}
+ profile:      {x:16,  y:10, w:210, h:46, r:12, n:'Profile'},
+ title:        {x:340, y:10, w:250, h:44, r:22, n:'Title'},
+ coins:        {x:624, y:10, w:130, h:44, r:22, n:'Coins'},
+ sound:        {x:760, y:10, w:46,  h:44, r:12, n:'Sound'},
+ gear:         {x:814, y:10, w:46,  h:44, r:12, n:'Settings'},
+ top_exit:     {x:868, y:10, w:76,  h:44, r:12, n:'Exit'},
+
+ // Left Showcase - Car Switcher
+ car_prev:     {x:28,  y:154,w:58,  h:34, r:8,  n:'Prev Car'},
+ car_tune:     {x:92,  y:154,w:146, h:34, r:8,  n:'Tune Car'},
+ car_next:     {x:244, y:154,w:58,  h:34, r:8,  n:'Next Car'},
+ car_card:     {x:20,  y:74, w:290, h:104,r:14, n:'Garage'},
+
+ // Right Side - Play & Arena
+ quick_map:    {x:634, y:116,w:268, h:64, r:14, n:'Race Settings'},
+ play:         {x:634, y:196,w:268, h:128,r:18, n:'Play'},
+ quick_gadgets:{x:634, y:340,w:268, h:74, r:12, n:'Gadgets'},
+
+ // Bottom Dock (5 Balanced Buttons)
+ garage:       {x:20,  y:442,w:172, h:64, r:14, n:'Garage'},
+ multiplayer:  {x:207, y:442,w:172, h:64, r:14, n:'Multiplayer'},
+ leaderboard:  {x:394, y:442,w:172, h:64, r:14, n:'Records'},
+ tutorial:     {x:581, y:442,w:172, h:64, r:14, n:'Tutorial'},
+ exit:         {x:768, y:442,w:172, h:64, r:14, n:'Exit'}
 };
 if(isWebGame){
- HOME_BTNS.get_app={x:380,y:14,w:204,h:32,r:8,n:'Get App'};
+ HOME_BTNS.get_app={x:340,y:10,w:250,h:44,r:22,n:'Get App'};
 }
 function getHomeHover(x,y){
  for(const [k,b] of Object.entries(HOME_BTNS)){
@@ -5293,33 +5308,70 @@ function homeClick(x,y){
  }
  const h=getHomeHover(x,y);
  if(!h){
-  if(x>=800&&x<=950&&y>=435&&y<=515){
+  if(x>=750&&x<=950&&y>=435&&y<=515){
    homeModal='exit';if(sfx&&sfx.tick)sfx.tick();return;
   }
-  if(x>=12&&x<=78&&y>=8&&y<=68){
-   state='splash';splashT=0;if(sfx&&sfx.power)sfx.power();
+  if(x>=860&&x<=955&&y>=6&&y<=60){
+   homeModal='exit';if(sfx&&sfx.tick)sfx.tick();return;
+  }
+  if(x>=10&&x<=230&&y>=6&&y<=60){
+   homeModal='profile';if(sfx&&sfx.tick)sfx.tick();return;
+  }
+  if(x>=620&&x<=920&&y>=180&&y<=330){
+   homeModal='play';if(sfx&&sfx.pick)sfx.pick();return;
+  }
+  if(x>=340&&x<=590&&y>=8&&y<=60){
+   if(isWebGame){homeModal='web_app_promo';if(sfx&&sfx.tick)sfx.tick()}
+   else{state='splash';splashT=0;if(sfx&&sfx.power)sfx.power()}
+   return;
+  }
+  if(x>=14&&x<=310&&y>=70&&y<=230){
+   shopSel=carSel;applyCar(carSel);state='shop';if(sfx&&sfx.tick)sfx.tick();return;
   }
   return;
  }
- if(h==='play'){
-  homeModal='play';sfx.pick();
+ if(h==='play'||h==='quick_map'){
+  homeModal='play';if(sfx&&sfx.pick)sfx.pick();
  }else if(h==='get_app'){
-  homeModal='web_app_promo';sfx.tick();
- }else if(h==='garage'){
-  shopSel=carSel;applyCar(carSel);state='shop';sfx.tick();
+  homeModal='web_app_promo';if(sfx&&sfx.tick)sfx.tick();
+ }else if(h==='garage'||h==='car_tune'||h==='car_card'){
+  shopSel=carSel;applyCar(carSel);state='shop';if(sfx&&sfx.tick)sfx.tick();
+ }else if(h==='car_prev'){
+  if(owned&&owned.length>0){
+   let idx=owned.indexOf(carSel);
+   if(idx>0)idx--;else idx=owned.length-1;
+   carSel=owned[idx];
+   try{localStorage.setItem('rcCar',carSel)}catch(e){}
+   applyCar(carSel);
+   if(sfx&&sfx.tick)sfx.tick();
+  }
+ }else if(h==='car_next'){
+  if(owned&&owned.length>0){
+   let idx=owned.indexOf(carSel);
+   if(idx<owned.length-1)idx++;else idx=0;
+   carSel=owned[idx];
+   try{localStorage.setItem('rcCar',carSel)}catch(e){}
+   applyCar(carSel);
+   if(sfx&&sfx.tick)sfx.tick();
+  }
  }else if(h==='settings'||h==='gear'){
-  settingsPrevState='home';state='settings';sfx.tick();
+  settingsPrevState='home';state='settings';if(sfx&&sfx.tick)sfx.tick();
  }else if(h==='sound'){
   toggleMute();
-  popups.push({t:muted?'🔇 Sound Muted':'🔊 Sound Active',x:870,y:80,l:1.2,s:1});
+  popups.push({t:muted?'🔇 Sound Muted':'🔊 Sound Active',x:780,y:80,l:1.2,s:1});
  }else if(h==='coins'||h==='profile'){
-  homeModal='profile';sfx.tick();
+  homeModal='profile';if(sfx&&sfx.tick)sfx.tick();
  }else if(h==='multiplayer'){
-  homeModal='multiplayer';sfx.tick();
+  homeModal='multiplayer';if(sfx&&sfx.tick)sfx.tick();
  }else if(h==='leaderboard'){
-  homeModal='leaderboard';sfx.tick();
- }else if(h==='exit'){
-  homeModal='exit';sfx.tick();
+  homeModal='leaderboard';if(sfx&&sfx.tick)sfx.tick();
+ }else if(h==='tutorial'||h==='quick_gadgets'){
+  startTutorial();if(sfx&&sfx.pick)sfx.pick();
+ }else if(h==='exit'||h==='top_exit'){
+  homeModal='exit';if(sfx&&sfx.tick)sfx.tick();
+ }else if(h==='title'){
+  if(isWebGame){homeModal='web_app_promo';if(sfx&&sfx.tick)sfx.tick()}
+  else{state='splash';splashT=0;if(sfx&&sfx.power)sfx.power()}
  }
 }
 function drawHome(){
@@ -5329,22 +5381,29 @@ function drawHome(){
   g.drawImage(homeBgImg,0,0,W,H);
  }else{
   const bgGr=g.createLinearGradient(0,0,W,H);
-  bgGr.addColorStop(0,'#3a2213');bgGr.addColorStop(1,'#1b0d06');
+  bgGr.addColorStop(0,'#2b1810');bgGr.addColorStop(0.5,'#180d18');bgGr.addColorStop(1,'#0c0814');
   g.fillStyle=bgGr;g.fillRect(0,0,W,H);
-  g.textAlign='center';
-  g.font='italic 900 64px "Trebuchet MS",sans-serif';
-  g.fillStyle='#00f0ff';g.fillText('RC',W/2-240,140);
-  g.fillStyle='#ffd23f';g.fillText('CAR IN',W/2-30,140);
-  g.fillStyle='#ff007f';g.fillText('CLASS?',W/2+220,140);
  }
- if(logoImgOK){
-  const pulse=(Math.sin(Date.now()/340)+1)*.5;
-  g.save();
-  g.shadowColor='#ff8800';
-  g.shadowBlur=14+pulse*8;
-  g.drawImage(logoImg,18,12,50,52);
-  g.restore();
- }
+
+ // Ambient atmospheric shading
+ g.save();
+ const topGr=g.createLinearGradient(0,0,0,72);
+ topGr.addColorStop(0,'rgba(10,8,18,0.78)');
+ topGr.addColorStop(0.7,'rgba(10,8,18,0.45)');
+ topGr.addColorStop(1,'rgba(10,8,18,0)');
+ g.fillStyle=topGr;g.fillRect(0,0,W,72);
+
+ const botGr=g.createLinearGradient(0,410,0,H);
+ botGr.addColorStop(0,'rgba(10,8,18,0)');
+ botGr.addColorStop(0.3,'rgba(10,8,18,0.55)');
+ botGr.addColorStop(1,'rgba(10,8,18,0.85)');
+ g.fillStyle=botGr;g.fillRect(0,410,W,110);
+
+ g.fillStyle='rgba(14,10,22,0.18)';
+ g.fillRect(0,0,W,H);
+ g.restore();
+
+ // Floating sunlight motes
  for(let i=0;i<homeMotes.length;i++){
   const m=homeMotes[i];
   m.y-=m.vy;m.x+=Math.sin(Date.now()/1200+m.seed)*.2;
@@ -5355,63 +5414,195 @@ function drawHome(){
   g.beginPath();g.arc(m.x,m.y,m.sz,0,Math.PI*2);g.fill();
   g.restore();
  }
+
+ // Top Bar: Profile (Top-Left)
+ const isHoverProf=homeHover==='profile';
+ drawCard(16,10,210,46,14,isHoverProf?['rgba(36,26,56,.96)','rgba(22,16,36,.98)']:['rgba(24,18,36,.9)','rgba(14,10,22,.95)'],isHoverProf?'#00f0ff':'rgba(0,240,255,.35)',isHoverProf?2:1.5,isHoverProf?'#00f0ff':null);
+ drawAvatarCircle(38,33,16,playerAvatar,false,null,true);
  g.save();
- fillRoundRect(762,14,76,32,6,'rgba(48,28,14,.92)');
- strokeRoundRect(762,14,76,32,6,'rgba(255,215,80,.4)',1);
- g.textAlign='center';g.font='bold 15px "Trebuchet MS",sans-serif';
- g.fillStyle='#ffd700';g.shadowColor='rgba(0,0,0,.8)';g.shadowOffsetY=1;g.shadowBlur=3;
- g.fillText(coins>99999?'99k+':coins.toLocaleString(),800,35);
- g.restore();
- if(muted){
-  g.save();
-  fillRoundRect(846,4,51,52,10,'rgba(0,0,0,.55)');
-  g.textAlign='center';g.font='24px "Trebuchet MS",sans-serif';
-  g.fillText('🔇',871,38);
-  g.restore();
- }
- if(isWebGame){
-  const pulse=(Math.sin(Date.now()/300)+1)*.5;
-  drawCard(380,14,204,32,8,['#10b981','#059669'],'#34d399',1.5,'rgba(16,185,129,'+(0.3+pulse*0.4)+')');
-  g.textAlign='center';g.fillStyle='#ffffff';g.font='bold 12px "Trebuchet MS",sans-serif';
-  g.fillText('📱 GET FULL APP (APK)',482,35);
- }
- // Profile Badge on Home screen
- g.save();
- fillRoundRect(394,158,173,59,12,'rgba(26,18,38,.92)');
- strokeRoundRect(394,158,173,59,12,'rgba(255,215,80,.4)',1.5);
- drawAvatarCircle(420,187,19,playerAvatar,false,null,true);
  g.textAlign='left';
- g.fillStyle='#ffffff';g.font='bold 12px "Trebuchet MS",sans-serif';
- const truncName=playerName.length>11?playerName.slice(0,10)+'…':playerName;
- g.fillText(truncName,448,178);
+ g.fillStyle='#ffffff';g.font='bold 13px "Trebuchet MS",sans-serif';
+ const truncName=playerName.length>10?playerName.slice(0,9)+'…':playerName;
+ g.fillText(truncName+' ✏️',62,26);
  g.fillStyle='#00f0ff';g.font='bold 10px "Trebuchet MS",sans-serif';
  const truncInt=playerInterest.length>14?playerInterest.slice(0,13)+'…':playerInterest;
- g.fillText(truncInt,448,197);
+ g.fillText(truncInt,62,44);
  g.restore();
- const pulse=(Math.sin(Date.now()/340)+1)*.5;
+
+ // Top Center: Title / Web App button
+ if(isWebGame){
+  const pulse=(Math.sin(Date.now()/300)+1)*.5;
+  drawCard(340,10,250,44,22,['#10b981','#059669'],'#34d399',2,'rgba(16,185,129,'+(0.4+pulse*0.4)+')');
+  g.save();
+  g.textAlign='center';g.fillStyle='#ffffff';g.font='bold 13px "Trebuchet MS",sans-serif';
+  g.fillText('📱 GET FULL APP (APK)',465,34);
+  g.restore();
+ }else{
+  const isHoverTitle=homeHover==='title';
+  drawCard(340,10,250,44,22,isHoverTitle?['rgba(36,24,48,.96)','rgba(20,14,32,.98)']:['rgba(20,16,32,.88)','rgba(12,10,20,.94)'],isHoverTitle?'#ffd23f':'rgba(255,210,63,.35)',isHoverTitle?2:1.5,isHoverTitle?'#ffd23f':null);
+  g.save();
+  g.textAlign='center';
+  g.font='italic 900 15px "Trebuchet MS",sans-serif';
+  g.fillStyle='#00f0ff';g.fillText('RC ',415,34);
+  g.fillStyle='#ffd23f';g.fillText('CAR IN CLASS',485,34);
+  if(logoImgOK){
+   g.drawImage(logoImg,352,14,32,34);
+  }
+  g.restore();
+ }
+
+ // Top Right: Coins, Sound, Gear, Exit
+ const isHoverCoins=homeHover==='coins';
+ drawCard(624,10,130,44,22,isHoverCoins?['rgba(48,34,16,.96)','rgba(28,18,8,.98)']:['rgba(35,26,12,.92)','rgba(20,14,6,.96)'],'#ffd700',isHoverCoins?2:1.5,isHoverCoins?'#ffd700':null);
  g.save();
- g.strokeStyle='rgba(180,255,60,'+(.3+pulse*.45)+')';
- g.lineWidth=3+pulse*2;
- rr(634,196,268,128,16);g.stroke();
+ g.textAlign='center';g.font='bold 14px "Trebuchet MS",sans-serif';
+ g.fillStyle='#ffd700';g.shadowColor='rgba(0,0,0,.8)';g.shadowOffsetY=1;g.shadowBlur=3;
+ g.fillText('🪙 '+(coins>99999?'99k+':coins.toLocaleString()),689,34);
+ g.restore();
+
+ const isHoverSound=homeHover==='sound';
+ drawCard(760,10,46,44,12,isHoverSound?['rgba(36,26,56,.96)','rgba(22,16,36,.98)']:['rgba(24,18,36,.9)','rgba(14,10,22,.95)'],muted?'#f87171':(isHoverSound?'#00f0ff':'rgba(0,240,255,.3)'),1.5,isHoverSound?(muted?'#f87171':'#00f0ff'):null);
+ g.save();
+ g.textAlign='center';g.font='18px "Trebuchet MS",sans-serif';
+ g.fillText(muted?'🔇':'🔊',783,34);
+ g.restore();
+
+ const isHoverGear=homeHover==='gear';
+ drawCard(814,10,46,44,12,isHoverGear?['rgba(42,26,62,.96)','rgba(24,16,40,.98)']:['rgba(24,18,36,.9)','rgba(14,10,22,.95)'],isHoverGear?'#c084fc':'rgba(168,85,247,.3)',1.5,isHoverGear?'#c084fc':null);
+ g.save();
+ g.textAlign='center';g.font='18px "Trebuchet MS",sans-serif';
+ g.fillText('⚙️',837,34);
+ g.restore();
+
+ const isHoverTopExit=homeHover==='top_exit';
+ drawCard(868,10,76,44,12,isHoverTopExit?['rgba(60,20,24,.96)','rgba(36,12,16,.98)']:['rgba(40,16,20,.9)','rgba(24,10,12,.95)'],isHoverTopExit?'#f87171':'rgba(239,68,68,.35)',1.5,isHoverTopExit?'#f87171':null);
+ g.save();
+ g.textAlign='center';g.font='bold 13px "Trebuchet MS",sans-serif';
+ g.fillStyle='#f87171';
+ g.fillText('🚪 Exit',906,34);
+ g.restore();
+
+ // Left Hero Card: Equipped Car Showcase
+ const c=CARS[carSel]||CARS[0];
+ const isHoverCarCard=homeHover==='car_card'||homeHover==='car_tune';
+ drawCard(20,74,290,154,16,isHoverCarCard?['rgba(28,22,46,.94)','rgba(16,12,28,.98)']:['rgba(20,16,32,.88)','rgba(12,10,22,.94)'],isHoverCarCard?'#38bdf8':'rgba(56,189,248,.35)',isHoverCarCard?2:1.5,isHoverCarCard?'rgba(56,189,248,.25)':null);
+ g.save();
+ g.textAlign='left';
+ g.fillStyle='#ffd23f';g.font='bold 10px "Trebuchet MS",sans-serif';
+ g.fillText('🏎️ EQUIPPED RC CAR',34,92);
+ g.fillStyle='#ffffff';g.font='bold 15px "Trebuchet MS",sans-serif';
+ const cName=c[0].length>18?c[0].slice(0,17)+'…':c[0];
+ g.fillText(cName,34,112);
+ g.fillStyle='#38bdf8';g.font='10px "Trebuchet MS",sans-serif';
+ const spd=Math.round(cf(3)*100),acc=Math.round(cf(4)*100),hnd=Math.round(cf(2)*100);
+ g.fillText('Speed '+spd+'% • Accel '+acc+'% • Drift '+hnd+'%',34,130);
+
+ g.fillStyle='rgba(255,255,255,.1)';
+ fillRoundRect(34,138,262,6,3);
+ const spdGrad=g.createLinearGradient(34,138,34+262,138);
+ spdGrad.addColorStop(0,'#00f0ff');spdGrad.addColorStop(1,'#10b981');
+ g.fillStyle=spdGrad;
+ fillRoundRect(34,138,Math.max(10,Math.min(262,262*(spd/120))),6,3);
+
+ const isHoverPrev=homeHover==='car_prev';
+ drawCard(28,154,58,34,8,isHoverPrev?['#374151','#1f2937']:['rgba(35,40,60,.85)','rgba(20,25,40,.9)'],isHoverPrev?'#38bdf8':'rgba(255,255,255,.15)',1);
+ g.textAlign='center';g.fillStyle='#ffffff';g.font='bold 11px "Trebuchet MS",sans-serif';
+ g.fillText('◀ Prev',57,175);
+
+ drawCard(92,154,146,34,8,isHoverCarCard?['#0284c7','#0369a1']:['#0369a1','#075985'],'#38bdf8',1.5,isHoverCarCard?'#0284c7':null);
+ g.fillStyle='#ffffff';g.font='bold 11px "Trebuchet MS",sans-serif';
+ g.fillText('🛠️ Tune / Garage',165,175);
+
+ const isHoverNext=homeHover==='car_next';
+ drawCard(244,154,58,34,8,isHoverNext?['#374151','#1f2937']:['rgba(35,40,60,.85)','rgba(20,25,40,.9)'],isHoverNext?'#38bdf8':'rgba(255,255,255,.15)',1);
+ g.fillStyle='#ffffff';g.font='bold 11px "Trebuchet MS",sans-serif';
+ g.fillText('Next ▶',273,175);
+ g.restore();
+
+ // Right Play & Mode Area
+ const curMp=MAPS.find(m=>m.id===selectedMap)||MAPS[0];
+ const curM=MODES.find(m=>m.id===gameMode)||MODES[0];
+ const isHoverQMap=homeHover==='quick_map';
+ drawCard(634,116,268,64,14,isHoverQMap?['rgba(28,22,46,.94)','rgba(16,12,28,.98)']:['rgba(20,16,32,.88)','rgba(12,10,22,.94)'],isHoverQMap?'#38bdf8':'rgba(56,189,248,.35)',isHoverQMap?2:1.5,isHoverQMap?'rgba(56,189,248,.25)':null);
+ g.save();
+ g.textAlign='left';
+ g.fillStyle='#ffffff';g.font='bold 12px "Trebuchet MS",sans-serif';
+ g.fillText((isWebGame&&curMp.appOnly?'🔒 ':curMp.icon+' ')+curMp.n+' • '+curM.n,648,136);
+ g.fillStyle='#38bdf8';g.font='10px "Trebuchet MS",sans-serif';
+ const diffLabel=diff===0?'Easy':diff===1?'Normal':'Hard';
+ g.fillText((ghostEnabled?'👻 Ghost ON':'👻 Ghost OFF')+' • '+diffLabel+' Diff',648,153);
+ g.fillStyle='#94a3b8';g.font='9px "Trebuchet MS",sans-serif';
+ g.fillText('Tap to change map or mode ▶',648,168);
+ g.restore();
+
+ // Main Play Button
+ const pulse=(Math.sin(Date.now()/340)+1)*.5;
+ const isHoverPlay=homeHover==='play';
+ const playGlow=isHoverPlay?'#34d399':('rgba(16,185,129,'+(0.4+pulse*0.4)+')');
+ drawCard(634,196,268,128,18,isHoverPlay?['#059669','#047857']:['#10b981','#059669'],'#34d399',isHoverPlay?3:2,playGlow);
+
  const sheen=((Date.now()%2600)/2600)*400-60;
- g.beginPath();rr(634,196,268,128,16);g.clip();
+ g.save();
+ g.beginPath();rr(634,196,268,128,18);g.clip();
  const sGrad=g.createLinearGradient(634+sheen,196,634+sheen+70,196+128);
  sGrad.addColorStop(0,'rgba(255,255,255,0)');
  sGrad.addColorStop(.5,'rgba(255,255,255,.24)');
  sGrad.addColorStop(1,'rgba(255,255,255,0)');
  g.fillStyle=sGrad;g.fillRect(634,196,268,128);
  g.restore();
- if(homeHover&&!homeModal){
-  const b=HOME_BTNS[homeHover];
-  if(b){
-   g.save();
-   g.strokeStyle='rgba(255,230,120,.85)';
-   g.lineWidth=3.5;g.shadowColor='#ffd23f';g.shadowBlur=16;
-   rr(b.x,b.y,b.w,b.h,b.r);g.stroke();
-   g.fillStyle='rgba(255,255,255,.08)';g.fill();
-   g.restore();
-  }
+
+ g.save();
+ g.textAlign='center';
+ g.fillStyle='#ffd23f';g.font='bold 11px "Trebuchet MS",sans-serif';
+ g.shadowColor='rgba(0,0,0,.6)';g.shadowOffsetY=1;g.shadowBlur=4;
+ g.fillText('★ CLASSROOM GRAND PRIX ★',768,222);
+ g.fillStyle='#ffffff';g.font='bold 28px "Trebuchet MS",sans-serif';
+ g.shadowColor='rgba(0,0,0,.8)';g.shadowOffsetY=2;g.shadowBlur=6;
+ g.fillText('🏁 RACE NOW ▶',768,266);
+ g.fillStyle='#d1fae5';g.font='bold 11px "Trebuchet MS",sans-serif';
+ g.shadowBlur=0;
+ g.fillText('Tap to Select Map & Launch',768,298);
+ g.restore();
+
+ // Quick Gadgets Card
+ const isHoverQGad=homeHover==='quick_gadgets';
+ drawCard(634,340,268,74,12,isHoverQGad?['rgba(36,26,44,.94)','rgba(20,14,28,.98)']:['rgba(20,16,32,.88)','rgba(12,10,22,.94)'],isHoverQGad?'#f59e0b':'rgba(245,158,11,.35)',isHoverQGad?2:1.5,isHoverQGad?'rgba(245,158,11,.25)':null);
+ g.save();
+ g.textAlign='left';
+ g.fillStyle='#f59e0b';g.font='bold 10px "Trebuchet MS",sans-serif';
+ g.fillText('⚡ IN-GAME GADGETS ARSENAL',648,358);
+ g.fillStyle='#ffffff';g.font='10px "Trebuchet MS",sans-serif';
+ g.fillText('Space: Jump • R: Slingshot • M: Magnet',648,377);
+ g.fillStyle='#94a3b8';g.font='9px "Trebuchet MS",sans-serif';
+ g.fillText('F: Gale • E: Ink Cloud • Q: Chalk Line',648,396);
+ g.restore();
+
+ // Bottom Dock: 5 Balanced Buttons
+ const dockBtns=[
+  {id:'garage',     title:'🏎️ GARAGE',     sub:'21 Cars & Paint',   col:'#38bdf8', g:['#0284c7','#0369a1'], border:'#38bdf8'},
+  {id:'multiplayer',title:'👥 MULTIPLAYER',sub:'Lobbies & Tag',     col:'#f59e0b', g:['#d97706','#b45309'], border:'#f59e0b'},
+  {id:'leaderboard',title:'🏆 RECORDS',    sub:'Drift Hall of Fame',col:'#ffd700', g:['#ca8a04','#a16207'], border:'#ffd700'},
+  {id:'tutorial',   title:'🎓 TUTORIAL',   sub:'Controls & Guide',  col:'#c084fc', g:['#7c3aed','#5b21b6'], border:'#c084fc'},
+  {id:'exit',       title:'🚪 EXIT GAME',  sub:'Quit Application',  col:'#f87171', g:['#dc2626','#991b1b'], border:'#f87171'}
+ ];
+
+ for(let i=0;i<dockBtns.length;i++){
+  const db=dockBtns[i];
+  const bx=20+i*187;
+  const isHover=homeHover===db.id;
+  drawCard(bx,442,172,64,14,isHover?db.g:['rgba(24,18,36,.92)','rgba(14,10,24,.96)'],isHover?db.border:'rgba(255,255,255,.18)',isHover?2:1.5,isHover?db.border:null);
+  g.save();
+  g.textAlign='center';
+  g.fillStyle='#ffffff';g.font='bold 13px "Trebuchet MS",sans-serif';
+  g.shadowColor='rgba(0,0,0,.6)';g.shadowOffsetY=1;g.shadowBlur=3;
+  g.fillText(db.title,bx+86,467);
+  g.fillStyle=isHover?'#ffffff':db.col;g.font='bold 10px "Trebuchet MS",sans-serif';
+  g.shadowBlur=0;
+  g.fillText(db.sub,bx+86,489);
+  g.restore();
  }
+
+ // Popups
  g.textAlign='center';
  popups.forEach(p=>{
   const l=Math.min(1,p.l),yy=p.y-(1-l)*30;
@@ -5421,6 +5612,8 @@ function drawHome(){
   g.restore();
  });
  g.globalAlpha=1;
+
+ // Modals
  if(homeModal){
   g.save();
   g.fillStyle='rgba(10,8,18,.75)';g.fillRect(0,0,W,H);
