@@ -21,6 +21,25 @@ Play online or download the native Android app / Windows edition:
 ---
 
 ### Features
+- **📐 Ruler & Textbook Stunt Ramps**: Inclined wooden rulers stacked on colorful manga & textbooks scattered across the classroom. Hitting a ramp at speed triggers a 3D parabolic aerial jump (`car.airZ` up to 45 units), airtime score bonuses, landing sparks, and allows jumping directly over rows of desks or driving across desk-tops!
+- **🦘 Bunny Hop Jump Action**: Tap `SPACE`, `J`, or the on-screen `[🦘 JUMP]` touch button (or Gamepad `Y` button) to execute an instant spring hop (`car.airZ = 19`) to hop over clutter, clear bags and balls, or dodge incoming student kicks mid-drift!
+- **🖋️ Fountain Pen Ink Trap**: Tap `E`, `I`, or the `[🖋️ INK]` button to drop a glossy dark ink puddle behind your RC Car. When Sakamoto Sensei steps into the ink, he comically slips, spins out, and is knocked down for 2.8 seconds (`+150 SENSEI SLIPPED!`) with dedicated slip voice lines! (Charges recharge over time).
+- **💨 Eraser Chalk Dust Smoke Screen**: Tap `Q`, `C`, or the `[💨 CHALK]` button to deploy an expanding cloud of chalk dust. Completely blinds and confuses Sensei (`+100 CHALK SCREEN!`), breaking line-of-sight and freezing his pursuit for 2.4 seconds while he coughs and sneezes!
+- **🎮 Native Gamepad & Android Haptics**: Full plug-and-play controller support via HTML5 Gamepad API (Xbox, PlayStation, Bluetooth mobile controllers) with analog steering/throttle and dual-motor rumble haptics, plus tactile Android vibration pulses (`navigator.vibrate`) on drifts, jumps, crashes, and nitro boost!
+- **🌈 Neon Underglow Color Customizer**: Personalize your RC Car in the Garage/Shop with 7 radiant neon underglow colors (Cyber Cyan, Tokyo Gold, Toxic Lime, Hot Pink, Ultra Violet, Crimson Red, Pure Xenon) with real-time 3D Three.js ground lighting!
+- **🏁 4 Selectable Game Modes**: Choose your mode from the pre-race launcher:
+  - **Classic Chase**: Standard classroom escape — collect homework papers and evade Sensei before the bell.
+  - **Stealth Heist**: Undercover exam delivery — deliver secret test notes under desks to Sakura-kun, Hinata-chan, and Ren Sakuragi.
+  - **Gymkhana Stunt**: 60-second time attack frenzy with extra ramps, chalk donut circles, and 2x stunt combo multipliers!
+  - **Sensei Mayhem**: Non-stop adrenaline survival with a blazing fiery rage Sensei whose sprint speed accelerates over time!
+- **🌅 5 Visual Environment Themes (Now with Sunset & Stormy Academy)**:
+  - **1st Old School Type**: Vintage wood classroom, chalkboard green, warm sepia sunlight, walnut desks.
+  - **2nd Modern Type**: Sleek minimalist studio, white porcelain tiles, whiteboard with blue marker, daylight.
+  - **3rd Futuristic Type**: Dark sci-fi cyber academy, neon cyan grid floor, holographic terminal board, neon underglow.
+  - **4th Sunset Golden Hour**: Warm amber sunset glow pouring through classroom windows, long dramatic shadows, honey oak desks, twilight cherry blossoms.
+  - **5th Stormy Night Academy**: Midnight academy with wet slate reflections, rain tapping on glass, dynamic random lightning flashes that illuminate the room, and xenon car headlights.
+- **⚡ Close Call Combo Multiplier**: Grazing inches past Sakamoto Sensei's legs at high speed triggers `⚡ CLOSE CALL! +75` with dynamic speed-lines, sound FX, and haptic rumble!
+- **🏅 Driver Achievements & Badges**: Unlock badges displayed on your Driver Profile card: *Sky High* (Ramp Stunt Pro), *Ink Master* (Slipped Teacher), *Nitro Demon* (Drift Specialist), and *Ghost Driver* (Stealth Evader).
 - **🦵 Character Panic Reactions (Kick & Throw to Half Classroom Distance)**: When the RC Car buzzes near student characters (Sakura-kun, Hinata-chan, Ren-kun, Classmates - except Sensei) and their panic/fear meter spikes (>=65% with sweat drop indicators `💦` and shivering), if Sakamoto Sensei is not nearby (>220 units away), there is a **20% chance** they will frantically react by either **kicking** (`💥 KICK!`) or **throwing** (`💨 THROW!`) the car across half the classroom distance (~440 units) with 3D aerial parabolic tumble, ground skid sparks, and spoken voice lines across English, Japanese, and Tamil!
 - **🎙️ Dedicated Character Voice Module (95 Clips)**: Full offline neural voice acting across **English**, **Japanese Anime**, and **Tamil** for Sakamoto Sensei, Sakura-kun, Hinata-chan, Ren-kun, and Classmates. Includes dedicated Kick/Throw reactions, 3D directional stereo panning (`StereoPannerNode`), distance rolloff, speech bubble visualizers with dancing equalizer bars, and multi-character language previews.
 - **🎓 Interactive Tutorial Level**: First-time launch onboarding with step-by-step driver training (Steering & Gas, Power Slide & Drift, Nitro Boost, and Sensei evasion) with S-Rank completion and replay anytime directly from Settings.

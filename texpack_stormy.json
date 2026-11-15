@@ -1,0 +1,49 @@
+{
+  "id": "stormy",
+  "name": "Stormy Night Academy",
+  "desc": "Midnight academy, rain & dynamic lightning flashes, xenon headlights",
+  "swatches": ["#0f172a", "#38bdf8", "#818cf8"],
+  "floor": {
+    "style": "wood",
+    "hsl": [220, 25, 16],
+    "var": 8,
+    "plank": 180,
+    "line": "rgba(15, 23, 42, 0.8)",
+    "gloss": 0.72
+  },
+  "wall": {
+    "top": "#1e293b",
+    "bottom": "#0f172a",
+    "wain": "#020617",
+    "base": "#38bdf8",
+    "neon": "#38bdf8",
+    "petals": false
+  },
+  "board": {
+    "top": "#020617",
+    "bottom": "#090d16",
+    "chalk": "#38bdf8",
+    "glow": true
+  },
+  "desk": {
+    "wood": "#1e293b",
+    "grain": [30, 41, 59]
+  },
+  "ceil": "#0f172a",
+  "sky": ["#020617", "#1e1b4b"],
+  "bg": "#020617",
+  "light": {
+    "sky": "#38bdf8",
+    "ground": "#020617",
+    "hemi": 0.45,
+    "sun": "#60a5fa",
+    "sunI": 0.65
+  },
+  "car": {
+    "metal": 0.9,
+    "rough": 0.12,
+    "clear": 1.0,
+    "rim": "#38bdf8",
+    "glow": "#38bdf8"
+  }
+}

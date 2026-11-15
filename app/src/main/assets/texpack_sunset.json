@@ -1,0 +1,49 @@
+{
+  "id": "sunset",
+  "name": "Sunset Golden Hour",
+  "desc": "Warm amber sunset glow, long dramatic shadows, honey oak desks",
+  "swatches": ["#d97706", "#78350f", "#fbbf24"],
+  "floor": {
+    "style": "wood",
+    "hsl": [32, 58, 38],
+    "var": 12,
+    "plank": 180,
+    "line": "rgba(60, 25, 10, 0.6)",
+    "gloss": 0.52
+  },
+  "wall": {
+    "top": "#fef3c7",
+    "bottom": "#fde68a",
+    "wain": "#78350f",
+    "base": "#451a03",
+    "neon": null,
+    "petals": true
+  },
+  "board": {
+    "top": "#292524",
+    "bottom": "#1c1917",
+    "chalk": "#fef08a",
+    "glow": false
+  },
+  "desk": {
+    "wood": "#b45309",
+    "grain": [85, 45, 20]
+  },
+  "ceil": "#fef9c3",
+  "sky": ["#ea580c", "#fbbf24"],
+  "bg": "#1c0b03",
+  "light": {
+    "sky": "#f97316",
+    "ground": "#78350f",
+    "hemi": 0.75,
+    "sun": "#f59e0b",
+    "sunI": 1.4
+  },
+  "car": {
+    "metal": 0.75,
+    "rough": 0.18,
+    "clear": 1.0,
+    "rim": "#f59e0b",
+    "glow": "#f59e0b"
+  }
+}
