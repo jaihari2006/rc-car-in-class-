@@ -2,22 +2,27 @@
 
 ![RC Car in Class Banner](images/banner.jpg)
 
+### 🎬 Official Gameplay Trailer
+https://github.com/user-attachments/assets/90dee69e-94a2-4178-8099-7c6344331fbe
+
+*▶ Hit Play above to watch the 1080p full gameplay trailer directly on GitHub!*
+
 Play online or download the native Android app / Windows edition:
 
-- **🌐 Play in Browser**: [https://jaihari2006.github.io/rc-car-in-class-/](https://jaihari2006.github.io/rc-car-in-class-/)
+- **🌐 Play in Browser & Watch Trailer**: [https://jaihari2006.github.io/rc-car-in-class-/](https://jaihari2006.github.io/rc-car-in-class-/)
 - **📱 Download Android APK**: [Download Rc.Car.in.Class.apk (v1.2.1)](https://github.com/jaihari2006/rc-car-in-class-/releases/download/v1.2.1/Rc.Car.in.Class.apk)
 - **💻 Download Windows Edition**: [Download Rc.Car.in.Class-Windows-v1.2.1.zip (Portable 64-bit .exe)](https://github.com/jaihari2006/rc-car-in-class-/releases/download/v1.2.1/Rc.Car.in.Class-Windows-v1.2.1.zip) | [Windows Guide & Source](windows/README.md)
 - **🏷️ GitHub Release**: [v1.2.1 Release Page](https://github.com/jaihari2006/rc-car-in-class-/releases/tag/v1.2.1)
-- **🎬 Official 1080p Gameplay Trailer**: [`trailerrr.mp4`](trailerrr.mp4) / [`rc_car_in_class_trailer.mp4`](rc_car_in_class_trailer.mp4) (Full HD 1080p cinema trailer with 3D classroom drifting, desk stunt jumps, Sensei Tag chase, and nitro boost action)
+- **🎬 Watch / Download Video File**: [`trailerrr.mp4`](trailerrr.mp4) / [`rc_car_in_class_trailer.mp4`](rc_car_in_class_trailer.mp4)
 - **🎮 Unreal Engine 5 Project Edition**: Full native Unreal Engine 5.4 project in [`RCCarInClass_Unreal/`](RCCarInClass_Unreal/) with Chaos vehicle physics, Sakamoto Sensei AI, and 3D PBR assets.
 
 ---
 
 ## 📸 Screenshots & Artwork
 
-| Official App Icon | Nitro Boost & Power Slide | Official 1080p Gameplay Trailer |
+| Official App Icon | Nitro Boost & Power Slide | Live Trailer Preview |
 | :---: | :---: | :---: |
-| ![Official App Icon](images/icon.png) | ![Nitro Boost Action](images/gameplay-nitro.jpg) | [![RC Car in Class Trailer](images/trailer-poster.jpg)](rc_car_in_class_trailer.mp4) |
+| ![Official App Icon](images/icon.png) | ![Nitro Boost Action](images/gameplay-nitro.jpg) | [![RC Car in Class Trailer](images/trailer-preview.gif)](https://jaihari2006.github.io/rc-car-in-class-/) |
 
 ---
 

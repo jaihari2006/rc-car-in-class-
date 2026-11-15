@@ -93,11 +93,25 @@ body.cine #pad,body.cine #bar,body.home #pad,body.home #bar{visibility:hidden;di
 <script>if(!window.THREE||!THREE.GLTFLoader){document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"><\\/script>')}</script>
 </head>
 <body>
-<div id="bar"><button id="b-sensei" hidden style="background:#b82b2b;color:#fff;font-weight:bold" title="Toggle Sensei Mode">👑 Sensei Tag</button><button id="b-ghost" style="background:#047857;color:#fff;font-weight:bold" title="Toggle Ghost Car (PB)">👻 Ghost</button><button id="b-chat" style="background:#1d4ed8;color:#fff;font-weight:bold" title="Quick Chat Emote">💬 Emote</button><button id="b-spec" hidden style="background:#7c3aed;color:#fff;font-weight:bold" title="Spectate Mode">🎥 Spectate</button><button id="bs" hidden>Invite</button><button id="bl" hidden>Leave</button><button id="bp">⏸</button><button id="bv">🗣</button><button id="bm">🔊</button></div>
+<div id="bar"><button id="b-sensei" hidden style="background:#b82b2b;color:#fff;font-weight:bold" title="Toggle Sensei Mode">👑 Sensei Tag</button><button id="b-ghost" style="background:#047857;color:#fff;font-weight:bold" title="Toggle Ghost Car (PB)">👻 Ghost</button><button id="b-trailer" style="background:linear-gradient(135deg,#e11d48,#be123c);color:#fff;font-weight:bold;box-shadow:0 0 10px rgba(225,29,72,.45)" title="Watch Official Game Trailer">🎬 Trailer</button><button id="b-chat" style="background:#1d4ed8;color:#fff;font-weight:bold" title="Quick Chat Emote">💬 Emote</button><button id="b-spec" hidden style="background:#7c3aed;color:#fff;font-weight:bold" title="Spectate Mode">🎥 Spectate</button><button id="bs" hidden>Invite</button><button id="bl" hidden>Leave</button><button id="bp">⏸</button><button id="bv">🗣</button><button id="bm">🔊</button></div>
 <div id="rot"><b>📱</b>Rotate your phone to landscape to play</div>
 <div id="stage">
  <canvas id="gl"></canvas>
  <canvas id="c" width="960" height="520"></canvas>
+ <div id="trailer-modal" style="display:none;position:absolute;inset:0;background:rgba(8,6,16,.92);z-index:9999;backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:12px;">
+  <div style="position:relative;width:min(96%,860px);background:#0f172a;border-radius:18px;border:2px solid #f43f5e;box-shadow:0 0 35px rgba(244,63,94,.5);overflow:hidden;display:flex;flex-direction:column;">
+   <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#1e293b;">
+    <span style="color:#fff;font-weight:900;font-size:14px;display:flex;align-items:center;gap:8px">🎬 RC Car in Class — Official Trailer (1080p)</span>
+    <button id="close-trailer-btn" type="button" style="background:#e11d48;color:#fff;border:none;padding:5px 14px;border-radius:8px;font-weight:bold;cursor:pointer;font-size:13px">✕ Close</button>
+   </div>
+   <div style="position:relative;width:100%;background:#000;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;">
+    <video id="game-trailer-video" controls playsinline style="width:100%;height:100%;object-fit:contain;background:#000;outline:none">
+     <source src="trailerrr.mp4" type="video/mp4">
+     <source src="rc_car_in_class_trailer.mp4" type="video/mp4">
+    </video>
+   </div>
+  </div>
+ </div>
  <input type="file" id="pfpUpload" accept="image/*" style="display:none">
  <div id="profile-text-dialog" style="display:none;position:absolute;inset:0;background:rgba(10,8,20,.88);z-index:90;backdrop-filter:blur(8px);align-items:center;justify-content:center;">
   <div style="background:linear-gradient(145deg,#1f1a35,#120f22);border:2px solid #00f0ff;border-radius:18px;padding:22px;width:min(90%,400px);box-shadow:0 0 32px rgba(0,240,255,.4);text-align:center;color:#fff;">
@@ -1242,6 +1256,37 @@ document.getElementById('bv').onclick=function(){toggleVoice();this.blur()};
 const bgBtn=document.getElementById('b-ghost');if(bgBtn)bgBtn.onclick=function(){ghostEnabled=!ghostEnabled;try{localStorage.setItem('rcGhostEnabled',ghostEnabled)}catch(e){}popups.push({t:ghostEnabled?'👻 Ghost Car ON':'👻 Ghost Car OFF',x:480,y:190,l:1.5,s:1});sfx.tick();this.blur()};
 const bChat=document.getElementById('b-chat');if(bChat)bChat.onclick=function(){triggerEmote(Math.floor(Math.random()*EMOTES.length));this.blur()};
 const bSpec=document.getElementById('b-spec');if(bSpec)bSpec.onclick=function(){spectatorMode=!spectatorMode;if(spectatorMode)spectateIdx++;popups.push({t:spectatorMode?'🎥 SPECTATOR ON':'🎥 RACER CAM',x:480,y:190,l:1.5,s:1});sfx.tick();this.blur()};
+
+const bTrailerBtn=document.getElementById('b-trailer');
+const trailerModal=document.getElementById('trailer-modal');
+const trailerVid=document.getElementById('game-trailer-video');
+const closeTrailerBtn=document.getElementById('close-trailer-btn');
+
+function openTrailerModal(){
+ if(state==='play')togglePause();
+ if(trailerModal){
+  trailerModal.style.display='flex';
+  if(trailerVid){
+   trailerVid.currentTime=0;
+   trailerVid.play().catch(()=>{});
+  }
+ }
+ if(sfx&&sfx.tick)sfx.tick();
+}
+
+function closeTrailerModal(){
+ if(trailerModal){
+  trailerModal.style.display='none';
+  if(trailerVid){
+   trailerVid.pause();
+  }
+ }
+ if(sfx&&sfx.tick)sfx.tick();
+}
+
+if(bTrailerBtn)bTrailerBtn.onclick=function(){openTrailerModal();this.blur()};
+if(closeTrailerBtn)closeTrailerBtn.onclick=closeTrailerModal;
+if(trailerModal)trailerModal.onclick=function(e){if(e.target===trailerModal)closeTrailerModal()};
 
 const pfpInp=document.getElementById('pfpUpload');
 if(pfpInp){
@@ -5218,6 +5263,7 @@ function drawTitle(){const W=960,H=520;g.fillStyle='#0c0a14';g.fillRect(0,0,W,H)
  g.font='13px "Trebuchet MS",sans-serif';g.fillStyle='rgba(255,255,255,.7)';g.fillText('Best played in landscape with sound on',W/2,410);g.textAlign='left'}
 const HOME_BTNS={
  profile:      {x:16,  y:10, w:210, h:46, r:12, n:'Profile'},
+ trailer:      {x:234, y:10, w:98,  h:44, r:14, n:'Trailer'},
  title:        {x:340, y:10, w:250, h:44, r:22, n:'Title'},
  coins:        {x:624, y:10, w:130, h:44, r:22, n:'Coins'},
  sound:        {x:760, y:10, w:46,  h:44, r:12, n:'Sound'},
@@ -5469,6 +5515,8 @@ function homeClick(x,y){
   startTutorial();if(sfx&&sfx.pick)sfx.pick();
  }else if(h==='exit'||h==='top_exit'){
   homeModal='exit';if(sfx&&sfx.tick)sfx.tick();
+ }else if(h==='trailer'){
+  openTrailerModal();
  }else if(h==='title'){
   if(isWebGame){homeModal='web_app_promo';if(sfx&&sfx.tick)sfx.tick()}
   else{state='splash';splashT=0;if(sfx&&sfx.power)sfx.power()}
@@ -5527,6 +5575,16 @@ function drawHome(){
  g.fillStyle='#00f0ff';g.font='bold 10px "Trebuchet MS",sans-serif';
  const truncInt=playerInterest.length>14?playerInterest.slice(0,13)+'…':playerInterest;
  g.fillText(truncInt,62,44);
+ g.restore();
+
+ // Top Bar: Trailer Button (between Profile and Title)
+ const isHoverTrailer=homeHover==='trailer';
+ drawCard(234,10,98,44,14,isHoverTrailer?['#f43f5e','#be123c']:['rgba(190,18,60,.85)','rgba(136,19,55,.94)'],'#fb7185',isHoverTrailer?2:1.5,isHoverTrailer?'#fb7185':null);
+ g.save();
+ g.textAlign='center';g.font='bold 12px "Trebuchet MS",sans-serif';
+ g.fillStyle='#ffffff';
+ g.shadowColor='rgba(0,0,0,.6)';g.shadowOffsetY=1;g.shadowBlur=3;
+ g.fillText('🎬 TRAILER',283,34);
  g.restore();
 
  // Top Center: Title / Web App button
