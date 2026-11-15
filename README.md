@@ -21,6 +21,24 @@ Play online or download the native Android app / Windows edition:
 ---
 
 ### Features
+- **🗺️ 4 Distinct Maps & Environments**:
+  - **Homeroom 3-A**: Classic classroom with tidy desk rows, chalkboards, student clutter, and tight drift lanes.
+  - **Chemistry Lab 101**: Granite resin lab benches, 6 breakable test tube racks (shatters on impact, confusing Sensei for 3 seconds!), 4 live Bunsen burners with thermal boost flames, and slingshot catapult pads.
+  - **Central Academy Library**: Tall mahogany bookshelf maze, fragile book piles, oscillating ventilation fans, and a quiet noise meter that triggers Sensei's investigative sprint when making loud tire screeches!
+  - **Sunset Rooftop Terrace**: Wide-open rooftop under twilight skies with 3 industrial HVAC draft units, 3 solar panel stunt ramps, and rainwater puddles causing slippery hydroplane drift slides.
+- **👻 Ghost Car Replay & Time Trial System**:
+  - High-fidelity holographic 3D ghost car with translucent cyan glow and 2D minimap shadow silhouette.
+  - Real-time HUD delta split tracker (`▲ -0.35s` green ahead / `▼ +0.50s` red behind) comparing your current run against your Personal Best.
+  - High-precision 80ms sampling with automatic spline interpolation and `localStorage` persistence per map and game mode.
+  - Quick on/off toggle via top bar `[👻 GHOST]` button.
+- **🧰 3 New Interactive Gadgets & Environmental Hazards**:
+  - **Rubber Band Catapult Boost** (`R` / `B` / touch `[⚡ SLING]` / gamepad `B`/`RB`): launches car forward (`car.v += 6.5`) with elastic snap SFX, speed lines, and reactive floor slingshot boost pads.
+  - **Electro-Magnet Collector** (`M` / `G` / touch `[🧲 MAGNET]` / gamepad `X`): activates a 240px tractor beam pulling homework papers and power-ups straight to your car for 6.0 seconds with electric hum SFX and magnetic particle aura.
+  - **Turbofan Gale & Room Drafts** (`F` / touch `[🌪️ FAN]` / gamepad `LB`): blasts a supersonic shockwave pushing Sakamoto Sensei back by 110 units and scattering clutter, plus environmental oscillating desk fans and HVAC drafts.
+- **🌐 Enhanced Online Multiplayer**:
+  - **Quick Match Public Lobby Browser**: 1-click room browser with standard lobbies (`CL3A`, `LABX`, `LIBS`, `ROOF`) or custom room codes.
+  - **Spectator Mode** (`C` / touch `[👁️ SPEC]`): spectate active racers or Sakamoto Sensei with cinematic 2D & 3D chase camera tracking.
+  - **Quick Chat & Emote Wheel** (`T` / touch `[💬 CHAT]`): broadcast animated floating speech bubbles (`🏎️💨`, `⚡`, `😎`, `😂`, `🔥`, `😱`) across PeerJS peers.
 - **📐 Ruler & Textbook Stunt Ramps**: Inclined wooden rulers stacked on colorful manga & textbooks scattered across the classroom. Hitting a ramp at speed triggers a 3D parabolic aerial jump (`car.airZ` up to 45 units), airtime score bonuses, landing sparks, and allows jumping directly over rows of desks or driving across desk-tops!
 - **🦘 Bunny Hop Jump Action**: Tap `SPACE`, `J`, or the on-screen `[🦘 JUMP]` touch button (or Gamepad `Y` button) to execute an instant spring hop (`car.airZ = 19`) to hop over clutter, clear bags and balls, or dodge incoming student kicks mid-drift!
 - **🖋️ Fountain Pen Ink Trap**: Tap `E`, `I`, or the `[🖋️ INK]` button to drop a glossy dark ink puddle behind your RC Car. When Sakamoto Sensei steps into the ink, he comically slips, spins out, and is knocked down for 2.8 seconds (`+150 SENSEI SLIPPED!`) with dedicated slip voice lines! (Charges recharge over time).
