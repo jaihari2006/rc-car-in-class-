@@ -429,7 +429,7 @@ function tutorialClick(x,y){
 }
 const homeMotes=Array.from({length:18},()=>({x:Math.random()*960,y:Math.random()*520,sz:1+Math.random()*2,vy:.15+Math.random()*.25,seed:Math.random()*10,alpha:.2+Math.random()*.35}));
 try{best=+localStorage.getItem('rcBest')||0}catch(e){}
-let desks=[];buildDesks(0);
+let desks=[];
 const car={x:450,y:560,a:-Math.PI/2,v:0,r:8};
 let level=1,diff=1,combo=0,comboT=0,shake=0,skids=[],powers=[],clutter=[],pTimer=5,collected=0,steerA=0,popups=[],tops=[];
 let ramps=[],inkPuddles=[],chalkClouds=[];
@@ -467,6 +467,7 @@ const PUBLIC_ROOMS=[
 ];
 const EMOTES=['👋 HELLO!','🚀 ZOOM ZOOM!','😱 SENSEI BEHIND YOU!','🧲 MAGNET ON!','⚡ SLINGSHOT!','🎉 GG WP!'];
 let playerEmote=null,chatToast='';
+buildDesks(0);
 const UNDERGLOW_PALETTE=[
  {n:'Cyber Cyan',c:'#00f0ff',hex:0x00f0ff},
  {n:'Tokyo Gold',c:'#ffd23f',hex:0xffd23f},
@@ -769,7 +770,9 @@ function engine(){
   eng.o1.frequency.setTargetAtTime(f,t,.05);eng.o2.frequency.setTargetAtTime(f/2,t,.05);eng.o3.frequency.setTargetAtTime(f*1.5,t,.05);
   eng.lp.frequency.setTargetAtTime(350+f*8*thr,t,.05);eng.gn.gain.setTargetAtTime(on?(.03+thr*.035+(nitroOn?.03:0)):0,t,.08);
  }
- const slip=on&&v>2.4&&Math.abs(steerS)>.55?Math.min(1,(v-2.4)/2):0;sq.g.gain.setTargetAtTime(slip*.06,t,.05);sq.fl.frequency.setTargetAtTime(2200+v*120,t,.1);nit.g.gain.setTargetAtTime(on&&nitroOn?.1:0,t,.05);nit.fl.frequency.setTargetAtTime(500+v*160,t,.08);
+ const slip=on&&v>2.4&&Math.abs(steerS)>.55?Math.min(1,(v-2.4)/2):0;
+ if(sq&&sq.g){sq.g.gain.setTargetAtTime(slip*.06,t,.05);sq.fl.frequency.setTargetAtTime(2200+v*120,t,.1)}
+ if(nit&&nit.g){nit.g.gain.setTargetAtTime(on&&nitroOn?.1:0,t,.05);nit.fl.frequency.setTargetAtTime(500+v*160,t,.08)}
  if(on&&time<=10&&Math.ceil(time)!==lastTick){lastTick=Math.ceil(time);sfx.tick()}}
 function toggleMute(){muted=!muted;if(muted&&window.speechSynthesis)speechSynthesis.cancel();updateVolumeGains();updateMusicVolume();if(!muted)playMusic();document.getElementById('bm').textContent=muted?'\ud83d\udd07':'\ud83d\udd0a'}
 function togglePause(){if(state==='play'){state='pause';pauseMusic()}else if(state==='pause'){state='play';playMusic()}}
