@@ -1140,6 +1140,7 @@ window.addEventListener('pointercancel',e=>{
 cv.addEventListener('pointerdown',e=>{audioInit();
  const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)*960/r.width,y=(e.clientY-r.top)*520/r.height;
  if(isTutorial&&state==='play'){if(tutorialClick(x,y))return}
+ if(state==='goodbye'){goodbyeClick(x,y);return}
  if(state==='play'||NG)return;
  if(state==='splash'){startFromSplash();return}
  if(state==='profile_setup'){profileSetupClick(x,y);return}
@@ -5260,16 +5261,17 @@ function homeClick(x,y){
    if(cx>=630&&cx<=866&&cy>=366&&cy<=398){homeModal=null;sfx.tick();return}
    return;
   }else if(homeModal==='exit'){
-   if(cx>290&&cx<470&&cy>250&&cy<296){
-    try{window.close()}catch(e){}
-    try{if(window.navigator&&navigator.app&&navigator.app.exitApp)navigator.app.exitApp()}catch(e){}
-    try{history.back()}catch(e){}
-    homeModal=null;
+   if(cx>=260&&cx<=480&&cy>=240&&cy<=318){
+    exitGame();
     return;
    }
-   if((cx>490&&cx<670&&cy>250&&cy<296)||(cx>650&&cx<695&&cy>135&&cy<175)||cx<260||cx>700||cy<130||cy>390){
-    homeModal=null;sfx.tick();return;
+   if(cx>=485&&cx<=700&&cy>=240&&cy<=318){
+    homeModal=null;if(sfx&&sfx.tick)sfx.tick();return;
    }
+   if((cx>=648&&cx<=716&&cy>=114&&cy<=178)||cx<240||cx>720||cy<110||cy>410){
+    homeModal=null;if(sfx&&sfx.tick)sfx.tick();return;
+   }
+   return;
   }else if(homeModal==='tutorial_ask'){
    if((cx>=490&&cx<=740&&cy>=355&&cy<=415)||(cx>=715&&cx<=760&&cy>=50&&cy<=95)||cx<180||cx>780||cy<40||cy>485){
     hasPromptedTutorial=true;
@@ -5291,6 +5293,9 @@ function homeClick(x,y){
  }
  const h=getHomeHover(x,y);
  if(!h){
+  if(x>=800&&x<=950&&y>=435&&y<=515){
+   homeModal='exit';if(sfx&&sfx.tick)sfx.tick();return;
+  }
   if(x>=12&&x<=78&&y>=8&&y<=68){
    state='splash';splashT=0;if(sfx&&sfx.power)sfx.power();
   }
@@ -5914,24 +5919,99 @@ function drawModalTutorialAsk(){
  g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';
  g.fillText('✕',740,78);
 }
+function exitGame(){
+ if(sfx&&sfx.tick)sfx.tick();
+ homeModal=null;
+
+ try{if(window.AndroidApp&&window.AndroidApp.exitApp){window.AndroidApp.exitApp();return;}}catch(e){}
+ try{if(window.Android&&window.Android.exitApp){window.Android.exitApp();return;}}catch(e){}
+ try{if(window.navigator&&navigator.app&&navigator.app.exitApp){navigator.app.exitApp();return;}}catch(e){}
+ try{if(window.electronAPI&&window.electronAPI.exitApp){window.electronAPI.exitApp();return;}}catch(e){}
+ try{window.close();}catch(e){}
+
+ try{stopMusic();}catch(e){}
+ try{if(sq&&sq.g)sq.g.gain.value=0;}catch(e){}
+ try{if(nit&&nit.g)nit.g.gain.value=0;}catch(e){}
+ try{if(window.speechSynthesis)speechSynthesis.cancel();}catch(e){}
+
+ state='goodbye';
+}
+
 function drawModalExit(){
- drawCard(260,130,440,260,20,['rgba(26,20,40,.98)','rgba(12,10,22,.99)'],['#ef4444','#dc2626'],2,'rgba(239,68,68,.35)');
+ const pulse=(Math.sin(Date.now()/300)+1)*.5;
+ drawCard(240,110,480,300,20,['rgba(26,20,40,.98)','rgba(12,10,22,.99)'],['#ef4444','#dc2626'],2,'rgba(239,68,68,'+(0.28+pulse*0.35)+')');
  g.textAlign='center';
- g.fillStyle='#ffd23f';g.font='bold 26px "Trebuchet MS",sans-serif';
+ g.fillStyle='#ffd23f';g.font='bold 28px "Trebuchet MS",sans-serif';
  g.shadowColor='#ffd23f';g.shadowBlur=8;
- g.fillText('🚪 EXIT RC CAR IN CLASS?',480,178);
+ g.fillText('🚪 EXIT RC CAR IN CLASS?',480,162);
  g.shadowBlur=0;
- g.fillStyle='#cbd5e1';g.font='14px "Trebuchet MS",sans-serif';
- g.fillText('Are you sure you want to quit the game?',480,210);
- drawCard(290,248,170,48,12,['#ef4444','#b91c1c'],'#fca5a5',1.5,'#ef4444');
+
+ g.fillStyle='#cbd5e1';g.font='15px "Trebuchet MS",sans-serif';
+ g.fillText('Are you sure you want to quit the game session?',480,202);
+
+ g.fillStyle='#94a3b8';g.font='12px "Trebuchet MS",sans-serif';
+ if(isWebGame){
+  g.fillText('Click Exit Game to end audio and close session.',480,228);
+ }else{
+  g.fillText('All progress and high scores are safely saved.',480,228);
+ }
+
+ drawCard(270,256,200,52,14,['#ef4444','#b91c1c'],['#fca5a5','#f87171'],2,'rgba(239,68,68,'+(0.35+pulse*0.35)+')');
  g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';
- g.fillText('Exit Game',375,278);
- drawCard(500,248,170,48,12,['#10b981','#059669'],'#34d399',1.5,'#10b981');
+ g.fillText('🚪  Exit Game',370,288);
+
+ drawCard(490,256,200,52,14,['#10b981','#059669'],['#34d399','#6ee7b7'],1.8,'#10b981');
  g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';
- g.fillText('Keep Playing',585,278);
- drawCard(656,140,32,32,16,['#ef4444','#b91c1c'],'#fca5a5',1.5);
+ g.fillText('▶  Keep Playing',590,288);
+
+ drawCard(676,122,32,32,16,['#374151','#1f2937'],'#9ca3af',1.5);
  g.fillStyle='#fff';g.font='bold 16px "Trebuchet MS",sans-serif';
- g.fillText('✕',672,161);
+ g.fillText('✕',692,144);
+}
+
+function drawGoodbye(){
+ const W=960,H=520;
+ g.clearRect(0,0,W,H);
+ const bgGr=g.createLinearGradient(0,0,W,H);
+ bgGr.addColorStop(0,'#141022');bgGr.addColorStop(1,'#08060e');
+ g.fillStyle=bgGr;g.fillRect(0,0,W,H);
+
+ const pulse=(Math.sin(Date.now()/320)+1)*.5;
+ drawCard(220,70,520,380,22,['rgba(26,20,42,.98)','rgba(12,10,22,.99)'],['#ef4444','#ffd23f'],2,'rgba(239,68,68,'+(0.25+pulse*0.35)+')');
+
+ g.textAlign='center';
+ g.fillStyle='#ffd23f';g.font='bold 32px "Trebuchet MS",sans-serif';
+ g.shadowColor='#ffd23f';g.shadowBlur=12;
+ g.fillText('👋 THANKS FOR PLAYING!',480,135);
+ g.shadowBlur=0;
+
+ g.fillStyle='#00f0ff';g.font='bold 18px "Trebuchet MS",sans-serif';
+ g.fillText('RC Car in Class?',480,172);
+
+ g.fillStyle='#cbd5e1';g.font='15px "Trebuchet MS",sans-serif';
+ g.fillText('Game session safely ended.',480,216);
+ g.fillStyle='#94a3b8';g.font='13px "Trebuchet MS",sans-serif';
+ g.fillText('You can now safely close this browser tab or window.',480,244);
+
+ drawCard(300,288,360,52,14,['#10b981','#059669'],['#34d399','#6ee7b7'],2,'#10b981');
+ g.fillStyle='#ffffff';g.font='bold 17px "Trebuchet MS",sans-serif';
+ g.fillText('🔄  Return to Game / Play Again',480,320);
+
+ if(isWebGame){
+  drawCard(330,358,300,42,10,['#0284c7','#0369a1'],'#38bdf8',1.2);
+  g.fillStyle='#e2e8f0';g.font='bold 13px "Trebuchet MS",sans-serif';
+  g.fillText('📱 Download Official Android App',480,384);
+ }
+}
+
+function goodbyeClick(x,y){
+ if(x>=300&&x<=660&&y>=288&&y<=340){
+  state='home';homeModal=null;playMusic();if(sfx&&sfx.power)sfx.power();return;
+ }
+ if(isWebGame&&x>=330&&x<=630&&y>=358&&y<=400){
+  try{window.open(APK_DOWNLOAD_URL,'_blank')}catch(e){}
+  return;
+ }
 }
 function drawModalWebAppPromo(){
  const pulse=(Math.sin(Date.now()/300)+1)*.5;
@@ -6025,6 +6105,7 @@ function draw(){
  const isSubMenu=state==='settings'||state==='voices'||state==='textures'||state==='volumes';
  const show3D=T3&&(state==='play'||state==='pause'||state==='over'||state==='intro'||state==='shop'||(isSubMenu&&settingsPrevState==='pause'));
  if(glEl)glEl.style.display=show3D?'block':'none';
+ if(state==='goodbye'){drawGoodbye();return}
  if(state==='splash'){drawSplash();return}
  if(state==='profile_setup'){drawProfileSetup();return}
  if(state==='home'){drawHome();return}
@@ -6082,18 +6163,24 @@ state='splash';
 splashT=0;
 if(qRoom)joinRoom(qRoom);
 buildRoom();
+window.handleAndroidBack=function(){
+ if(state==='goodbye'){exitGame();return true;}
+ if(homeModal==='exit'){exitGame();return true;}
+ if(homeModal){homeModal=null;if(sfx&&sfx.tick)sfx.tick();return true;}
+ if(state==='play'){state='pause';return true;}
+ if(state==='volumes'){state=volPrevState||'settings';if(sfx&&sfx.tick)sfx.tick();return true;}
+ if(state==='voices'||state==='textures'){state='settings';if(sfx&&sfx.tick)sfx.tick();return true;}
+ if(state==='settings'){state=settingsPrevState||'home';if(sfx&&sfx.tick)sfx.tick();return true;}
+ if(state==='pause'||state==='ready'||state==='shop'||state==='over'||state==='intro'||state==='title'){
+  state='home';if(sfx&&sfx.tick)sfx.tick();return true;
+ }
+ if(state==='home'){homeModal='exit';if(sfx&&sfx.tick)sfx.tick();return true;}
+ return false;
+};
 try{history.pushState({page:'game'},'')}catch(_){}
 window.addEventListener('popstate',()=>{
  try{history.pushState({page:'game'},'')}catch(_){}
- if(homeModal){homeModal=null;if(sfx&&sfx.tick)sfx.tick();return}
- if(state==='play'){state='pause';return}
- if(state==='volumes'){state=volPrevState||'settings';if(sfx&&sfx.tick)sfx.tick();return;}
- if(state==='voices'||state==='textures'){state='settings';if(sfx&&sfx.tick)sfx.tick();return;}
- if(state==='settings'){state=settingsPrevState||'home';if(sfx&&sfx.tick)sfx.tick();return;}
- if(state==='pause'||state==='ready'||state==='shop'||state==='over'||state==='intro'||state==='title'){
-  state='home';if(sfx&&sfx.tick)sfx.tick();return;
- }
- if(state==='home'&&!homeModal){homeModal='exit';if(sfx&&sfx.tick)sfx.tick()}
+ if(window.handleAndroidBack)window.handleAndroidBack();
 });
 let last=performance.now();
 let acc=0;(function loop(n){const dt=Math.min(.1,(n-last)/1000);last=n;fdt=dt;if(state==='splash'){splashT+=dt;if(splashT>=3.4)startFromSplash()}if(state==='intro')introT+=dt;acc+=dt;let k=0;while(acc>=1/60&&k<5){update(1/60);acc-=1/60;k++}if(k===5)acc=0;netTick(dt);engine();draw();requestAnimationFrame(loop)})(last);

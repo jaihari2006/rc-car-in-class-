@@ -50,10 +50,48 @@ public class MainActivity extends Activity {
         settings.setUseWideViewPort(true);
         settings.setSupportZoom(false);
         settings.setBuiltInZoomControls(false);
+        settings.setJavaScriptCanOpenWindowsAutomatically(true);
+
+        webView.addJavascriptInterface(new Object() {
+            @android.webkit.JavascriptInterface
+            public void exitApp() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        finishAffinity();
+                        System.exit(0);
+                    }
+                });
+            }
+        }, "AndroidApp");
+
+        webView.addJavascriptInterface(new Object() {
+            @android.webkit.JavascriptInterface
+            public void exitApp() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        finishAffinity();
+                        System.exit(0);
+                    }
+                });
+            }
+        }, "Android");
 
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         webView.setWebViewClient(new WebViewClient());
         webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onCloseWindow(WebView window) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        finishAffinity();
+                        System.exit(0);
+                    }
+                });
+            }
+
             @Override
             public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
                 if (uploadMessage != null) {
@@ -122,8 +160,19 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (webView != null && webView.canGoBack()) {
-            webView.goBack();
+        if (webView != null) {
+            webView.evaluateJavascript(
+                "(function(){ if(window.handleAndroidBack) return window.handleAndroidBack(); return false; })()",
+                new ValueCallback<String>() {
+                    @Override
+                    public void onReceiveValue(String value) {
+                        if (!"true".equals(value)) {
+                            finishAffinity();
+                            System.exit(0);
+                        }
+                    }
+                }
+            );
         } else {
             super.onBackPressed();
         }

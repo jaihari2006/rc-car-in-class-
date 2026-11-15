@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain } = require('electron');
 const path = require('path');
 
 let mainWindow;
@@ -13,6 +13,7 @@ function createWindow() {
     icon: path.join(__dirname, 'icon-192.png'),
     backgroundColor: '#0a0a14',
     webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
       webSecurity: false, // Allows loading local glb 3D assets and audio via file:// protocol
@@ -48,6 +49,13 @@ function createWindow() {
 app.whenReady().then(() => {
   Menu.setApplicationMenu(null);
   createWindow();
+
+  ipcMain.on('exit-app', () => {
+    if (mainWindow) {
+      mainWindow.close();
+    }
+    app.quit();
+  });
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
