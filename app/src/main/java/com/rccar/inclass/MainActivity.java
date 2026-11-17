@@ -34,6 +34,43 @@ public class MainActivity extends Activity {
 
         hideSystemUI();
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            try {
+                android.view.Display.Mode[] modes = getDisplay().getSupportedModes();
+                android.view.Display.Mode bestMode = null;
+                float maxRate = 60.0f;
+                for (android.view.Display.Mode m : modes) {
+                    if (m.getRefreshRate() > maxRate) {
+                        maxRate = m.getRefreshRate();
+                        bestMode = m;
+                    }
+                }
+                if (bestMode != null && maxRate >= 90.0f) {
+                    WindowManager.LayoutParams params = getWindow().getAttributes();
+                    params.preferredDisplayModeId = bestMode.getModeId();
+                    params.preferredRefreshRate = maxRate;
+                    getWindow().setAttributes(params);
+                }
+            } catch (Exception ignored) {}
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            try {
+                android.view.Display.Mode[] modes = getWindowManager().getDefaultDisplay().getSupportedModes();
+                android.view.Display.Mode bestMode = null;
+                float maxRate = 60.0f;
+                for (android.view.Display.Mode m : modes) {
+                    if (m.getRefreshRate() > maxRate) {
+                        maxRate = m.getRefreshRate();
+                        bestMode = m;
+                    }
+                }
+                if (bestMode != null && maxRate >= 90.0f) {
+                    WindowManager.LayoutParams params = getWindow().getAttributes();
+                    params.preferredDisplayModeId = bestMode.getModeId();
+                    getWindow().setAttributes(params);
+                }
+            } catch (Exception ignored) {}
+        }
+
         webView = new WebView(this);
         setContentView(webView);
 
